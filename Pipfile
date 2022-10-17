@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+injector = "*"
+parameterized = "*"
 plum-dispatch = "*"
 
 [dev-packages]

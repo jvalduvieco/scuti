@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "815c356ee650446fdf8f907ac4ba6f88e4a6a59dc144b75f06a3345b75744e1f"
+            "sha256": "3b37cbabb8c8171e78724fdff74c5fbb20274945b99f9a5ceb99b3ebabd42c3c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,22 @@
         ]
     },
     "default": {
+        "injector": {
+            "hashes": [
+                "sha256:8661b49a2f8309ce61e3a6a82b7acb5e225c4bde8e17d1610c893a670dff223a",
+                "sha256:f8fc5994176a8cf6b0455a8d1558c588733474ef17795553464e7e9d2f94eaf5"
+            ],
+            "index": "pypi",
+            "version": "==0.20.1"
+        },
+        "parameterized": {
+            "hashes": [
+                "sha256:41bbff37d6186430f77f900d777e5bb6a24928a1c46fb1de692f8b52b8833b5c",
+                "sha256:9cbb0b69a03e8695d68b3399a8a5825200976536fe1cb79db60ed6a4c8c9efe9"
+            ],
+            "index": "pypi",
+            "version": "==0.8.1"
+        },
         "plum-dispatch": {
             "hashes": [
                 "sha256:e7639bbffef7995aa801d136935c9f74573db0e0f5dd7bcec83c71de2222f8ad",
