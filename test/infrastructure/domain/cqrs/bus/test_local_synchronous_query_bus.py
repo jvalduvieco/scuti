@@ -50,13 +50,13 @@ class TestLocalSynchronousQueryBus(TestCase):
         [LocalSynchronousQueryBus()]
     ])
     def test_should_register_a_handler_for_a_query(self, query_bus: QueryBus):
-        query_bus.register(AQuery, a_simple_handler)
+        query_bus.subscribe(AQuery, a_simple_handler)
 
     @parameterized.expand([
         [LocalSynchronousQueryBus()]
     ])
     def test_should_handle_a_query(self, query_bus: QueryBus):
-        query_bus.register(**build_simple_query_handler(AQuery, AQueryHandler))
+        query_bus.subscribe(**build_simple_query_handler(AQuery, AQueryHandler))
         query_result = query_bus.handle(AQuery(a_property="Test"))
         self.assertEqual({"result": "test"}, query_result)
 
@@ -64,16 +64,16 @@ class TestLocalSynchronousQueryBus(TestCase):
         [LocalSynchronousQueryBus()]
     ])
     def test_should_not_let_register_two_handlers_for_a_query(self, query_bus: QueryBus):
-        query_bus.register(AQuery, a_simple_handler)
+        query_bus.subscribe(AQuery, a_simple_handler)
 
         with self.assertRaises(AlreadyRegisteredEffect):
-            query_bus.register(AQuery, a_simple_handler)
+            query_bus.subscribe(AQuery, a_simple_handler)
 
     @parameterized.expand([
         [LocalSynchronousQueryBus()]
     ])
     def test_should_handle_a_registered_query(self, query_bus: QueryBus):
-        query_bus.register(AQuery, a_handler_that_raises_an_exception)
+        query_bus.subscribe(AQuery, a_handler_that_raises_an_exception)
 
         with self.assertRaises(HandlerCalled):
             query_bus.handle(AQuery(a_property="Test"))
@@ -82,7 +82,7 @@ class TestLocalSynchronousQueryBus(TestCase):
         [LocalSynchronousQueryBus()]
     ])
     def test_should_bubble_up_exceptions(self, query_bus: QueryBus):
-        query_bus.register(AQuery, a_handler_that_fails)
+        query_bus.subscribe(AQuery, a_handler_that_fails)
 
         with self.assertRaises(ValueError):
             query_bus.handle(AQuery(a_property="Test"))

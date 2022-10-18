@@ -33,7 +33,7 @@ class TestEventBusFacade(TestCase):
         called_event_handlers = []
         event_bus.subscribe(AnEvent, lambda x: called_event_handlers.append(1))
         event_bus.subscribe(AnEvent, lambda x: called_event_handlers.append(2))
-        event_bus.publish([AnEvent()])
+        event_bus.handle([AnEvent()])
         async_bus.drain()
         self.assertEqual([1, 2], called_event_handlers)
 
@@ -50,7 +50,7 @@ class TestEventBusFacade(TestCase):
         event_bus.subscribe(AnEvent, lambda x: 1 / 0)
         event_bus.subscribe(AnEvent, lambda x: called_event_handlers.append(2))
         event_bus.subscribe(BusHandlerFailed, failure_handler)
-        event_bus.publish([AnEvent()])
+        event_bus.handle([AnEvent()])
         async_bus.drain()
         self.assertEqual([2], called_event_handlers)
         self.assertEqual(1, len(failures_handled))
@@ -61,6 +61,6 @@ class TestEventBusFacade(TestCase):
 
         called_event_handlers = []
         event_bus.subscribe(AnEvent, lambda x: called_event_handlers.append(2))
-        event_bus.publish([AnotherEvent()])
+        event_bus.handle([AnotherEvent()])
         async_bus.drain()
         self.assertEqual([], called_event_handlers)

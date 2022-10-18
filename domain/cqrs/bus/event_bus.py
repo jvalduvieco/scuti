@@ -1,14 +1,15 @@
 import abc
-from typing import List, TypeVar, Callable, Dict, Type, Optional
+from typing import List, TypeVar, Callable, Type
 
 from domain.cqrs.effects import Event
+from domain.cqrs.bus.bus import Bus
 
 T = TypeVar('T', bound=Event)
 
 
-class EventBus(abc.ABC):
+class EventBus(abc.ABC, Bus):
     @abc.abstractmethod
-    def publish(self, events: List[Event]):
+    def handle(self, events: List[Event]):
         pass
 
     @abc.abstractmethod

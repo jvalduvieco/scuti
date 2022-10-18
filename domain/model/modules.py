@@ -1,32 +1,25 @@
 from abc import ABC
-from typing import List, Callable, Union, Type, Tuple
+from collections.abc import Mapping
+from typing import List, Type, Tuple
 
-from domain.cqrs.effects import Command, Query
-from domain.cqrs.bus.query_handler import QueryHandler
+from injector import Module, Scope
 
-
-class CommandHandler:
-    pass
+from domain.cqrs.effects import Command
+from domain.cqrs.bus.effect_handler import EffectHandler
 
 
 class DomainModule(ABC):
-    def bindings(self) -> List[Callable[[Binder], None]]:
-        return []
+    def __init__(self, config: Mapping):
+        self._config = config
 
-    def sagas(self) -> List[Type]:
-        return []
-
-    def command_handlers(self) -> List[Union[Type[CommandHandler], Tuple[Type[CommandHandler], Type]]]:
-        return []
-
-    def event_handlers(self) -> List[Union[Type, Tuple[Type, Type]]]:
-        return []
-
-    def query_handlers(self) -> List[Tuple[List[Type[Query]], Type[QueryHandler]]]:
-        return []
-
-    def projections(self) -> List[Type]:
+    def bindings(self) -> List[Type[Module] | Tuple[Type, Type, Type[Scope]]]:
         return []
 
     def init_commands(self) -> List[Command]:
+        return []
+
+    def effect_handlers(self) -> List[Type[EffectHandler]]:
+        return []
+
+    def processes(self) -> List[Type]:
         return []

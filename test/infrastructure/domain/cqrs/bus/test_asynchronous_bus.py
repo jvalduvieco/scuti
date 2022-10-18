@@ -27,11 +27,11 @@ class TestAsynchronousBus(TestCase):
     def test_can_run_until_there_are_no_more_items_to_handle(self):
         self.assertIsNone(self.bus.drain())
 
-    def test_handlers_for_a_bus_item_can_be_registered(self):
+    def test_handlers_for_a_bus_item_can_be_subscribed(self):
         def handler(item: AnotherItem):
             pass
 
-        self.assertIsNone(self.bus.register(AnotherItem, handler))
+        self.assertIsNone(self.bus.subscribe(AnotherItem, handler))
 
     def test_can_bus_items_can_be_pushed(self):
         self.assertIsNone(self.bus.handle(AnotherItem))
@@ -42,7 +42,7 @@ class TestAsynchronousBus(TestCase):
         def handler(item: AnotherItem):
             handlers_called.append(item)
 
-        self.bus.register(AnotherItem, handler)
+        self.bus.subscribe(AnotherItem, handler)
         self.bus.handle(AnotherItem(id=1))
         self.bus.drain()
         self.assertEqual([AnotherItem(id=1)], handlers_called)
@@ -53,14 +53,14 @@ class TestAsynchronousBus(TestCase):
         def spying_handler(item: AnotherItem):
             called_handlers.append(item)
 
-        self.bus.register(AnotherItem, spying_handler)
+        self.bus.subscribe(AnotherItem, spying_handler)
         self.bus.handle(AnotherItem(id=1))
         self.bus.drain()
         self.bus.drain()
         self.assertEqual([AnotherItem(id=1)], called_handlers)
 
     def test_can_check_if_an_item_type_has_a_handler(self):
-        self.bus.register(AnotherItem, lambda x: None)
+        self.bus.subscribe(AnotherItem, lambda x: None)
 
         self.assertTrue(self.bus.handles(AnotherItem))
         IAmNotRegistered = bool
@@ -75,8 +75,8 @@ class TestAsynchronousBus(TestCase):
         def failure_handler(item: BusHandlerFailed):
             failures_handled.append(item)
 
-        self.bus.register(BusHandlerFailed, failure_handler)
-        self.bus.register(AnItem, failing_handler)
+        self.bus.subscribe(BusHandlerFailed, failure_handler)
+        self.bus.subscribe(AnItem, failing_handler)
         self.bus.handle(AnItem(id=1))
         self.bus.drain()
 

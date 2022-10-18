@@ -1,13 +1,15 @@
 import queue
 import traceback
 from typing import TypeVar, Type, Callable, Union, List, Generic
+
+from infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 from domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
 
 HandledTypeBase = TypeVar('HandledTypeBase')
 ASynchronousHandler = Callable[[HandledTypeBase], None]
 
 
-class LocalAsynchronousBus(Generic[HandledTypeBase]):
+class LocalAsynchronousBus(Generic[HandledTypeBase], AsynchronousBus):
     def __init__(self):
         self.__handlers = {}
         self.__items = queue.Queue()
@@ -24,7 +26,7 @@ class LocalAsynchronousBus(Generic[HandledTypeBase]):
                         self.__items.put(BusHandlerFailed(effect=item, error=e.__str__(), stack_trace=''.join(traceback.format_stack())))
             self.__items.task_done()
 
-    def register(self, item_type: Type[HandledTypeBase], handler: ASynchronousHandler):
+    def subscribe(self, item_type: Type[HandledTypeBase], handler: ASynchronousHandler):
         if item_type in self.__handlers:
             self.__handlers[item_type] += [handler]
         else:
