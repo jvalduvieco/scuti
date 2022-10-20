@@ -32,5 +32,8 @@ class UuidId(Identifier):
     def __hash__(self):
         return self.__id.__hash__()
 
+    def __repr__(self):
+        return str(self)
+
     def serialize(self):
         return str(self)

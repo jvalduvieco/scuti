@@ -9,7 +9,7 @@ from domain.model.identifiable.identifier import Identifier
 class StringId(Identifier):
     def __init__(self, initial_value: int | str = None):
         if initial_value is None:
-            self.__id = ''.join(random.choices(string.ascii_uppercase + string.digits))
+            self.__id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
         else:
             self.__id = str(initial_value)
 
@@ -27,6 +27,9 @@ class StringId(Identifier):
 
     def __hash__(self):
         return self.__id.__hash__()
+
+    def __repr__(self):
+        return str(self)
 
     def serialize(self):
         return str(self)
