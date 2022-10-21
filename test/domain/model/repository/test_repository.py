@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Generator
 from unittest import TestCase
 
-from domain.model.identifiable.identifiable_entity import IdentifiableEntity, IdentifiableEntityType
-from domain.model.identifiable.identifier import IdentifierType
-from domain.model.repository.repository import Repository
-from infrastructure.domain.model.identifier.uuid_id import UuidId
+from domain.model.identifiable.identifiable_entity import IdentifiableEntity
+from infrastructure.domain.model.identifiable.uuid_id import UuidId
+from infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
 
 
 @dataclass(frozen=True)
@@ -15,23 +13,8 @@ class Something(IdentifiableEntity[UuidId]):
     id: UuidId
 
 
-class SomethingRepositoryInMemory(Repository[Something, UuidId]):
-    def __init__(self, initial_values: List[Something] = None):
-        initial_values = initial_values if initial_values is not None else []
-        self.__entities = {value.id: value for value in initial_values}
-
-    def save(self, entity: Something):
-        self.__entities = {entity.id: entity}
-
-    def by_id(self, an_id: UuidId) -> Something:
-        return self.__entities[an_id]
-
-    def delete(self, an_id: UuidId):
-        del (self.__entities[an_id])
-
-    def all(self) -> Generator[IdentifiableEntityType[IdentifierType]]:
-        for entity in self.__entities.values():
-            yield entity
+class SomethingRepositoryInMemory(InMemoryRepository[Something, UuidId]):
+    pass
 
 
 class TestRepository(TestCase):
