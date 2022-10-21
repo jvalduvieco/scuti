@@ -211,19 +211,11 @@ class TestTicTacToeGame(TestCase):
         self.a_game.handle(PlaceMark(game_id=self.game_id,
                                      operation_id=self.another_operation_id,
                                      player_id=self.player_2, x=0, y=0))
-        self.assertEqual([GameStarted(game_id=self.game_id,
-                                      player_1=self.player_1,
-                                      player_2=self.player_2,
-                                      board=TicTacToeBoard(),
-                                      parent_operation_id=self.operation_id),
-                          BoardUpdated(game_id=self.game_id, board=TicTacToeBoard()),
-                          WaitingForPlayerPlay(game_id=self.game_id, player_id=self.player_1),
-                          GameErrorOccurred(reason=GameErrorReasons.PLAYER_CAN_NOT_PLAY,
-                                            player=self.player_2,
-                                            game_id=self.game_id,
-                                            parent_operation_id=self.another_operation_id),
-                          ],
-                         self.event_bus.emitted_events)
+        self.assertTrue(GameErrorOccurred(reason=GameErrorReasons.PLAYER_CAN_NOT_PLAY,
+                                          player=self.player_2,
+                                          game_id=self.game_id,
+                                          parent_operation_id=self.another_operation_id)
+                        in self.event_bus.emitted_events)
 
     def test_a_player_can_not_play_to_an_already_filled_position(self):
         third_operation_id = OperationId()
@@ -236,21 +228,11 @@ class TestTicTacToeGame(TestCase):
         self.a_game.handle(PlaceMark(game_id=self.game_id,
                                      operation_id=third_operation_id,
                                      player_id=self.player_2, x=0, y=0))
-        self.assertEqual([GameStarted(game_id=self.game_id,
-                                      player_1=self.player_1,
-                                      player_2=self.player_2,
-                                      board=TicTacToeBoard(),
-                                      parent_operation_id=self.operation_id),
-                          BoardUpdated(game_id=self.game_id, board=TicTacToeBoard()),
-                          WaitingForPlayerPlay(game_id=self.game_id, player_id=self.player_1),
-                          BoardUpdated(game_id=self.game_id,
-                                       board=TicTacToeBoard(cells={(0, 0): self.player_1})),
-                          GameErrorOccurred(reason=GameErrorReasons.POSITION_ALREADY_FILLED,
-                                            player=self.player_2,
-                                            game_id=self.game_id,
-                                            parent_operation_id=third_operation_id),
-                          ],
-                         self.event_bus.emitted_events)
+        self.assertTrue(GameErrorOccurred(reason=GameErrorReasons.POSITION_ALREADY_FILLED,
+                                          player=self.player_2,
+                                          game_id=self.game_id,
+                                          parent_operation_id=third_operation_id)
+                        in self.event_bus.emitted_events)
 
 
 if __name__ == '__main__':
