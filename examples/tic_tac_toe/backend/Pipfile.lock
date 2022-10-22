@@ -1,0 +1,73 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "e7bca5f7eaaa3e953d3f33dd5627fb9ad7143ca2882a103b3f19bd74dca6ce42"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.10"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "colorama": {
+            "hashes": [
+                "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da",
+                "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==0.4.5"
+        },
+        "injector": {
+            "hashes": [
+                "sha256:8661b49a2f8309ce61e3a6a82b7acb5e225c4bde8e17d1610c893a670dff223a",
+                "sha256:f8fc5994176a8cf6b0455a8d1558c588733474ef17795553464e7e9d2f94eaf5"
+            ],
+            "version": "==0.20.1"
+        },
+        "mani": {
+            "editable": true,
+            "path": "./../../../../mani"
+        },
+        "parameterized": {
+            "hashes": [
+                "sha256:41bbff37d6186430f77f900d777e5bb6a24928a1c46fb1de692f8b52b8833b5c",
+                "sha256:9cbb0b69a03e8695d68b3399a8a5825200976536fe1cb79db60ed6a4c8c9efe9"
+            ],
+            "version": "==0.8.1"
+        },
+        "plum-dispatch": {
+            "hashes": [
+                "sha256:e7639bbffef7995aa801d136935c9f74573db0e0f5dd7bcec83c71de2222f8ad",
+                "sha256:f884ecd37d5e9fc303303d05f7595f8aa7ccbfde7f2524ef6be38690336a121a"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==1.7.2"
+        },
+        "sampleproject": {
+            "editable": true,
+            "path": "./../../../../mani"
+        },
+        "uuid": {
+            "hashes": [
+                "sha256:1f87cc004ac5120466f36c5beae48b4c48cc411968eed0eaecd3da82aa96193f"
+            ],
+            "version": "==1.30"
+        },
+        "vistir": {
+            "hashes": [
+                "sha256:1a89a612fb667c26ed6b4ed415b01e0261e13200a350c43d1990ace0ef44d35b",
+                "sha256:a8beb7643d07779cdda3941a08dad77d48de94883dbd3cb2b9b5ecb7eb7c0994"
+            ],
+            "markers": "python_version not in '3.0, 3.1, 3.2, 3.3' and python_version >= '3.7'",
+            "version": "==0.6.1"
+        }
+    },
+    "develop": {}
+}
