@@ -6,13 +6,13 @@ from typing import Type, List, Tuple
 from injector import Module, Scope, SingletonScope, Binder
 from plum import dispatch
 
-from domain.cqrs.bus.command_bus import CommandBus
-from domain.cqrs.bus.event_bus import EventBus
-from domain.cqrs.bus.exceptions import NoHandlerForEffect
-from domain.cqrs.bus.query_bus import QueryBus
-from domain.cqrs.effects import Command, Query, Event
-from domain.model.application import Application
-from domain.model.modules import DomainModule
+from mani.domain.cqrs.bus.command_bus import CommandBus
+from mani.domain.cqrs.bus.event_bus import EventBus
+from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect
+from mani.domain.cqrs.bus.query_bus import QueryBus
+from mani.domain.cqrs.effects import Command, Query, Event
+from mani.domain.model.application import Application
+from mani.domain.model.modules import DomainModule
 
 
 class TestApplication(unittest.TestCase):

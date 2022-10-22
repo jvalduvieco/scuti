@@ -20,11 +20,3 @@ jobs:
 
       - name: ✅ Run mani tests
         run: pipenv run test
-
-      - name: Install tic_tac_toe-fat_effect_handlers example dependencies
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/backend
-        run: pipenv install --dev
-
-      - name: ✅ Run tic_tac_toe-fat_effect_handlers example tests
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/backend
-        run: pipenv run test
