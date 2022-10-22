@@ -9,9 +9,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
 
       - name: Install system dependencies
-        run: apt update && apt install -y python3-pip && pip install pipenv
+        run: sudo apt update && apt sudo install -y python3-pip && sudo pip install pipenv
 
       - name: Install mani dependencies
         run: pipenv install --dev
