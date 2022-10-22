@@ -26,11 +26,11 @@
         },
         "plum-dispatch": {
             "hashes": [
-                "sha256:e7639bbffef7995aa801d136935c9f74573db0e0f5dd7bcec83c71de2222f8ad",
-                "sha256:f884ecd37d5e9fc303303d05f7595f8aa7ccbfde7f2524ef6be38690336a121a"
+                "sha256:1c1d15b2842b5fa98405fd3dff6fad4887bdc77b60bd200e209d76ebfe9990fe",
+                "sha256:c40dbeab269bbbf972ce0dbc078380da19ebaee1a370a2c564e1814a11bde216"
             ],
             "index": "pypi",
-            "version": "==1.7.2"
+            "version": "==1.7.4"
         },
         "uuid": {
             "hashes": [
