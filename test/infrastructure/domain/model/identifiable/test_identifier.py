@@ -19,7 +19,7 @@ class TestIdentifier(TestCase):
         self.assertEqual(self.type(self.expected), self.type(self.expected))
 
     def test_should_be_stringifiables(self):
-        self.assertEqual(self.expected, str(self.type(self.expected)))
+        self.assertEqual(f"{self.type.__name__}(id='{self.expected}')", str(self.type(self.expected)))
 
     def test_should_be_hasheable(self):
         a_dict = {self.type(self.expected): self.expected}
@@ -27,5 +27,5 @@ class TestIdentifier(TestCase):
 
     def test_generate_a_random_valid_value_if_none_is_provided(self):
         self.assertEqual(self.type, type(self.type()))
-        random_id = str(self.type())
-        self.assertEqual(random_id, str(self.type(random_id)))
+        random_id = self.type().id
+        self.assertEqual(f"{self.type.__name__}(id='{random_id}')", str(self.type(random_id)))

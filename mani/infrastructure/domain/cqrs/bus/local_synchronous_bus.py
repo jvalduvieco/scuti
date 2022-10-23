@@ -1,7 +1,8 @@
 from typing import TypeVar, Callable, Type, Dict, Generic
 
-from mani.domain.cqrs.bus.exceptions import AlreadyRegisteredEffect, NoHandlerForEffect
 from mani.domain.cqrs.bus.bus import Bus
+from mani.domain.cqrs.bus.exceptions import AlreadyRegisteredEffect, NoHandlerForEffect
+from mani.domain.cqrs.effects import Effect
 
 HandledTypeBase = TypeVar('HandledTypeBase')
 ResultType = TypeVar('ResultType')
@@ -23,3 +24,6 @@ class LocalSynchronousBus(Generic[HandledTypeBase, ResultType], Bus):
             return self._handlers[effect_type](an_effect)
         else:
             raise NoHandlerForEffect(f"Could not find a handler for {effect_type}")
+
+    def handled(self) -> Dict[str, Type[Effect]]:
+        return {a_type.__name__: a_type for a_type in self._handlers.keys()}

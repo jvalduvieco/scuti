@@ -81,3 +81,11 @@ class TestAsynchronousBus(TestCase):
         self.bus.drain()
 
         self.assertEqual(BusHandlerFailed, type(failures_handled[0]))
+
+    def test_can_retrieve_handled_effect_types(self):
+        def handler(item: AnotherItem):
+            pass
+
+        self.bus.subscribe(AnItem, handler)
+        self.bus.subscribe(AnotherItem, handler)
+        self.assertEqual({"AnItem": AnItem, "AnotherItem": AnotherItem}, self.bus.handled())

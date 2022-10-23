@@ -1,9 +1,10 @@
 import queue
 import traceback
-from typing import TypeVar, Type, Callable, Union, List, Generic
+from typing import TypeVar, Type, Callable, Union, List, Generic, Dict
 
-from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
+from mani.domain.cqrs.effects import Effect
+from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 
 HandledTypeBase = TypeVar('HandledTypeBase')
 ASynchronousHandler = Callable[[HandledTypeBase], None]
@@ -23,7 +24,8 @@ class LocalAsynchronousBus(Generic[HandledTypeBase], AsynchronousBus):
                     try:
                         handler(item)
                     except Exception as e:
-                        self.__items.put(BusHandlerFailed(effect=item, error=e.__str__(), stack_trace=''.join(traceback.format_stack())))
+                        self.__items.put(BusHandlerFailed(effect=item, error=e.__str__(),
+                                                          stack_trace=''.join(traceback.format_stack())))
             self.__items.task_done()
 
     def subscribe(self, item_type: Type[HandledTypeBase], handler: ASynchronousHandler):
@@ -40,6 +42,9 @@ class LocalAsynchronousBus(Generic[HandledTypeBase], AsynchronousBus):
 
     def handles(self, item_type: Type[HandledTypeBase]):
         return item_type in self.__handlers
+
+    def handled(self) -> Dict[str, Type[Effect]]:
+        return {a_type.__name__: a_type for a_type in self.__handlers.keys()}
 
     def is_empty(self):
         return self.__items.empty()

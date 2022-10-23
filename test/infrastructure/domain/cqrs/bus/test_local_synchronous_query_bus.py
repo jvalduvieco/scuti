@@ -5,9 +5,9 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from mani.domain.cqrs.bus.exceptions import AlreadyRegisteredEffect, NoHandlerForEffect
-from mani.domain.cqrs.effects import Query
 from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.bus.query_handler import QueryHandler
+from mani.domain.cqrs.effects import Query
 from mani.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
 
 
@@ -51,6 +51,13 @@ class TestLocalSynchronousQueryBus(TestCase):
     ])
     def test_should_register_a_handler_for_a_query(self, query_bus: QueryBus):
         query_bus.subscribe(AQuery, a_simple_handler)
+
+    @parameterized.expand([
+        [LocalSynchronousQueryBus()]
+    ])
+    def test_test_can_retrieve_handled_query_types(self, query_bus: QueryBus):
+        query_bus.subscribe(AQuery, a_simple_handler)
+        self.assertEqual({"AQuery": AQuery}, query_bus.handled())
 
     @parameterized.expand([
         [LocalSynchronousQueryBus()]
