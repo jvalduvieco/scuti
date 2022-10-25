@@ -11,7 +11,7 @@ from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect
 from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.effects import Command, Query, Event
-from mani.domain.model.application import Application
+from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.modules import DomainModule
 
 
@@ -19,25 +19,25 @@ class TestApplication(unittest.TestCase):
     def test_can_create_an_application(self):
         config = {}
         domains = []
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertTrue(app)
 
     def test_can_access_command_bus(self):
         config = {}
         domains = []
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertTrue(issubclass(app.command_bus.__class__, CommandBus))
 
     def test_can_access_event_bus(self):
         config = {}
         domains = []
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertTrue(issubclass(app.event_bus.__class__, EventBus))
 
     def test_can_access_query_bus(self):
         config = {}
         domains = []
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertTrue(issubclass(app.query_bus.__class__, QueryBus))
 
     def test_can_register_domain_modules(self):
@@ -46,7 +46,7 @@ class TestApplication(unittest.TestCase):
 
         config = {}
         domains = [DummyDomainModule]
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertEqual("This is an app running these domains: CQRSDomainModule, DummyDomainModule", str(app))
 
     def test_domain_modules_can_add_bindings_using_tuples(self):
@@ -65,7 +65,7 @@ class TestApplication(unittest.TestCase):
 
         config = {}
         domains = [DummyDomainModule]
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertEqual(SomethingConcrete, app.injector().get(SomethingAbstract).__class__)
 
     def test_domain_modules_can_add_bindings_using_injector_modules(self):
@@ -88,7 +88,7 @@ class TestApplication(unittest.TestCase):
 
         config = {}
         domains = [DummyDomainModule]
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         self.assertEqual(SomethingConcrete, app.injector().get(SomethingAbstract).__class__)
 
     def test_domain_modules_can_define_a_list_of_initial_commands_that_are_executed_on_starting_application(self):
@@ -102,7 +102,7 @@ class TestApplication(unittest.TestCase):
 
         config = {}
         domains = [DummyDomainModule]
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         with self.assertRaises(NoHandlerForEffect):
             app.start()
 
@@ -138,7 +138,7 @@ class TestApplication(unittest.TestCase):
 
         config = {}
         domains = [DummyDomainModule]
-        app = Application(config=config, domains=domains)
+        app = DomainApplication(config=config, domains=domains)
         app.start()
         # TODO Improve assertions
         app.command_bus.handle(ACommand())
