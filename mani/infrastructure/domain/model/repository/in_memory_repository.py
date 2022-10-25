@@ -6,7 +6,7 @@ from mani.domain.model.identifiable.identifier import IdentifierType
 from mani.domain.model.repository.repository import Repository
 
 
-class InMemoryRepository(Repository[IdentifiableEntityType, IdentifierType], ABC):
+class InMemoryRepository(Repository[IdentifiableEntityType, IdentifierType]):
     def __init__(self, initial_values: List[IdentifiableEntityType] = None):
         initial_values = initial_values if initial_values is not None else []
         self.__entities = {value.id: value for value in initial_values}

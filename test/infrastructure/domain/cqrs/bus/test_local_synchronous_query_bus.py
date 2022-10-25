@@ -55,13 +55,6 @@ class TestLocalSynchronousQueryBus(TestCase):
     @parameterized.expand([
         [LocalSynchronousQueryBus()]
     ])
-    def test_test_can_retrieve_handled_query_types(self, query_bus: QueryBus):
-        query_bus.subscribe(AQuery, a_simple_handler)
-        self.assertEqual({"AQuery": AQuery}, query_bus.handled())
-
-    @parameterized.expand([
-        [LocalSynchronousQueryBus()]
-    ])
     def test_should_handle_a_query(self, query_bus: QueryBus):
         query_bus.subscribe(**build_simple_query_handler(AQuery, AQueryHandler))
         query_result = query_bus.handle(AQuery(a_property="Test"))

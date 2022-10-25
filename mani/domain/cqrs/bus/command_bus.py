@@ -2,10 +2,9 @@ from abc import ABC, abstractmethod
 from typing import Type, Callable
 
 from mani.domain.cqrs.effects import Command
-from mani.domain.cqrs.bus.bus import Bus
 
 
-class CommandBus(ABC, Bus):
+class CommandBus(ABC):
     @abstractmethod
     def handle(self, command: Command) -> None:
         pass

@@ -1,7 +1,11 @@
-from typing import List, Type, Callable, Dict
+from typing import List, Type, Callable, Dict, Protocol, cast
 
 import plum
 from plum import Signature
+
+
+class PlumWrapper(Protocol):
+    methods: Dict
 
 
 def _resolve_inner_types(plum_type: plum.Type) -> List[Type]:
@@ -16,7 +20,7 @@ def _plum_parameter_types(signature: Signature) -> List[List[Type]]:
 
 def inspect(a_plum_overloaded_callable: Callable, should_ignore_self: bool = False) -> Dict:
     result = {}
-    methods = a_plum_overloaded_callable.methods
+    methods = cast(PlumWrapper, a_plum_overloaded_callable).methods
     for index, (parameters, _return_type) in enumerate(methods.items()):
         types = _plum_parameter_types(parameters)
         result[index] = types[1:] if should_ignore_self else types

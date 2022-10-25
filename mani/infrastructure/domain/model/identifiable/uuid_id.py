@@ -22,7 +22,7 @@ class UuidId(Identifier):
             return False
         return True
 
-    def __eq__(self, other: UuidId) -> bool:
+    def __eq__(self, other) -> bool:
         if not isinstance(other, UuidId):
             return False
         return other.id == self.id

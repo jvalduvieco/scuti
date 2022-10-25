@@ -64,12 +64,3 @@ class TestEventBusFacade(TestCase):
         event_bus.handle([AnotherEvent()])
         async_bus.drain()
         self.assertEqual([], called_event_handlers)
-
-    def test_can_retrieve_handled_event_types(self):
-        async_bus = LocalAsynchronousBus()
-        event_bus = EventBusFacade(async_bus)
-
-        called_event_handlers = []
-        event_bus.subscribe(AnEvent, lambda x: called_event_handlers.append(2))
-        event_bus.subscribe(AnotherEvent, lambda x: called_event_handlers.append(2))
-        self.assertEqual({"AnEvent": AnEvent, "AnotherEvent": AnotherEvent}, event_bus.handled())

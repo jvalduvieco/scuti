@@ -1,6 +1,6 @@
 from abc import ABC
 from collections.abc import Mapping
-from typing import List, Type, Tuple
+from typing import List, Type, Tuple, Callable
 
 from injector import Module, Scope
 
@@ -21,5 +21,5 @@ class DomainModule(ABC):
     def effect_handlers(self) -> List[Type[EffectHandler]]:
         return []
 
-    def processes(self) -> List[Type]:
+    def processes(self) -> List[Callable]:
         return []

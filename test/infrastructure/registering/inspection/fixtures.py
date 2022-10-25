@@ -5,42 +5,42 @@ from plum import dispatch
 
 
 @dataclass(frozen=True)
-class Effect:
+class _Effect:
     pass
 
 
 @dataclass(frozen=True)
-class Event(Effect):
+class _Event(_Effect):
     pass
 
 
 @dataclass(frozen=True)
-class Command(Effect):
+class _Command(_Effect):
     pass
 
 
 @dataclass(frozen=True)
-class ANiceEvent(Event):
+class ANiceEvent(_Event):
     pass
 
 
 @dataclass(frozen=True)
-class ACreationalCommand(Command):
+class ACreationalCommand(_Command):
     pass
 
 
 @dataclass(frozen=True)
-class ANiceCommand(Command):
+class ANiceCommand(_Command):
     pass
 
 
 @dataclass(frozen=True)
-class AStinkyCommand(Command):
+class AStinkyCommand(_Command):
     pass
 
 
 @dataclass(frozen=True)
-class ANotSoNiceCommand(Command):
+class ANotSoNiceCommand(_Command):
     pass
 
 
@@ -54,18 +54,18 @@ class ANicePlumHandler:
         pass
 
     @dispatch
-    def handle(self, command: ACreationalCommand) -> Tuple[SomeState, List[Effect]]:
+    def handle(self, command: ACreationalCommand) -> Tuple[SomeState, List[_Effect]]:
         return SomeState(), []
 
     @dispatch
-    def handle(self, state: SomeState, command: ANiceCommand) -> Tuple[SomeState, List[Effect]]:
+    def handle(self, state: SomeState, command: ANiceCommand) -> Tuple[SomeState, List[_Effect]]:
         return state, []
 
     @dispatch
-    def handle(self, state: SomeState, event: ANiceEvent) -> Tuple[SomeState, List[Effect]]:
+    def handle(self, state: SomeState, event: ANiceEvent) -> Tuple[SomeState, List[_Effect]]:
         return state, []
 
     @dispatch
     def handle(self, state: SomeState, command: Union[AStinkyCommand, ANotSoNiceCommand]) -> Tuple[
-        SomeState, List[Effect]]:
+        SomeState, List[_Effect]]:
         return state, []

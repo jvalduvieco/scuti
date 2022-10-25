@@ -1,27 +1,19 @@
-from typing import TypeVar, List, Type, Callable, Dict
+from typing import List, Type, Callable
 
 from injector import inject
 
-from mani.domain.cqrs.bus.bus import Bus
 from mani.domain.cqrs.bus.event_bus import EventBus
-from mani.domain.cqrs.effects import Event, Effect
-
-T = TypeVar('T', bound=Event)
+from mani.domain.cqrs.effects import Event
+from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 
 
 class EventBusFacade(EventBus):
     @inject
-    def __init__(self, bus: Bus):
+    def __init__(self, bus: AsynchronousBus):
         self.__bus = bus
 
-    def handle(self, events: List[Event]):
+    def handle(self, events: List[Event] | Event):
         self.__bus.handle(events)
 
-    def subscribe(self, effect_type: Type[T], handler: Callable) -> None:
+    def subscribe(self, effect_type: Type[Event], handler: Callable[[Event], None]) -> None:
         self.__bus.subscribe(effect_type, handler)
-
-    def handled(self) -> Dict[str, Type[Effect]]:
-        return self.__bus.handled()
-
-    def handles(self, item_type: Type[Effect]):
-        return self.__bus.handles(item_type)

@@ -1,17 +1,14 @@
 import abc
-from typing import List, TypeVar, Callable, Type
+from typing import List, Callable, Type
 
 from mani.domain.cqrs.effects import Event
-from mani.domain.cqrs.bus.bus import Bus
-
-T = TypeVar('T', bound=Event)
 
 
-class EventBus(abc.ABC, Bus):
+class EventBus(abc.ABC):
     @abc.abstractmethod
-    def handle(self, events: List[Event]):
+    def handle(self, events: List[Event] | Event):
         pass
 
     @abc.abstractmethod
-    def subscribe(self, event: Type[T], handler: Callable[[T], None]) -> None:
+    def subscribe(self, event: Type[Event], handler: Callable[[Event], None]) -> None:
         pass

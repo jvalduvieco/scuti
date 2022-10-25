@@ -50,9 +50,3 @@ class TestCommandBusFacade(TestCase):
         a_command_bus = CommandBusFacade(LocalAsynchronousBus())
         with self.assertRaises(NoHandlerForEffect):
             a_command_bus.handle(_ACommand())
-
-    def test_can_retrieve_handled_command_types(self):
-        a_command_bus = CommandBusFacade(LocalAsynchronousBus())
-        a_command_bus.subscribe(_ACommand, _a_simple_handler)
-        a_command_bus.subscribe(_AnotherCommand, _a_simple_handler)
-        self.assertEqual({"_ACommand": _ACommand, "_AnotherCommand": _AnotherCommand}, a_command_bus.handled())

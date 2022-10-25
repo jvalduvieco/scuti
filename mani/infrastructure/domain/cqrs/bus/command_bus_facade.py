@@ -1,22 +1,19 @@
-from typing import TypeVar, Type, Callable, List, Dict
+from typing import TypeVar, Type, Callable
 
 from injector import inject
 
-from mani.domain.cqrs.bus.bus import Bus
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect, AlreadyRegisteredEffect
-from mani.domain.cqrs.effects import Command, Effect
-from mani.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
-
-T = TypeVar('T', bound=Command)
+from mani.domain.cqrs.effects import Command
+from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 
 
 class CommandBusFacade(CommandBus):
     @inject
-    def __init__(self, bus: Bus):
+    def __init__(self, bus: AsynchronousBus):
         self.__bus = bus
 
-    def subscribe(self, effect_type: Type[T], handler: Callable[[T], None]):
+    def subscribe(self, effect_type: Type[Command], handler: Callable[[Command], None]):
         if self.__bus.handles(effect_type):
             raise AlreadyRegisteredEffect(effect_type)
         else:
@@ -26,9 +23,3 @@ class CommandBusFacade(CommandBus):
         if not self.__bus.handles(type(command)):
             raise NoHandlerForEffect(command)
         self.__bus.handle(command)
-
-    def handled(self) -> Dict[str, Type[Effect]]:
-        return self.__bus.handled()
-
-    def handles(self, item_type: Type[Effect]):
-        return self.__bus.handles(item_type)

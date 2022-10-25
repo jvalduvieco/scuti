@@ -1,7 +1,7 @@
-import abc
+from abc import ABC
 
 
-class Effect(abc.ABC):
+class Effect(ABC):
     pass
 
 
