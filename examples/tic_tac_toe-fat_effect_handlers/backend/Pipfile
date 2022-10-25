@@ -5,6 +5,7 @@ name = "pypi"
 
 [scripts]
 test = "python3 -m unittest"
+start-dev = "python3 -m applications.api"
 
 [packages]
 plum-dispatch = "*"
