@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: 19
           cache: 'yarn'
+          cache-dependency-path: ./examples/tic_tac_toe-fat_effect_handlers/frontend/yarn.lock
 
       - name: ⚙️ Install pipenv
         run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
