@@ -52,6 +52,14 @@ class Subject(IdentifiableEntity):
     some_data: int
 
 
+class SubjectRepository(Repository[Subject, UuidId], ABC):
+    pass
+
+
+class SubjectRepositoryInMemory(InMemoryRepository[Subject, UuidId]):
+    pass
+
+
 BySubjectId = lambda e, r: r.by_id(e.subject_id)
 
 
@@ -69,14 +77,6 @@ class AStateManagingEffectHandler(EffectHandler):
     @state_fetcher(BySubjectId)
     def handle(self, state: Subject, an_effect: Set) -> Tuple[Subject, List[Effect]]:
         return replace(state, some_data=an_effect.some_data), []
-
-
-class SubjectRepository(Repository[Subject, UuidId], ABC):
-    pass
-
-
-class SubjectRepositoryInMemory(InMemoryRepository[Subject, UuidId]):
-    pass
 
 
 class TestStateManagingEffectHandlers(unittest.TestCase):
@@ -180,4 +180,3 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
         self.bus.drain()
         self.assertEqual(Subject(a_create_subject_command.subject_id, 32),
                          a_repository.by_id(a_create_subject_command.subject_id))
-

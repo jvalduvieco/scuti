@@ -7,10 +7,12 @@ EffectToStateMapper = Callable[[Effect, Repository], Any]
 
 _singleton_id = 0
 
+effect_to_state_mapper_property = "_effect_to_state_mapper"
+
 
 def state_fetcher(mapper: EffectToStateMapper):
     def decorator(function):
-        function._effect_to_state_mapper = mapper
+        setattr(function, effect_to_state_mapper_property, mapper)
         return function
 
     return decorator
