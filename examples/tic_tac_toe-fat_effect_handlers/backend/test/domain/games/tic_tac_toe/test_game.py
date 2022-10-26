@@ -8,7 +8,7 @@ from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingFo
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
 from domain.games.types import GameId, PlayerId
-from domain.operatuion_id import OperationId
+from domain.operation_id import OperationId
 from infrastructure.domain.tic_tac_toe.game_repository_in_memory import GameRepositoryInMemory
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.effects import Effect
