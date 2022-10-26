@@ -12,9 +12,9 @@ from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.effects import Command, Event, Query, Effect
 from mani.domain.model.modules import DomainModule
-from mani.infrastructure.domain.cqrs.bus.effect_handlers.asynchronous_class import \
+from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
     build_asynchronous_class_effect_handler
-from mani.infrastructure.domain.cqrs.bus.effect_handlers.synchronous_class import build_synchronous_class_effect_handler
+from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.synchronous_class import build_synchronous_class_effect_handler
 from mani.infrastructure.domain.cqrs.cqrs_module import CQRSDomainModule
 from mani.infrastructure.registering.inspection.plum_inspection import inspect
 from mani.infrastructure.tools.list import unique
@@ -106,6 +106,6 @@ class DomainApplication:
     def __register_handlers(self, handler_builder: Callable, bus, base_effect: Type[Effect],
                             handler: Type[EffectHandler]):
         all_handler_parameters = inspect(handler.handle, should_ignore_self=True).values()
-        effects = unique(flatten([handler_parameters[-1] for handler_parameters in all_handler_parameters]))
+        effects = unique(flatten([handler_parameters.parameter_types[-1] for handler_parameters in all_handler_parameters]))
         [bus.subscribe(effect, handler_builder(handler, self.injector())) for effect in effects if
          base_effect in effect.__mro__]
