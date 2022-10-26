@@ -8,3 +8,6 @@ from domain.games.types import GameId
 
 class GameRepository(Repository[Game, GameId], ABC):
     pass
+
+
+ByGameId = lambda e, r: r.by_id(e.game_id)
