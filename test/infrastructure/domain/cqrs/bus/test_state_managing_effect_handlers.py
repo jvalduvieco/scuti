@@ -10,14 +10,14 @@ from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.query_bus import QueryBus
-from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, Singleton, All
+from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, All
 from mani.domain.cqrs.effects import Command, Effect
 from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntity
 from mani.domain.model.repository.repository import Repository
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
-from mani.infrastructure.domain.cqrs.bus.command_bus_facade import CommandBusFacade
 from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.state_managing_effect_handler import \
     build_asynchronous_state_managing_class_effect_handler
+from mani.infrastructure.domain.cqrs.bus.command_bus_facade import CommandBusFacade
 from mani.infrastructure.domain.cqrs.bus.event_bus_facade import EventBusFacade
 from mani.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
 from mani.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
@@ -40,9 +40,19 @@ class Modify(Command):
 
 
 @dataclass(frozen=True)
+class Set(Command):
+    subject_id: UuidId
+    some_data: int
+    operation_id: UuidId
+
+
+@dataclass(frozen=True)
 class Subject(IdentifiableEntity):
     id: UuidId
     some_data: int
+
+
+BySubjectId = lambda e, r: r.by_id(e.subject_id)
 
 
 class AStateManagingEffectHandler(EffectHandler):
@@ -54,6 +64,11 @@ class AStateManagingEffectHandler(EffectHandler):
     @state_fetcher(lambda e, r: r.by_id(e.subject_id))
     def handle(self, state: Subject, an_effect: Modify) -> Tuple[Subject, List[Effect]]:
         return replace(state, some_data=state.some_data + an_effect.some_data), []
+
+    @dispatch
+    @state_fetcher(BySubjectId)
+    def handle(self, state: Subject, an_effect: Set) -> Tuple[Subject, List[Effect]]:
+        return replace(state, some_data=an_effect.some_data), []
 
 
 class SubjectRepository(Repository[Subject, UuidId], ABC):
@@ -132,6 +147,7 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
                                        repository_type=SubjectRepository,
                                        state_mapper=All,
                                        injector=self.injector))
+
         subject_id = UuidId()
         a_create_subject_command = Create(subject_id=subject_id, some_data=3, operation_id=UuidId())
         a_modify_subject_command = Modify(subject_id=subject_id, some_data=39, operation_id=UuidId())
@@ -139,5 +155,29 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
         self.command_bus.handle(a_modify_subject_command)
         self.bus.drain()
         self.assertEqual(Subject(a_create_subject_command.subject_id, 42),
+                         a_repository.by_id(a_create_subject_command.subject_id))
+
+    def test_can_use_custom_annotations(self):
+        a_repository = self.injector.get(SubjectRepository)
+
+        self.command_bus.subscribe(Create,
+                                   build_asynchronous_state_managing_class_effect_handler(
+                                       a_handler=AStateManagingEffectHandler,
+                                       repository_type=SubjectRepository,
+                                       state_mapper=None,
+                                       injector=self.injector))
+        self.command_bus.subscribe(Set,
+                                   build_asynchronous_state_managing_class_effect_handler(
+                                       a_handler=AStateManagingEffectHandler,
+                                       repository_type=SubjectRepository,
+                                       state_mapper=BySubjectId,
+                                       injector=self.injector))
+        subject_id = UuidId()
+        a_create_subject_command = Create(subject_id=subject_id, some_data=3, operation_id=UuidId())
+        a_set_command = Set(subject_id=subject_id, some_data=32, operation_id=UuidId())
+        self.command_bus.handle(a_create_subject_command)
+        self.command_bus.handle(a_set_command)
+        self.bus.drain()
+        self.assertEqual(Subject(a_create_subject_command.subject_id, 32),
                          a_repository.by_id(a_create_subject_command.subject_id))
 

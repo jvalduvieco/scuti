@@ -18,4 +18,4 @@ def state_fetcher(mapper: EffectToStateMapper):
 
 All = lambda e, r: r.all()
 Singleton = lambda e, r: r.by_id(_singleton_id)
-By_id = lambda e, r: r.by_id(e.id)
+ById = lambda e, r: r.by_id(e.id)
