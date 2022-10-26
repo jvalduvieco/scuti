@@ -12,11 +12,45 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install system dependencies
-        run: sudo apt update && sudo apt install -y python3-pip && sudo pip install pipenv
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
 
-      - name: Install mani dependencies
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 19
+          cache: 'yarn'
+          cache-dependency-path: ./examples/tic_tac_toe-fat_effect_handlers/frontend/yarn.lock
+
+      - name: ⚙️ Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+      - name: ⚙️ Install mani dependencies
         run: pipenv install --dev
 
       - name: ✅ Run mani tests
         run: pipenv run test
+
+      - name: ⚙️ Install fat example dependencies
+        run: pipenv install --dev
+        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/backend
+
+      - name: ✅ Run fat example tests
+        run: pipenv run test
+        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/backend
+
+      - name: ⚙️ Install Node corepack to have yarn installed
+        run: corepack enable
+
+      - name: ⚙️ Install fat example frontend dependencies
+        run: yarn install --dev
+        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/frontend
+
+      - name: ✅ Run fat example frontend tests
+        run: yarn test
+        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/frontend
+
+      - name: Build fat example frontend app
+        run: yarn build
+        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/frontend
