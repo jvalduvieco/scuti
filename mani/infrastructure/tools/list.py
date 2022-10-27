@@ -1,4 +1,4 @@
-from typing import Iterable, Union, Callable, Any, List, TypeVar, Set
+from typing import Iterable, Iterator, Union, Callable, Any, List, TypeVar, Set
 
 T = TypeVar("T")
 
@@ -16,3 +16,6 @@ def unique(a_list: Iterable[T],
         seen: Set[T] = set()
         seen_add = seen.add
         return [x for x in a_list if not (unique_by(x) in seen or seen_add(unique_by(x)))]
+
+def filter_none(an_iterator: Iterator) -> Iterator:
+    return filter(lambda x: x is not None, an_iterator)
