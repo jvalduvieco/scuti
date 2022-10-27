@@ -38,5 +38,5 @@ packages = ["mani"]
 url = "https://test.pypi.org/legacy/"
 
 [project.urls]
-"Homepage" = "https://github.com/jvalduvieco/mani/sampleproject"
+"Homepage" = "https://github.com/jvalduvieco/mani"
 "Bug Tracker" = "https://github.com/jvalduvieco/mani/issues"
