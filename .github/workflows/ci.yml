@@ -32,25 +32,25 @@ jobs:
       - name: ✅ Run mani tests
         run: pipenv run test
 
-      - name: ⚙️ Install fat example dependencies
+      - name: ⚙️ Install tic tac toe example dependencies
         run: pipenv install --dev
         working-directory: ./examples/tic_tac_toe/backend
 
-      - name: ✅ Run fat example tests
+      - name: ✅ Run tic tac toe example tests
         run: pipenv run test
         working-directory: ./examples/tic_tac_toe/backend
 
       - name: ⚙️ Install Node corepack to have yarn installed
         run: corepack enable
 
-      - name: ⚙️ Install fat example frontend dependencies
+      - name: ⚙️ Install tic tac toe example frontend dependencies
         run: yarn install --dev
         working-directory: ./examples/tic_tac_toe/frontend
 
-      - name: ✅ Run fat example frontend tests
+      - name: ✅ Run tic tac toe example frontend tests
         run: yarn test
         working-directory: ./examples/tic_tac_toe/frontend
 
-      - name: Build fat example frontend app
+      - name: Build tic tac toe example frontend app
         run: yarn build
         working-directory: ./examples/tic_tac_toe/frontend
