@@ -4,7 +4,7 @@ from typing import Optional, List
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
 from domain.games.types import GameId, PlayerId
-from domain.operatuion_id import OperationId
+from domain.operation_id import OperationId
 from mani.domain.cqrs.effects import Event
 
 TicTacToeBoardAsLists = List[List[PlayerId]]

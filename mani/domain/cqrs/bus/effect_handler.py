@@ -7,3 +7,9 @@ class EffectHandler(ABC):
     @abstractmethod
     def handle(self, effect: Effect):
         pass
+
+
+class ManagedStateEffectHandler(ABC):
+    @abstractmethod
+    def handle(self, effect: Effect):
+        pass

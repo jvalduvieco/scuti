@@ -18,7 +18,7 @@ from mani.domain.cqrs.effects import Command, Event, Query
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.application.net_config import NetConfig
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
-from mani.infrastructure.domain.cqrs.bus.effect_handlers.asynchronous_class import \
+from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
     build_asynchronous_class_effect_handler
 from mani.infrastructure.logging.get_logger import get_logger
 from mani.infrastructure.tools.thread import spawn
