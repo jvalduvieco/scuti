@@ -13,4 +13,4 @@ class TicTacToeDomainModule(DomainModule):
         return [(GameRepository, GameRepositoryInMemory, SingletonScope)]
 
     def effect_handlers(self):
-        return [TicTacToeGame]
+        return [(TicTacToeGame, GameRepository)]

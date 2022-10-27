@@ -1,6 +1,6 @@
 import unittest
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Type, List, Tuple
 
 from injector import Module, Scope, SingletonScope, Binder
@@ -10,9 +10,14 @@ from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect
 from mani.domain.cqrs.bus.query_bus import QueryBus
+from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 from mani.domain.cqrs.effects import Command, Query, Event
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.modules import DomainModule
+from mani.domain.model.repository.repository import Repository
+from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
+from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
 
 
 class TestApplication(unittest.TestCase):
@@ -144,3 +149,63 @@ class TestApplication(unittest.TestCase):
         app.command_bus.handle(ACommand())
         app.event_bus.handle([AnEvent()])
         self.assertEqual({"result": "query handled"}, app.query_bus.handle(AQuery()))
+
+    def test_domain_modules_can_register_effect_handlers_wit_external_state(self):
+        BySubjectId = lambda e, r: r.by_id(e.subject_id)
+
+        @dataclass(frozen=True)
+        class Subject:
+            id: UuidId
+            some_data: int
+
+        @dataclass(frozen=True)
+        class Create(Command):
+            subject_id: UuidId
+            some_data: int
+
+        @dataclass(frozen=True)
+        class AQuery(Query):
+            subject_id: UuidId
+
+        @dataclass(frozen=True)
+        class SubjectChanged(Event):
+            subject_id: UuidId
+            some_data: int
+
+        class SubjectRepository(Repository[Subject, UuidId], ABC):
+            pass
+
+        class SubjectRepositoryInMemory(InMemoryRepository[Subject, UuidId]):
+            pass
+
+        class AnEffectHandler:
+            @dispatch
+            def handle(self, a_command: Create):
+                return Subject(a_command.subject_id, a_command.some_data), []
+
+            @dispatch
+            @state_fetcher(BySubjectId)
+            def handle(self, state: Subject, a_query: AQuery):
+                return {"result": state.some_data}
+
+            @dispatch
+            @state_fetcher(BySubjectId)
+            def handle(self, state: Subject, an_event: SubjectChanged):
+                return replace(state, some_data=state.some_data + an_event.some_data), []
+
+        class DummyDomainModule(DomainModule):
+            def bindings(self) -> List[Type[Module] | Tuple[Type, Type, Type[Scope]]]:
+                return [(SubjectRepository, SubjectRepositoryInMemory, SingletonScope)]
+
+            def effect_handlers(self) -> List[Type | Tuple[Type, Type[Repository]]]:
+                return [(AnEffectHandler, SubjectRepository)]
+
+        config = {}
+        domains = [DummyDomainModule]
+        app = DomainApplication(config=config, domains=domains)
+        app.start()
+        subject_id = UuidId()
+        app.command_bus.handle(Create(subject_id=subject_id, some_data=23))
+        app.event_bus.handle([SubjectChanged(subject_id=subject_id, some_data=44)])
+        app.injector().get(AsynchronousBus).drain()
+        self.assertEqual({"result": 67}, app.query_bus.handle(AQuery(subject_id=subject_id)))

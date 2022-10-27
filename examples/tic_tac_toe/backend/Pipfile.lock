@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "48c171cfa03c596109b6f911e8fe32c60d63dc31c90f0dfb129e73922aa76e8c"
+            "sha256": "055afc6c9b055ec4d2d0207899d74a24508e9cc40bf4ce1ed6c917270127e7ec"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -156,12 +156,8 @@
             "version": "==3.1.2"
         },
         "mani-fwk": {
-            "hashes": [
-                "sha256:1e5067d3b9ea2891167b148a508c4300b9793e83af3601919d07d3aa4127e9a4",
-                "sha256:210abe4656c765debf92e9a912ca0acdfca7ecb55e99286ce45c7c179a60f865"
-            ],
-            "index": "pypi",
-            "version": "==0.0.1"
+            "editable": true,
+            "path": "./../../../../mani"
         },
         "markupsafe": {
             "hashes": [
@@ -285,7 +281,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==1.16.0"
         },
         "typing-extensions": {

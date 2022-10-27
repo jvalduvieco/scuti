@@ -8,25 +8,24 @@ from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingFo
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
 from domain.games.types import GameId, PlayerId
-from domain.operatuion_id import OperationId
+from domain.operation_id import OperationId
 from infrastructure.domain.tic_tac_toe.game_repository_in_memory import GameRepositoryInMemory
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.effects import Effect
 from test.tools.simple_fake_event_bus import SimpleFakeEventBus
+from mani.infrastructure.tools.list import filter_none
 
 
 class TestTicTacToeGame(TestCase):
     def setUp(self) -> None:
-        self.event_bus = SimpleFakeEventBus()
-        self.game_repository = GameRepositoryInMemory()
-        self.a_game = TicTacToeGame(event_bus=self.event_bus, game_repository=self.game_repository)
+        self.a_game = TicTacToeGame()
         self.game_id = GameId()
         self.first_player = PlayerId()
         self.second_player = PlayerId()
 
     def test_a_game_can_be_started(self):
         operation_id = OperationId()
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=operation_id, first_player=self.first_player,
                     second_player=self.second_player)
         ])
@@ -39,12 +38,12 @@ class TestTicTacToeGame(TestCase):
                                       parent_operation_id=operation_id),
                           BoardUpdated(game_id=self.game_id, board=TicTacToeBoard().to_list()),
                           WaitingForPlayerPlay(game_id=self.game_id, player_id=self.first_player)],
-                         self.event_bus.emitted_events)
+                         effects)
 
     def test_a_player_can_play_if_it_is_her_turn(self):
         operation_id = OperationId()
         another_operation_id = OperationId()
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=operation_id, first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=another_operation_id, player=self.first_player, x=0, y=0)
@@ -62,12 +61,12 @@ class TestTicTacToeGame(TestCase):
                           BoardUpdated(game_id=self.game_id,
                                        board=TicTacToeBoard(cells={(0, 0): self.first_player}).to_list()),
                           ],
-                         self.event_bus.emitted_events)
+                         effects)
 
     def test_a_player_can_not_play_if_it_is_not_her_turn(self):
         operation_id = OperationId()
         another_operation_id = OperationId()
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=operation_id, first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=another_operation_id, player=self.second_player, x=0, y=0)
@@ -77,13 +76,13 @@ class TestTicTacToeGame(TestCase):
                                           player=self.second_player,
                                           game_id=self.game_id,
                                           parent_operation_id=another_operation_id)
-                        in self.event_bus.emitted_events)
+                        in effects)
 
     def test_a_player_can_not_play_to_an_already_filled_position(self):
         operation_id = OperationId()
         another_operation_id = OperationId()
         yet_another_operation_id = OperationId()
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=operation_id, first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=another_operation_id, player=self.first_player, x=0, y=0),
@@ -96,12 +95,12 @@ class TestTicTacToeGame(TestCase):
                               player=self.second_player,
                               game_id=self.game_id,
                               parent_operation_id=yet_another_operation_id)
-            in self.event_bus.emitted_events)
+            in effects)
 
     def test_a_player_can_not_play_off_the_limits(self):
         operation_id = OperationId()
         another_operation_id = OperationId()
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=operation_id, first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=another_operation_id, player=self.first_player, x=3, y=3)
@@ -111,10 +110,10 @@ class TestTicTacToeGame(TestCase):
                                           player=self.first_player,
                                           game_id=self.game_id,
                                           parent_operation_id=another_operation_id)
-                        in self.event_bus.emitted_events)
+                        in effects)
 
     def test_a_player_can_win_the_game_if_manages_to_place_three_marks_in_a_row(self):
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=OperationId(), first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=OperationId(), player=self.first_player, x=0, y=0),
@@ -126,10 +125,10 @@ class TestTicTacToeGame(TestCase):
 
         self.assertTrue(
             GameEnded(game_id=self.game_id, result=GameStage.PLAYER_WON, winner=self.first_player)
-            in self.event_bus.emitted_events)
+            in effects)
 
     def test_game_end_in_draw_if_board_is_filled_and_not_player_has_three_in_a_row(self):
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=OperationId(), first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=OperationId(), player=self.first_player, x=0, y=0),
@@ -145,11 +144,11 @@ class TestTicTacToeGame(TestCase):
 
         self.assertTrue(
             GameEnded(game_id=self.game_id, result=GameStage.DRAW, winner=None)
-            in self.event_bus.emitted_events)
+            in effects)
 
     def test_a_player_can_not_play_if_game_has_ended(self):
         last_operation_id = OperationId()
-        self.__feed_effects(self.a_game, [
+        state, effects = self.__feed_effects(self.a_game, [
             NewGame(game_id=self.game_id, operation_id=OperationId(), first_player=self.first_player,
                     second_player=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=OperationId(), player=self.first_player, x=0, y=0),
@@ -163,7 +162,16 @@ class TestTicTacToeGame(TestCase):
         self.assertTrue(
             GameErrorOccurred(game_id=self.game_id, player=self.second_player, parent_operation_id=last_operation_id,
                               reason=GameErrorReasons.GAME_ALREADY_ENDED)
-            in self.event_bus.emitted_events)
+            in effects)
 
     def __feed_effects(self, into: EffectHandler, effects: List[Effect]):
-        [into.handle(effect) for effect in effects]
+        current_state = None
+        emitted_effects = []
+        for effect in effects:
+            if current_state is not None:
+                state, effects = into.handle(current_state, effect)
+            else:
+                state, effects = into.handle(effect)
+            current_state = state
+            emitted_effects += filter_none(effects)
+        return current_state, emitted_effects
