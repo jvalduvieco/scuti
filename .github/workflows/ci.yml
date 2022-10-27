@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 19
           cache: 'yarn'
-          cache-dependency-path: ./examples/tic_tac_toe-fat_effect_handlers/frontend/yarn.lock
+          cache-dependency-path: ./examples/tic_tac_toe/frontend/yarn.lock
 
       - name: ⚙️ Install pipenv
         run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
@@ -34,23 +34,23 @@ jobs:
 
       - name: ⚙️ Install fat example dependencies
         run: pipenv install --dev
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/backend
+        working-directory: ./examples/tic_tac_toe/backend
 
       - name: ✅ Run fat example tests
         run: pipenv run test
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/backend
+        working-directory: ./examples/tic_tac_toe/backend
 
       - name: ⚙️ Install Node corepack to have yarn installed
         run: corepack enable
 
       - name: ⚙️ Install fat example frontend dependencies
         run: yarn install --dev
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/frontend
+        working-directory: ./examples/tic_tac_toe/frontend
 
       - name: ✅ Run fat example frontend tests
         run: yarn test
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/frontend
+        working-directory: ./examples/tic_tac_toe/frontend
 
       - name: Build fat example frontend app
         run: yarn build
-        working-directory: ./examples/tic_tac_toe-fat_effect_handlers/frontend
+        working-directory: ./examples/tic_tac_toe/frontend
