@@ -5,10 +5,10 @@ from hamcrest import assert_that
 from hamcrest.core.matcher import Matcher
 from plum import dispatch
 
-from test.common.testing_domain_module import TestingDomainModule
 from mani.domain.cqrs.effect_store.effect_store import EffectStore
 from mani.domain.cqrs.effects import Command, Event, Effect
 from mani.domain.model.application.domain_application import DomainApplication
+from mani.domain.testing.testing_domain_module import TestingDomainModule
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 
 
