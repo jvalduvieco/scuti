@@ -11,7 +11,7 @@ class SomethingLike:
             return False
         for a_property, value in self._properties.items():
             try:
-                if getattr(other, a_property) != value:
+                if value != getattr(other, a_property):
                     return False
             except AttributeError:
                 return False

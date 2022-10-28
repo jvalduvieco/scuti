@@ -6,6 +6,7 @@ from hamcrest import contains_exactly
 from injector import Module, Scope, SingletonScope
 from plum import dispatch
 
+from mani.domain.testing.matchers.any_id import AnyId
 from mani.domain.testing.matchers.something_like import SomethingLike
 from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
@@ -91,5 +92,5 @@ class TestDomainTestCase(DomainTestCase):
             contains_exactly(
                 _Create(subject_id=subject_id, some_data=23),
                 _SubjectCreated(subject_id=subject_id, some_data=23),
-                SomethingLike(_SubjectChanged, subject_id=subject_id, some_data=44)
+                SomethingLike(_SubjectChanged, subject_id=AnyId(), some_data=44)
             ))

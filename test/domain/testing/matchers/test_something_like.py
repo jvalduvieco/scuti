@@ -7,7 +7,7 @@ from hamcrest import assert_that, contains_exactly
 from mani.domain.testing.matchers.something_like import SomethingLike
 
 
-class TestMatchers(TestCase):
+class TestSomethingLike(TestCase):
     def test_partial_match_can_match_by_type(self):
         @dataclass(frozen=True)
         class Something:
