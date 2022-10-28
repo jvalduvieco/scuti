@@ -6,7 +6,7 @@ from hamcrest import contains_exactly
 from injector import Module, Scope, SingletonScope
 from plum import dispatch
 
-from common.test_cases.domain_test_case import DomainTestCase
+from test.common.test_cases.domain_test_case import DomainTestCase
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 from mani.domain.cqrs.effects import Command, Query, Event
 from mani.domain.model.modules import DomainModule
