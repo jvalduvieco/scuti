@@ -6,7 +6,7 @@ from mani.domain.cqrs.effects import Event
 
 class EventBus(abc.ABC):
     @abc.abstractmethod
-    def handle(self, events: List[Event] | Event):
+    def handle(self, events: Event):
         pass
 
     @abc.abstractmethod

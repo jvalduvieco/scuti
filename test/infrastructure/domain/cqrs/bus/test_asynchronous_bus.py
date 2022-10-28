@@ -1,14 +1,15 @@
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import TypeVar, Optional
 from unittest import TestCase
 
 from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
-from mani.domain.cqrs.effects import Event
+from mani.domain.cqrs.bus.hooks.bus_hook import BusHook, Item
+from mani.domain.cqrs.effects import Event, Effect
 from mani.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
 
 
 @dataclass(frozen=True)
-class AnItem:
+class AnItem(Effect):
     id: int
 
 
@@ -34,7 +35,7 @@ class TestAsynchronousBus(TestCase):
         self.assertIsNone(self.bus.subscribe(AnotherItem, handler))
 
     def test_can_bus_items_can_be_pushed(self):
-        self.assertIsNone(self.bus.handle(AnotherItem))
+        self.assertIsNone(self.bus.handle(AnotherItem(id=1)))
 
     def test_handlers_are_called_when_a_bus_item_is_pushed(self):
         handlers_called = []
@@ -89,3 +90,45 @@ class TestAsynchronousBus(TestCase):
         self.bus.subscribe(AnItem, handler)
         self.bus.subscribe(AnotherItem, handler)
         self.assertEqual({"AnItem": AnItem, "AnotherItem": AnotherItem}, self.bus.handled())
+
+    def test_can_register_bus_hooks(self):
+        class SimpleBusHook(BusHook):
+
+            def __init__(self):
+                self.handled_effects = []
+                self.begin_processing_effects = []
+                self.before_handler_effects = []
+                self.after_handler_effects = []
+                self.end_processing_effects = []
+
+            def begin_processing(self, effect: Effect):
+                self.begin_processing_effects += [effect]
+
+            def before_handler(self, effect: Effect, human_friendly_name: Optional[str]):
+                self.before_handler_effects += [(effect, human_friendly_name)]
+
+            def after_handler(self, effect: Effect, human_friendly_name: Optional[str]):
+                self.after_handler_effects +=[(effect, human_friendly_name)]
+
+            def end_processing(self, effect: Effect):
+                self.end_processing_effects += [effect]
+
+            def on_handle(self, effect: Item):
+                self.handled_effects += [effect]
+
+        hook = SimpleBusHook()
+        self.bus.register_hook(hook)
+        self.bus.subscribe(AnItem, lambda x: None, "a handler")
+        self.bus.subscribe(AnItem, lambda x: None, "another handler")
+        event = AnItem(id=1)
+        self.bus.handle(event)
+        self.bus.drain()
+        self.assertEqual([event], hook.begin_processing_effects)
+        self.assertEqual([event], hook.end_processing_effects)
+        self.assertEqual([event], hook.handled_effects)
+        self.assertEqual([(AnItem(id=1), 'a handler'),
+                          (AnItem(id=1), 'another handler')],
+                         hook.before_handler_effects)
+        self.assertEqual([(AnItem(id=1), 'a handler'),
+                          (AnItem(id=1), 'another handler')],
+                         hook.after_handler_effects)

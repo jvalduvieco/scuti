@@ -102,7 +102,7 @@ class TestApplication(unittest.TestCase):
             pass
 
         class DummyDomainModule(DomainModule):
-            def init_commands(self) -> List[Command]:
+            def init(self) -> List[Command]:
                 return [ACommand()]
 
         config = {}
@@ -150,7 +150,7 @@ class TestApplication(unittest.TestCase):
         app.event_bus.handle([AnEvent()])
         self.assertEqual({"result": "query handled"}, app.query_bus.handle(AQuery()))
 
-    def test_domain_modules_can_register_effect_handlers_wit_external_state(self):
+    def test_domain_modules_can_register_effect_handlers_with_external_state(self):
         BySubjectId = lambda e, r: r.by_id(e.subject_id)
 
         @dataclass(frozen=True)
@@ -185,7 +185,7 @@ class TestApplication(unittest.TestCase):
 
             @dispatch
             @state_fetcher(BySubjectId)
-            def handle(self, state: Subject, a_query: AQuery):
+            def handle(self, state: Subject, _: AQuery):
                 return {"result": state.some_data}
 
             @dispatch
@@ -206,6 +206,6 @@ class TestApplication(unittest.TestCase):
         app.start()
         subject_id = UuidId()
         app.command_bus.handle(Create(subject_id=subject_id, some_data=23))
-        app.event_bus.handle([SubjectChanged(subject_id=subject_id, some_data=44)])
+        app.event_bus.handle(SubjectChanged(subject_id=subject_id, some_data=44))
         app.injector().get(AsynchronousBus).drain()
         self.assertEqual({"result": 67}, app.query_bus.handle(AQuery(subject_id=subject_id)))
