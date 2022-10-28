@@ -8,8 +8,8 @@ class SimpleFakeEventBus(EventBus):
     def __init__(self):
         self.emitted_events = []
 
-    def handle(self, events: List[Event]):
-        self.emitted_events += events
+    def handle(self, event: Event):
+        self.emitted_events += [event]
 
     def subscribe(self, event: Type[Event], handler: Callable[[Event], None]) -> None:
         pass

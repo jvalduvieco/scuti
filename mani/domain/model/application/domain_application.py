@@ -93,8 +93,8 @@ class DomainApplication:
         return result
 
     def __run_module_init_commands(self):
-        all_initial_commands = list(flatten([module.init_commands() for module in self.__domain_instances.values()]))
-        [self.command_bus.handle(command) for command in all_initial_commands]
+        all_initial_commands = list(flatten([module.init() for module in self.__domain_instances.values()]))
+        [self.command_bus.handle(command) for command in all_initial_commands if command is not None]
 
     def __register_effect_handlers(self):
         effect_handlers_to_inspect = list(

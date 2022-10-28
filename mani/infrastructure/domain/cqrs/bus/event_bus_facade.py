@@ -12,7 +12,7 @@ class EventBusFacade(EventBus):
     def __init__(self, bus: AsynchronousBus):
         self.__bus = bus
 
-    def handle(self, events: List[Event] | Event):
+    def handle(self, events: Event):
         self.__bus.handle(events)
 
     def subscribe(self, effect_type: Type[Event], handler: Callable[[Event], None]) -> None:

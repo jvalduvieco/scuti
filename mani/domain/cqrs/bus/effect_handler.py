@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from mani.domain.cqrs.effects import Effect
 
@@ -11,5 +12,5 @@ class EffectHandler(ABC):
 
 class ManagedStateEffectHandler(ABC):
     @abstractmethod
-    def handle(self, effect: Effect):
+    def handle(self, state: Any, effect: Effect):
         pass

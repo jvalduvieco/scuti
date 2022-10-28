@@ -12,8 +12,10 @@ class UuidId(Identifier):
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
 
     def __post_init__(self):
-        if not self.__is_uuidable(self.id):
-            raise Exception(f'Non UUIDable value supplied to Uuuidable Id: {self.contents}')
+        if isinstance(self.id, UuidId):
+            object.__setattr__(self, "id", str(self.id))
+        elif not self.__is_uuidable(self.id):
+            raise Exception(f'Non UUIDable value supplied to Uuuidable Id: {self.id}')
 
     def __is_uuidable(self, possible_uuid: Any) -> bool:
         try:
