@@ -12,7 +12,6 @@ from domain.operation_id import OperationId
 from infrastructure.domain.tic_tac_toe.game_repository_in_memory import GameRepositoryInMemory
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.effects import Effect
-from test.tools.simple_fake_event_bus import SimpleFakeEventBus
 from mani.infrastructure.tools.list import filter_none
 from mani.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
 
