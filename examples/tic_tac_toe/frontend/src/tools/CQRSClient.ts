@@ -1,5 +1,4 @@
 import {BACKEND_URL} from "../config";
-import TicTacToeBackendClient from "../backend/TicTacToeBackendClient";
 import {HttpStatus} from "./HttpStatus";
 
 export class CQRSClient {
@@ -24,7 +23,7 @@ export class CQRSClient {
     const onError = (response: Response) => {
       throw Error(`${response.status} while performing ${type} command with payload ${payload} (${response.statusText})`);
     }
-    return await TicTacToeBackendClient.command(body, onError);
+    return await CQRSClient.command(body, onError);
   }
 
   static async query(body: string, onError: (response: Response) => void) {
@@ -47,7 +46,7 @@ export class CQRSClient {
     const onError = (response: Response) => {
       throw Error(`${response.status} while performing ${type} query with payload ${payload} (${response.statusText})`);
     }
-    return await TicTacToeBackendClient.query(body, onError);
+    return await CQRSClient.query(body, onError);
   }
 
   static async event(body: string, onError: (response: Response) => void) {
@@ -70,6 +69,6 @@ export class CQRSClient {
     const onError = (response: Response) => {
       throw Error(`${response.status} while sending ${type} event with payload ${payload} (${response.statusText})`);
     }
-    return await TicTacToeBackendClient.event(body, onError);
+    return await CQRSClient.event(body, onError);
   }
 }

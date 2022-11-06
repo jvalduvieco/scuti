@@ -6,7 +6,7 @@ interface GameMessagesProps {
 }
 
 export const GameMessages: FC<GameMessagesProps> = ({messages}: GameMessagesProps) =>
-    <Paper sx={{padding: "8px", minHeight: "20vh"}}>
+    <Paper sx={{padding: "8px", height: "20vh"}}>
       <Grid container direction="column" spacing={1}>
         {messages.map((message, index) =>
             <Grid item key={index}>
