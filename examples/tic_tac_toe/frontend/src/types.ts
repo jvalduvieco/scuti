@@ -16,3 +16,7 @@ export interface GameState {
   firstPlayer: Id | null
   secondPlayer: Id | null
 }
+
+export function withPayloadType<T>() {
+  return (t: T) => ({payload: t})
+}

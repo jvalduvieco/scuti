@@ -1,89 +1,65 @@
-import {Action} from "redux";
-import {BoardState, CellState, ConnectionStatus, GameStage, Id} from "./types";
+import {BoardState, CellState, ConnectionStatus, GameStage, Id, withPayloadType} from "./types";
+import TicTacToeBackendClient from "./backend/TicTacToeBackendClient";
+import {createOperationId} from "./tools/id";
+import {createAction, createAsyncThunk} from "@reduxjs/toolkit";
 
-export interface ConnectionStatusUpdated extends Action<"CONNECTION_STATUS_CHANGED"> {
-  payload: {
-    newStatus: ConnectionStatus
-  }
-}
+export const connectionStatusUpdated = createAction('CONNECTION_STATUS_CHANGED',
+    withPayloadType<{
+      newStatus: ConnectionStatus
+    }>())
 
-export const connectionStatusUpdated = (newStatus: ConnectionStatus): ConnectionStatusUpdated => ({
-  type: "CONNECTION_STATUS_CHANGED",
-  payload: {
-    newStatus
-  }
-});
+export const placeMark = createAsyncThunk('game/placeMark', async (payload: { gameId: Id, player: Id, x: number, y: number }) => {
+  await TicTacToeBackendClient.placeMark(
+      payload.gameId,
+      payload.player,
+      payload.x,
+      payload.y,
+      createOperationId())
+  return payload;
+})
 
-export interface CreateNewGame extends Action<"CREATE_NEW_GAME"> {
-  payload: {
-    gameId: Id
-    firstPlayer: Id
-    secondPlayer: Id
-    operationId: Id
-  }
-}
-
-export const createNewGame = (gameId: Id, firstPlayer: Id, secondPlayer: Id, operationId: Id): CreateNewGame => ({
-  type: "CREATE_NEW_GAME",
-  payload: {
-    gameId,
-    firstPlayer,
-    secondPlayer,
-    operationId
-  }
+export const createNewGame = createAsyncThunk('game/createNewGame', async (payload: { gameId: Id, firstPlayer: Id, secondPlayer: Id }) => {
+  await TicTacToeBackendClient.createNewGame(
+      payload.gameId,
+      payload.firstPlayer,
+      payload.secondPlayer,
+      createOperationId())
+  return payload;
 })
 
 
-export interface PlaceMark extends Action<"PLACE_MARK"> {
-  payload: {
-    gameId: Id
-    player: Id
-    x: number
-    y: number
-    operationId: Id
-  }
-}
+export const gameStarted = createAction('GAME_STARTED',
+    withPayloadType<{
+      gameId: Id
+      player1: Id
+      player2: Id
+      board: BoardState
+      stage: GameStage
+      parentOperationId: Id
+    }>())
 
-export const placeMark = (gameId: Id, player: Id, x: number, y: number, operationId: Id): PlaceMark => ({
-  type: "PLACE_MARK",
-  payload: {
-    gameId,
-    player,
-    x,
-    y,
-    operationId
-  }
-})
+export const newGameCreated = createAction('NEW_GAME_CREATED',
+    withPayloadType<{
+      gameId: Id
+      firstPlayer: Id
+      secondPlayer: Id
+    }>())
 
-export interface GameStarted extends Action<"GAME_STARTED"> {
-  payload: {
-    gameId: Id
-    player1: Id
-    player2: Id
-    board: BoardState
-    stage: GameStage
-    parentOperationId: Id
-  }
-}
+export const waitingForPlayerToPlay = createAction('WAITING_FOR_PLAYER_PLAY',
+    withPayloadType<{
+      gameId: Id
+      playerId: Id
+    }>())
 
-export interface BoardUpdated extends Action<"BOARD_UPDATED"> {
-  payload: {
-    gameId: Id
-    board: CellState[][]
-  }
-}
+export const boardUpdated = createAction('BOARD_UPDATED',
+    withPayloadType<{
+      gameId: Id
+      board: CellState[][]
+    }>())
 
-export interface WaitingForPlayerPlay extends Action<"WAITING_FOR_PLAYER_PLAY"> {
-  payload: {
-    gameId: Id
-    playerId: Id
-  }
-}
-
-export interface GameEnded extends Action<"GAME_ENDED"> {
-  payload: {
-    gameId: Id
-    winner: Id
-    result: GameStage
-  }
-}
+export const gameEnded = createAction('GAME_ENDED',
+    withPayloadType<{
+      gameId: Id
+      winner: Id
+      result: GameStage
+    }>())
