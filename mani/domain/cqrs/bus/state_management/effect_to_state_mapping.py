@@ -5,8 +5,6 @@ from mani.domain.model.repository.repository import Repository
 
 EffectToStateMapper = Callable[[Effect, Repository], Any]
 
-_singleton_id = 0
-
 effect_to_state_mapper_property = "_effect_to_state_mapper"
 
 
@@ -19,5 +17,5 @@ def state_fetcher(mapper: EffectToStateMapper):
 
 
 All = lambda e, r: r.all()
-Singleton = lambda e, r: r.by_id(_singleton_id)
+Singleton = lambda e, s: s.get()
 ById = lambda e, r: r.by_id(e.id)

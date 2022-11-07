@@ -1,15 +1,15 @@
 from dataclasses import dataclass, field, replace
 from typing import Dict, Tuple, List
 
-from domain.games.types import PlayerId
+from domain.games.types import UserId
 from infrastructure.tools.list import all_equal_and_not_none
 
 
 @dataclass(frozen=True)
 class TicTacToeBoard:
-    cells: Dict[Tuple[int, int], PlayerId] = field(default_factory=dict)
+    cells: Dict[Tuple[int, int], UserId] = field(default_factory=dict)
 
-    def place(self, x: int, y: int, player_id: PlayerId):
+    def place(self, x: int, y: int, player_id: UserId):
         self.__assert_valid_position(x, y)
         if not self.is_cell_free(x, y):
             raise ValueError(f"Cell {x},{y} already used")
@@ -25,7 +25,7 @@ class TicTacToeBoard:
     def is_off_limits(self, x: int, y: int) -> bool:
         return x > 2 or y > 2
 
-    def to_list(self) -> List[List[PlayerId | None]]:
+    def to_list(self) -> List[List[UserId | None]]:
         result = []
         for y in range(3):
             row = []
@@ -34,7 +34,7 @@ class TicTacToeBoard:
             result.append(row)
         return result
 
-    def any_player_has_three_in_a_row(self) -> PlayerId | None:
+    def any_player_has_three_in_a_row(self) -> UserId | None:
         if all_equal_and_not_none([self.cells.get(position, None) for position in [(0, 0), (1, 0), (2, 0)]]):
             return self.cells[0, 0]
         elif all_equal_and_not_none([self.cells.get(position, None) for position in [(0, 1), (1, 1), (2, 1)]]):
@@ -53,7 +53,7 @@ class TicTacToeBoard:
             return self.cells[2, 0]
         return None
 
-    def __getitem__(self, item) -> PlayerId | None:
+    def __getitem__(self, item) -> UserId | None:
         return self.cells.get(item, None)
 
     def __assert_valid_position(self, x, y):

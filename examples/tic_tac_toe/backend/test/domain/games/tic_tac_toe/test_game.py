@@ -1,18 +1,11 @@
-from typing import List
-from unittest import TestCase
-
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import NewGame, PlaceMark
 from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
     GameEnded
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
-from domain.games.types import GameId, PlayerId
+from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
-from infrastructure.domain.tic_tac_toe.game_repository_in_memory import GameRepositoryInMemory
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
-from mani.domain.cqrs.effects import Effect
-from mani.infrastructure.tools.list import filter_none
 from mani.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
 
 
@@ -20,8 +13,8 @@ class TestTicTacToeGame(EffectHandlerTestCase):
     def setUp(self) -> None:
         self.a_game = TicTacToeGame()
         self.game_id = GameId()
-        self.first_player = PlayerId()
-        self.second_player = PlayerId()
+        self.first_player = UserId()
+        self.second_player = UserId()
 
     def test_a_game_can_be_started(self):
         operation_id = OperationId()

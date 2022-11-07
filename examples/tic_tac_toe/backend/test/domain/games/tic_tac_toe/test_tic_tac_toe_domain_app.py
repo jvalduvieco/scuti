@@ -7,7 +7,7 @@ from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingFo
     GameEnded
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
-from domain.games.types import GameId, PlayerId
+from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from hamcrest import has_items, has_item
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
@@ -23,8 +23,8 @@ class TestTicTacToeApp(DomainTestCase):
         super().setUp()
         self.a_game = TicTacToeGame()
         self.game_id = GameId()
-        self.first_player = PlayerId()
-        self.second_player = PlayerId()
+        self.first_player = UserId()
+        self.second_player = UserId()
 
     def test_a_game_can_be_started(self):
         operation_id = OperationId()
