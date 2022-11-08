@@ -2,7 +2,7 @@ from datetime import datetime
 
 from domain.games.scoring.domain_module import ScoringDomainModule
 from domain.games.scoring.events import PlayerScoreChanged
-from domain.games.scoring.queries import FetchTopThreePlayers
+from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.scoring.user_score import UserScore
 from domain.games.tic_tac_toe.events import GameEnded
 from domain.games.tic_tac_toe.types import GameStage
@@ -46,7 +46,7 @@ class ScoringTestCase(DomainTestCase):
             GameEnded(game_id=self.game_id, result=GameStage.PLAYER_WON, winner=self.first_player)
         ])
         operation_id = OperationId()
-        response = self.make_query(FetchTopThreePlayers(operation_id=operation_id))
+        response = self.make_query(GetTopThreePlayers(operation_id=operation_id))
         self.assertThatHandledEffects(has_item(PlayerScoreChanged(player_id=self.first_player, score=100)))
         self.assertEqual(
             {"list": [UserScore(id=self.first_player, score=200)], "parent_operation_id": operation_id},

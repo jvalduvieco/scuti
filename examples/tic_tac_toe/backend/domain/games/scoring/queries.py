@@ -5,5 +5,5 @@ from mani.domain.cqrs.effects import Query
 
 
 @dataclass(frozen=True)
-class FetchTopThreePlayers(Query):
+class GetTopThreePlayers(Query):
     operation_id: OperationId

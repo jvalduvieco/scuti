@@ -1,4 +1,3 @@
-from abc import ABC
 from typing import List, Generator
 
 from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntityType
@@ -12,7 +11,7 @@ class InMemoryRepository(Repository[IdentifiableEntityType, IdentifierType]):
         self.__entities = {value.id: value for value in initial_values}
 
     def save(self, entity: IdentifiableEntityType):
-        self.__entities = {entity.id: entity}
+        self.__entities[entity.id] = entity
 
     def by_id(self, an_id: IdentifierType) -> IdentifiableEntityType:
         return self.__entities[an_id]

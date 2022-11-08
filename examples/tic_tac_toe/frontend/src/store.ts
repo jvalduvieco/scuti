@@ -5,6 +5,7 @@ import createSocketIoMiddleware from "redux-socket.io";
 import {connectionStatusUpdated} from "./actions";
 import {gameReducer} from "./slices/game";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
+import { apiSlice } from './backend/apiSlice';
 
 const socket = io(BACKEND_URL);
 const socketIoMiddleware = createSocketIoMiddleware(socket, "server/");
@@ -14,8 +15,9 @@ socket.on("disconnect", () => store.dispatch(connectionStatusUpdated({newStatus:
 export const store = configureStore({
   reducer: {
     game: gameReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer
   },
-  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware(), socketIoMiddleware],
+  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware(), socketIoMiddleware, apiSlice.middleware],
   devTools: process.env.NODE_ENV !== 'production',
 });
 

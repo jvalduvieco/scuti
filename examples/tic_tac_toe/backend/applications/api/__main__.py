@@ -5,11 +5,14 @@ from typing import List, Type
 
 from applications.api.bus_error_handler import BusErrorHandler
 from applications.api.cqrs_api_app import CQRSAPIApp
-from domain.games.scoring.queries import FetchTopThreePlayers
+from domain.games.scoring.domain_module import ScoringDomainModule
+from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.tic_tac_toe.commands import NewGame, PlaceMark
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
 from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
     GameEnded
+from domain.users.commands import CreateUser
+from domain.users.domain_module import UserDomainModule
 from mani.domain.cqrs.effects import Event, Command, Query
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.application.net_config import NetConfig
@@ -33,14 +36,14 @@ def main():
     logger.setLevel(logging.DEBUG)
 
     logger.info(f"API starting...")
-    domains = [TicTacToeDomainModule]
+    domains = [TicTacToeDomainModule, UserDomainModule, ScoringDomainModule]
     events_to_publish: List[Type[Event]] = [GameStarted,
                                             BoardUpdated,
                                             WaitingForPlayerPlay,
                                             GameErrorOccurred,
                                             GameEnded]
-    accepted_commands: List[Type[Command]] = [NewGame, PlaceMark]
-    accepted_queries: List[Type[Query]] = [FetchTopThreePlayers]
+    accepted_commands: List[Type[Command]] = [NewGame, PlaceMark, CreateUser]
+    accepted_queries: List[Type[Query]] = [GetTopThreePlayers]
 
     config = TicTacToeConfig(host="127.0.0.1", port=8080)
 
