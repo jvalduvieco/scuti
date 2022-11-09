@@ -1,30 +1,34 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
-import {Id} from "../types";
+import {Id, ScoreListItem, User} from "../types";
 import {createOperationId} from "../tools/id";
+import {BACKEND_URL} from "../config";
 
-// Define our single API slice object
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:8080/'}),
+  baseQuery: fetchBaseQuery({baseUrl: process.env.NODE_ENV === "test" ? "" : BACKEND_URL}),
   tagTypes: ["TopThreeList"],
   endpoints: builder => ({
-    createUser: builder.mutation({
-      query: userId => ({
+    createUser: builder.mutation<void, User>({
+      query: (user: User) => ({
         url: '/commands',
         method: 'POST',
-        body: {command: {type: 'CreateUser', payload: {id: userId, alias: "an alias", createdAt: new Date().toISOString(), operationId: createOperationId()}}},
+        body: {
+          command: {
+            type: 'CreateUser',
+            payload: {
+              ...user,
+              operationId: createOperationId()
+            }
+          }
+        },
       })
     }),
-    getTopThreePlayers: builder.query({
+    getTopThreePlayers: builder.query<{ list: ScoreListItem[], parentOperationId: Id }, void>({
       query: operationId => ({
         url: '/queries',
         method: 'POST',
-        body: {query: {type: 'GetTopThreePlayers', payload: {operationId}}},
+        body: {query: {type: 'GetTopThreePlayers', payload: {operationId: createOperationId()}}},
       }),
-      transformResponse: (responseData: { list: string[], parentOperationId: Id }) => {
-        console.log("response", responseData)
-        return responseData.list
-      },
       providesTags: ["TopThreeList"]
     })
   })

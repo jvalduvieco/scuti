@@ -1,34 +1,29 @@
-import {AnyAction, configureStore, Store, ThunkDispatch} from '@reduxjs/toolkit'
+import {setupListeners} from "@reduxjs/toolkit/query";
+import {connectionStatusUpdated, topThreeListUpdated} from "./actions";
+import {apiSlice} from "./backend/apiSlice";
+import io from "socket.io-client";
 import {BACKEND_URL} from "./config";
-import io from 'socket.io-client';
 import createSocketIoMiddleware from "redux-socket.io";
-import {connectionStatusUpdated} from "./actions";
-import {gameReducer} from "./slices/game";
-import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
-import { apiSlice } from './backend/apiSlice';
+import {setupStore} from "./storeDefinition";
+import {createListenerMiddleware} from "@reduxjs/toolkit";
 
-const socket = io(BACKEND_URL);
-const socketIoMiddleware = createSocketIoMiddleware(socket, "server/");
-socket.on("connect", () => store.dispatch(connectionStatusUpdated({newStatus: "Online"})));
-socket.on("disconnect", () => store.dispatch(connectionStatusUpdated({newStatus: "Offline"})));
 
-export const store = configureStore({
-  reducer: {
-    game: gameReducer,
-    [apiSlice.reducerPath]: apiSlice.reducer
-  },
-  middleware: (getDefaultMiddleware) => [...getDefaultMiddleware(), socketIoMiddleware, apiSlice.middleware],
-  devTools: process.env.NODE_ENV !== 'production',
-});
+const buildSocketIoMiddleware = () => {
+  const socket = io(BACKEND_URL);
+  const socketIoMiddleware = createSocketIoMiddleware(socket, "server/");
+  socket.on("connect", () => store.dispatch(connectionStatusUpdated({newStatus: "Online"})));
+  socket.on("disconnect", () => store.dispatch(connectionStatusUpdated({newStatus: "Offline"})));
+  return socketIoMiddleware;
+}
 
-export type AppState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+const listenerMiddleware = createListenerMiddleware();
+export const store = setupStore(undefined, [listenerMiddleware.middleware], [buildSocketIoMiddleware()]);
 
-export type AppThunkDispatch = ThunkDispatch<AppState, any, AnyAction>;
-export type AppStore = Omit<Store<AppState, AnyAction>, "dispatch"> & {
-  dispatch: AppThunkDispatch;
-};
+setupListeners(store.dispatch);
 
-export const useAppDispatch = () => useDispatch<AppThunkDispatch>();
-export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
-
+listenerMiddleware.startListening({
+  actionCreator: topThreeListUpdated,
+  effect: async (action, {dispatch}) => {
+    dispatch(apiSlice.util.invalidateTags(["TopThreeList"]))
+  }
+})

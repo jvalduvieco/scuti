@@ -17,6 +17,10 @@ export interface GameState {
   secondPlayer: Id | null
 }
 
+export type ScoreListItem = { id: Id, score: number };
+
 export function withPayloadType<T>() {
   return (t: T) => ({payload: t})
 }
+
+export type User = { id: Id, alias: string, createdAt: string };

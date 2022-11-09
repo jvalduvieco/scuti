@@ -6,6 +6,7 @@ from typing import List, Type
 from applications.api.bus_error_handler import BusErrorHandler
 from applications.api.cqrs_api_app import CQRSAPIApp
 from domain.games.scoring.domain_module import ScoringDomainModule
+from domain.games.scoring.events import TopThreeListUpdated
 from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.tic_tac_toe.commands import NewGame, PlaceMark
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
@@ -41,7 +42,8 @@ def main():
                                             BoardUpdated,
                                             WaitingForPlayerPlay,
                                             GameErrorOccurred,
-                                            GameEnded]
+                                            GameEnded,
+                                            TopThreeListUpdated]
     accepted_commands: List[Type[Command]] = [NewGame, PlaceMark, CreateUser]
     accepted_queries: List[Type[Query]] = [GetTopThreePlayers]
 

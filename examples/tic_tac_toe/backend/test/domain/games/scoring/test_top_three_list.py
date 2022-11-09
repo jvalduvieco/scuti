@@ -12,11 +12,16 @@ class TopThreeListTestCase(unittest.TestCase):
                                       UserScore(id=UserId(), score=200)])
         self.assertFalse(top.should_be_on_the_list(50))
 
-    def test_if_a_score_equals_last_score_on_the_list_new_score_should_not_be_on_list(self):
+    def test_if_a_score_equals_last_score_on_the_list_new_score_should_not_be_on_list_when_list_is_full(self):
         top = TopThreeList(top_three=[UserScore(id=UserId(), score=100),
                                       UserScore(id=UserId(), score=300),
                                       UserScore(id=UserId(), score=200)])
         self.assertFalse(top.should_be_on_the_list(100))
+
+    def test_if_a_score_equals_last_score_on_the_list_new_score_should_be_on_list_if_list_is_not_full(self):
+        top = TopThreeList(top_three=[UserScore(id=UserId(), score=100)])
+        self.assertTrue(top.should_be_on_the_list(100))
+        self.assertEqual(2, len(top.include(player_id=UserId(), score=100).top_three))
 
     def test_if_a_score_is_greater_than_last_score_new_score_should_be_on_the_list(self):
         top = TopThreeList() \
@@ -25,7 +30,7 @@ class TopThreeListTestCase(unittest.TestCase):
             .include(player_id=UserId(), score=200)
         self.assertTrue(top.should_be_on_the_list(200))
 
-    def test_has_always_three_items(self):
+    def test_has_three_items_at_most(self):
         last_user_id = UserId()
         top = TopThreeList() \
             .include(player_id=UserId(), score=100) \

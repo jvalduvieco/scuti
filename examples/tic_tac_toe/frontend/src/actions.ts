@@ -63,3 +63,5 @@ export const gameEnded = createAction('GAME_ENDED',
       winner: Id
       result: GameStage
     }>())
+
+export const topThreeListUpdated= createAction('TOP_THREE_LIST_UPDATED')

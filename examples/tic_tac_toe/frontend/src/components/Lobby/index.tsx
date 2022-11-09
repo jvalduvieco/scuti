@@ -2,14 +2,21 @@ import {Button, Container, Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
 import {ShowTopThreePlayers} from "../TopThreePlayers";
 import {useNavigate} from "react-router";
-import {useAppDispatch} from "../../store";
+import {useAppDispatch} from "../../storeDefinition";
 import {useCreateUserMutation} from "../../backend/apiSlice";
 import {createGameId, createPlayerId} from "../../tools/id";
 import {createNewGame} from "../../actions";
 import {AppRoutes} from "../../TicTacToeRoutes";
+import {Id} from "../../types";
 
 interface LobbyProps {
 }
+
+const aPlayer = (playerId: Id, alias: string = "default") => ({
+  id: playerId,
+  alias: alias,
+  createdAt: new Date().toISOString()
+});
 
 export const Lobby: FC<LobbyProps> = () => {
   const navigate = useNavigate();
@@ -18,11 +25,12 @@ export const Lobby: FC<LobbyProps> = () => {
 
   const onNewGame = useCallback(async () => {
     const gameId = createGameId();
-    const firstPlayer = createPlayerId();
-    const secondPlayer = createPlayerId();
-    await createUser(firstPlayer).unwrap();
-    await createUser(secondPlayer).unwrap();
-    dispatch(createNewGame({gameId, firstPlayer, secondPlayer}));
+    const firstPlayerId = createPlayerId();
+    const secondPlayerId = createPlayerId();
+
+    await createUser(aPlayer(firstPlayerId)).unwrap();
+    await createUser(aPlayer(secondPlayerId)).unwrap();
+    dispatch(createNewGame({gameId, firstPlayer: firstPlayerId, secondPlayer: secondPlayerId}));
     navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`);
   }, [dispatch, navigate, createUser]);
 

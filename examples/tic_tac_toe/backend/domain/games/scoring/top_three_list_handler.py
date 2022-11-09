@@ -1,4 +1,4 @@
-from domain.games.scoring.events import PlayerScoreChanged
+from domain.games.scoring.events import PlayerScoreChanged, TopThreeListUpdated
 from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.scoring.top_three_list import TopThreeList
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
@@ -13,7 +13,8 @@ class TopThreeHandler(ManagedStateEffectHandler):
         if not top_three_list:
             top_three_list = TopThreeList()
         if top_three_list.should_be_on_the_list(effect.score):
-            return top_three_list.include(effect.player_id, effect.score), []
+            current_top_three = top_three_list.include(effect.player_id, effect.score)
+            return current_top_three, [TopThreeListUpdated(previous=top_three_list, current=current_top_three)]
         else:
             return top_three_list, []
 

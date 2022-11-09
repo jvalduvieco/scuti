@@ -2,7 +2,7 @@ import {Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
 import {connect} from "react-redux";
 import {GameShow} from "../components/GameShow";
-import {AppState, useAppDispatch} from "../store";
+import {AppState, useAppDispatch} from "../storeDefinition";
 import {createGameId} from "../tools/id";
 import {CongratulationsPlayerWon} from "../components/CongratulationsPlayerWon";
 import {AppRoutes} from "../TicTacToeRoutes";

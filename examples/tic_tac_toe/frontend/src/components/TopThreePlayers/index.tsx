@@ -1,28 +1,31 @@
 import {Grid, Typography} from "@mui/material";
 import {useGetTopThreePlayersQuery} from "../../backend/apiSlice";
-import {createOperationId} from "../../tools/id";
+import {Id, ScoreListItem} from "../../types";
+import {FC} from "react";
+
+const ScoreListItemShow: FC<{ id: Id, score: number }> = ({id, score}) => <Grid item>
+  {`${id.id} - ${score}`}
+</Grid>;
 
 export const ShowTopThreePlayers = () => {
   const {
-    status,
-    data: topThreeList = [],
+    data: topThreeList,
     isLoading,
     isSuccess,
     isError,
     error,
     isFetching
-  } = useGetTopThreePlayersQuery(createOperationId())
-  console.log(status, isLoading, isSuccess, isError, isFetching, topThreeList)
+  } = useGetTopThreePlayersQuery()
 
   let content;
-  if (isLoading) {
+  if (isLoading || isFetching) {
     content = <Typography>Loading...</Typography>
-  } else if (isSuccess) {
+  } else if (isSuccess && topThreeList) {
     content = <Grid container direction="column">
-      {topThreeList.map((item: string, index: number) => <Grid item key={index}>{item}</Grid>)}
+      {topThreeList.list.map((item: ScoreListItem, index: number) =>
+          <ScoreListItemShow key={index} id={item.id} score={item.score}/>)}
     </Grid>
-  }
-  if (isError) {
+  } else if (isError) {
     content = <Typography>An error occurred loading top three player list. {error.toString()}</Typography>
   }
   return <>{content}</>

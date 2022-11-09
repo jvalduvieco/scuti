@@ -10,7 +10,7 @@ class TopThreeList:
     top_three: List[UserScore] = field(default_factory=list)
 
     def should_be_on_the_list(self, score: int):
-        if len(self.top_three) == 0:
+        if len(self.top_three) != 3:
             return True
         else:
             return self.top_three[-1].score < score
