@@ -5,5 +5,5 @@ class GameId(UuidId):
     pass
 
 
-class PlayerId(UuidId):
+class UserId(UuidId):
     pass

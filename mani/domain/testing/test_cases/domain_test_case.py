@@ -1,15 +1,14 @@
-from typing import List
+from typing import List, Dict
 from unittest import TestCase
 
 from hamcrest import assert_that
 from hamcrest.core.matcher import Matcher
-from plum import dispatch
-
 from mani.domain.cqrs.effect_store.effect_store import EffectStore
-from mani.domain.cqrs.effects import Command, Event, Effect
+from mani.domain.cqrs.effects import Command, Event, Query, Effect
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.testing.testing_domain_module import TestingDomainModule
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
+from plum import dispatch
 
 
 class DomainTestCase(TestCase):
@@ -42,6 +41,9 @@ class DomainTestCase(TestCase):
 
     def assertThatHandledEffects(self, something: Matcher):
         assert_that(self.handled_effects(), something)
+
+    def make_query(self, a_query: Query) -> Dict:
+        return self.app.query_bus.handle(a_query)
 
     @dispatch
     def __feed_effect(self, command: Command) -> None:

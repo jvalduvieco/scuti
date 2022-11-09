@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.games.types import GameId, PlayerId
+from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from mani.domain.cqrs.effects import Command
 
@@ -9,14 +9,14 @@ from mani.domain.cqrs.effects import Command
 class NewGame(Command):
     operation_id: OperationId
     game_id: GameId
-    first_player: PlayerId
-    second_player: PlayerId
+    first_player: UserId
+    second_player: UserId
 
 
 @dataclass(frozen=True)
 class PlaceMark(Command):
     operation_id: OperationId
     game_id: GameId
-    player: PlayerId
+    player: UserId
     x: int
     y: int

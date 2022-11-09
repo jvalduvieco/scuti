@@ -12,5 +12,5 @@ const Template: ComponentStory<typeof Lobby> = (args) => <Lobby {...args} />;
 
 export const Empty = Template.bind({});
 Empty.args = {
-  onNewGame: () => null
+ 
 };

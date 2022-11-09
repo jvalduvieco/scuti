@@ -3,21 +3,21 @@ from typing import Optional
 
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.types import GameStage
-from domain.games.types import GameId, PlayerId
+from domain.games.types import GameId, UserId
 from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntity
 
 
 @dataclass(frozen=True)
 class Game(IdentifiableEntity[GameId]):
     id: GameId
-    first_player: PlayerId
-    second_player: PlayerId
+    first_player: UserId
+    second_player: UserId
     board: TicTacToeBoard
     stage: GameStage
-    winner: Optional[PlayerId] = field(default=None)
-    waiting_for_player: Optional[PlayerId] = field(default=None)
+    winner: Optional[UserId] = field(default=None)
+    waiting_for_player: Optional[UserId] = field(default=None)
 
-    def place(self, player: PlayerId, x: int, y: int):
+    def place(self, player: UserId, x: int, y: int):
         next_board = self.board.place(x=x, y=y, player_id=player)
         stage = self.__next_stage(next_board)
         winner = next_board.any_player_has_three_in_a_row()
