@@ -11,7 +11,7 @@ from domain.operation_id import OperationId
 from domain.users.domain_module import UserDomainModule
 from domain.users.events import UserCreated
 from domain.users.user import User
-from hamcrest import has_item
+from hamcrest import has_item, not_, instance_of
 from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
 
 
@@ -34,6 +34,12 @@ class ScoringTestCase(DomainTestCase):
             GameEnded(game_id=self.game_id, result=GameStage.PLAYER_WON, winner=self.first_player)
         ])
         self.assertThatHandledEffects(has_item(PlayerScoreChanged(player_id=self.first_player, score=100)))
+
+    def test_can_record_a_draw(self):
+        self.feed_effects([
+            GameEnded(game_id=self.game_id, result=GameStage.DRAW, winner=None)
+        ])
+        self.assertThatHandledEffects(not_(instance_of(PlayerScoreChanged)))
 
     def test_can_query_top_three(self):
         self.feed_effects([

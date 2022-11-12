@@ -1,4 +1,4 @@
-import {BoardState, CellState, ConnectionStatus, GameStage, Id, withPayloadType} from "./types";
+import {BoardState, CellState, ConnectionStatus, GameStage, Id, User, withPayloadType} from "./types";
 import TicTacToeBackendClient from "./backend/TicTacToeBackendClient";
 import {createOperationId} from "./tools/id";
 import {createAction, createAsyncThunk} from "@reduxjs/toolkit";
@@ -18,11 +18,10 @@ export const placeMark = createAsyncThunk('game/placeMark', async (payload: { ga
   return payload;
 })
 
-export const createNewGame = createAsyncThunk('game/createNewGame', async (payload: { gameId: Id, firstPlayer: Id, secondPlayer: Id }) => {
-  await TicTacToeBackendClient.createNewGame(
+export const createGame = createAsyncThunk('game/CreateGame', async (payload: { gameId: Id, creator: Id }) => {
+  await TicTacToeBackendClient.createGame(
       payload.gameId,
-      payload.firstPlayer,
-      payload.secondPlayer,
+      payload.creator,
       createOperationId())
   return payload;
 })
@@ -33,6 +32,15 @@ export const gameStarted = createAction('GAME_STARTED',
       gameId: Id
       player1: Id
       player2: Id
+      board: BoardState
+      stage: GameStage
+      parentOperationId: Id
+    }>())
+
+export const gameCreated = createAction('GAME_CREATED',
+    withPayloadType<{
+      gameId: Id
+      creator: Id
       board: BoardState
       stage: GameStage
       parentOperationId: Id
@@ -64,4 +72,9 @@ export const gameEnded = createAction('GAME_ENDED',
       result: GameStage
     }>())
 
-export const topThreeListUpdated= createAction('TOP_THREE_LIST_UPDATED')
+export const userConnected = createAction<User>('USER_CONNECTED')
+export const userInvited = createAction<{host: Id, invited: Id, game: Id}>('USER_INVITED')
+export const acceptInvitation = createAction<{host: Id, invited: Id, game: Id}>('ACCEPT_INVITATION')
+export const choseOpponent = createAction<User>('CHOSE_OPPONENT')
+export const UsersOnlineUpdated = createAction('USERS_ONLINE_UPDATED')
+export const topThreeListUpdated = createAction('TOP_THREE_LIST_UPDATED')

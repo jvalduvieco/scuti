@@ -1,6 +1,16 @@
 import {GameStage, GameState} from "../types";
 import {createSlice} from "@reduxjs/toolkit";
-import {boardUpdated, createNewGame, gameEnded, gameStarted, placeMark, waitingForPlayerToPlay} from "../actions";
+import {
+  acceptInvitation,
+  boardUpdated,
+  createGame,
+  gameCreated,
+  gameEnded,
+  gameStarted,
+  placeMark,
+  waitingForPlayerToPlay
+} from "../actions";
+import {apiSlice, userJoined} from "../backend/apiSlice";
 
 const initialState: GameState = {
   boardState: null,
@@ -19,10 +29,9 @@ const gameSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-        .addCase(createNewGame.pending, (state: GameState, action) => {
+        .addCase(createGame.pending, (state: GameState, action) => {
           state.gameId = action.meta.arg.gameId;
-          state.firstPlayer = action.meta.arg.firstPlayer;
-          state.secondPlayer = action.meta.arg.secondPlayer;
+          state.firstPlayer = action.meta.arg.creator;
         })
         .addCase(gameStarted, (state: GameState, action) => {
           if (state.gameId?.id === action.payload.gameId.id) {
@@ -53,6 +62,11 @@ const gameSlice = createSlice({
             state.messages = [];
             state.turn = null
           }
+        })
+        .addCase(acceptInvitation, (state: GameState, action) => {
+          state.gameId = action.payload.game;
+          state.firstPlayer = action.payload.host;
+          state.secondPlayer = action.payload.invited;
         })
   }
 })

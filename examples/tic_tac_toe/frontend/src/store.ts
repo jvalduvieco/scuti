@@ -1,11 +1,21 @@
 import {setupListeners} from "@reduxjs/toolkit/query";
-import {connectionStatusUpdated, topThreeListUpdated} from "./actions";
+import {
+  acceptInvitation,
+  connectionStatusUpdated,
+  gameStarted,
+  topThreeListUpdated,
+  userConnected,
+  userInvited,
+  UsersOnlineUpdated
+} from "./actions";
 import {apiSlice} from "./backend/apiSlice";
 import io from "socket.io-client";
 import {BACKEND_URL} from "./config";
 import createSocketIoMiddleware from "redux-socket.io";
-import {setupStore} from "./storeDefinition";
-import {createListenerMiddleware} from "@reduxjs/toolkit";
+import {AppStartListening, AppState, AppThunkDispatch, setupStore} from "./storeDefinition";
+import {addListener, createListenerMiddleware, TypedAddListener} from "@reduxjs/toolkit";
+import {push} from "@lagunovsky/redux-react-router";
+import {AppRoutes} from "./TicTacToeRoutes";
 
 
 const buildSocketIoMiddleware = () => {
@@ -16,14 +26,59 @@ const buildSocketIoMiddleware = () => {
   return socketIoMiddleware;
 }
 
-const listenerMiddleware = createListenerMiddleware();
+export const listenerMiddleware = createListenerMiddleware();
+
+export const startAppListening =
+    listenerMiddleware.startListening as AppStartListening
+
+
+export const addAppListener = addListener as TypedAddListener<
+    AppState,
+    AppThunkDispatch
+    >
+
 export const store = setupStore(undefined, [listenerMiddleware.middleware], [buildSocketIoMiddleware()]);
 
 setupListeners(store.dispatch);
 
-listenerMiddleware.startListening({
+startAppListening({
   actionCreator: topThreeListUpdated,
   effect: async (action, {dispatch}) => {
     dispatch(apiSlice.util.invalidateTags(["TopThreeList"]))
+  }
+})
+
+startAppListening({
+  actionCreator: UsersOnlineUpdated,
+  effect: async (action, {dispatch}) => {
+    dispatch(apiSlice.util.invalidateTags(["UsersOnline"]))
+  }
+})
+
+startAppListening({
+  actionCreator: userConnected,
+  effect: async (action, {dispatch}) => {
+    await dispatch(apiSlice.endpoints.userConnected.initiate(action.payload.id));
+  }
+})
+
+startAppListening({
+  actionCreator: userInvited,
+  effect: async(action, {dispatch, getState}) => {
+    const state = await getState();
+    console.log({id:state.client.currentUser?.id, action})
+    if (state.client.currentUser?.id.id === action.payload.invited.id) {
+      await dispatch(acceptInvitation({...action.payload}))
+    }
+  }
+})
+startAppListening({
+  actionCreator: acceptInvitation,
+  effect: async (action, {dispatch, getState}) =>{
+    const state = await getState();
+    if (state.client.currentUser?.id.id === action.payload.invited.id) {
+      await dispatch(apiSlice.endpoints.joinGame.initiate({player: action.payload.invited, game: action.payload.game}));
+      await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
+    }
   }
 })

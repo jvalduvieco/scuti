@@ -2,13 +2,12 @@ import {CQRSClient} from "../tools/CQRSClient";
 import {Id} from "../types";
 
 class TicTacToeBackendClient extends CQRSClient {
-  static async createNewGame(gameId: Id, player1: Id, player2: Id, operationId: Id) {
-    return await TicTacToeBackendClient.doCommand("NewGame",
+  static async createGame(gameId: Id, creator: Id, operationId: Id) {
+    return await TicTacToeBackendClient.doCommand("CreateGame",
         {
-          operationId: operationId,
-          gameId: gameId,
-          firstPlayer: player1,
-          secondPlayer: player2
+          operationId,
+          gameId,
+          creator,
         });
   }
 

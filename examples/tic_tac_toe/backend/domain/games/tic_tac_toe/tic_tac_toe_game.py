@@ -1,36 +1,56 @@
+from dataclasses import replace
+from typing import List, Tuple
+
 from domain.games.tic_tac_toe.board import TicTacToeBoard
-from domain.games.tic_tac_toe.commands import NewGame, PlaceMark
-from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded
+from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
+from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
+    GameEnded, GameStarted
 from domain.games.tic_tac_toe.game import Game
 from domain.games.tic_tac_toe.game_repository import ByGameId
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
+from domain.users.events import PlayerJoinedAGame
+from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
+from mani.domain.cqrs.effects import Effect
 from plum import dispatch
 
 
-class TicTacToeGame(EffectHandler):
+class TicTacToeGame(ManagedStateEffectHandler):
 
     @dispatch
-    def handle(self, command: NewGame):
+    def handle(self, command: CreateGame):
         current_game = Game(id=command.game_id,
-                            first_player=command.first_player,
-                            second_player=command.second_player,
                             board=TicTacToeBoard(),
-                            stage=GameStage.IN_PROGRESS,
-                            waiting_for_player=command.first_player)
+                            stage=GameStage.WAITING_FOR_PLAYERS)
         return current_game, [
-            GameStarted(game_id=current_game.id,
-                        first_player=current_game.first_player,
-                        second_player=current_game.second_player,
+            GameCreated(game_id=current_game.id,
                         board=current_game.board.to_list(),
+                        creator=command.creator,
                         stage=current_game.stage,
-                        parent_operation_id=command.operation_id),
-            BoardUpdated(game_id=current_game.id, board=current_game.board.to_list()),
-            WaitingForPlayerPlay(game_id=current_game.id,
-                                 player_id=current_game.first_player)
-        ]
+                        parent_operation_id=command.operation_id)]
+
+    @dispatch
+    @state_fetcher(ByGameId)
+    def handle(self, state: Game, effect: JoinGame) -> Tuple[Game, List[Effect]]:
+        number_of_players = len(state.players)
+        if number_of_players == 0:
+            new_state = replace(state, players=[*state.players, effect.player_id])
+            return new_state, [
+                PlayerJoinedAGame(game_id=new_state.id, player_id=effect.player_id,
+                                  parent_operation_id=effect.operation_id)]
+        elif number_of_players == 1:
+            new_state = replace(state, players=[*state.players, effect.player_id], stage=GameStage.IN_PROGRESS,
+                                waiting_for_player=state.players[0])
+            return new_state, [
+                PlayerJoinedAGame(game_id=new_state.id, player_id=effect.player_id,
+                                  parent_operation_id=effect.operation_id),
+                GameStarted(game_id=new_state.id, players=new_state.players, board=new_state.board.to_list()),
+                WaitingForPlayerPlay(game_id=new_state.id, player_id=new_state.waiting_for_player)]
+        else:
+            return state, [
+                GameErrorOccurred(reason=GameErrorReasons.ALL_PLAYERS_ALREADY_JOINED,
+                                  parent_operation_id=effect.operation_id,
+                                  player=effect.player_id, game_id=effect.game_id)]
 
     @dispatch
     @state_fetcher(ByGameId)

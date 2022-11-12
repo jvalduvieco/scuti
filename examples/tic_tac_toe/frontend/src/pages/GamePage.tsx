@@ -8,7 +8,8 @@ import {CongratulationsPlayerWon} from "../components/CongratulationsPlayerWon";
 import {AppRoutes} from "../TicTacToeRoutes";
 import {Draw} from "../components/Draw";
 import {useNavigate} from "react-router";
-import {createNewGame, placeMark} from "../actions";
+import {createGame, placeMark} from "../actions";
+import {useJoinGameMutation} from "../backend/apiSlice";
 
 
 const mapStateToProps = (state: AppState) => ({
@@ -19,6 +20,7 @@ type GamePageProps = ReturnType<typeof mapStateToProps>;
 const GamePage: FC<GamePageProps> = ({gameState}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [joinGame] = useJoinGameMutation();
 
   const onPlace = useCallback((x: number, y: number) => dispatch(placeMark({
         gameId: gameState.gameId!,
@@ -28,16 +30,19 @@ const GamePage: FC<GamePageProps> = ({gameState}) => {
       })),
       [dispatch, gameState.gameId, gameState.turn]);
 
-  const onRestartGame = useCallback(() => {
+  const onRestartGame = useCallback(async () => {
     const gameId = createGameId();
-    dispatch(createNewGame({gameId, firstPlayer: gameState.firstPlayer!, secondPlayer: gameState.secondPlayer!}));
+    dispatch(createGame({gameId, creator: gameState.firstPlayer!}));
+    await joinGame({game: gameId, player: gameState.firstPlayer!})
     navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`)
-  }, [dispatch, navigate, gameState.firstPlayer, gameState.secondPlayer]);
+  }, [dispatch, navigate, joinGame, gameState.firstPlayer]);
 
   const onGotoLobby = useCallback(() => navigate(AppRoutes.HOME), [navigate])
   switch (gameState.stage) {
     case null:
       return <Typography>Loading</Typography>
+    case "WAITING_FOR_PLAYERS":
+      return <Typography>Waiting for players</Typography>
     case "DRAW":
       return <Draw gotoLobby={onGotoLobby} restartGame={onRestartGame}/>
     case "PLAYER_WON":

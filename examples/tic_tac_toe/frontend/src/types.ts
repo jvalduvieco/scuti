@@ -1,7 +1,8 @@
 export type Handler = () => void
 export type CellState = Id | null
+export type CellContents = string | null
 export type BoardState = CellState[][]
-export type GameStage = "PLAYER_WON" | "DRAW" | "IN_PROGRESS"
+export type GameStage = "PLAYER_WON" | "DRAW" | "IN_PROGRESS" | "WAITING_FOR_PLAYERS"
 
 export type ConnectionStatus = "Online" | "Offline";
 export type Id = { id: string }
@@ -15,6 +16,11 @@ export interface GameState {
   gameId: Id | null
   firstPlayer: Id | null
   secondPlayer: Id | null
+}
+
+export interface GameClientState {
+  currentUser: User | null
+  opponent: User | null
 }
 
 export type ScoreListItem = { id: Id, score: number };
