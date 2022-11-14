@@ -1,7 +1,7 @@
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded, GameStarted
+    GameEnded, GameStarted, MarkPlaced
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
 from domain.games.types import GameId, UserId
@@ -53,6 +53,11 @@ class TestTicTacToeGame(EffectHandlerTestCase):
                           GameStarted(game_id=self.game_id, players=[self.first_player, self.second_player],
                                       board=TicTacToeBoard().to_list()),
                           WaitingForPlayerPlay(game_id=self.game_id, player_id=self.first_player),
+                          MarkPlaced(game_id=self.game_id,
+                                     player=self.first_player,
+                                     x=0,
+                                     y=0,
+                                     parent_operation_id=AnyId(OperationId)),
                           WaitingForPlayerPlay(game_id=self.game_id, player_id=self.second_player),
                           BoardUpdated(game_id=self.game_id,
                                        board=TicTacToeBoard(cells={(0, 0): self.first_player}).to_list()),
