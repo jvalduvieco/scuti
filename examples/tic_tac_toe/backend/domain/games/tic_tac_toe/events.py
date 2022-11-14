@@ -50,3 +50,12 @@ class GameEnded(Event):
     game_id: GameId
     result: GameStage
     winner: Optional[UserId] = field(default=None)
+
+
+@dataclass(frozen=True)
+class MarkPlaced(Event):
+    game_id: GameId
+    player: UserId
+    x: int
+    y: int
+    parent_operation_id: OperationId

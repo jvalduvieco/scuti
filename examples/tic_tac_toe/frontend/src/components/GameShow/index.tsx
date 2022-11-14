@@ -14,11 +14,7 @@ export const GameShow: FC<GameShowProps> = ({
                                               gameState: {
                                                 boardState,
                                                 messages,
-                                                stage,
-                                                winner,
                                                 turn,
-                                                firstPlayer,
-                                                secondPlayer
                                               },
                                               onPlace
                                             }: GameShowProps) =>

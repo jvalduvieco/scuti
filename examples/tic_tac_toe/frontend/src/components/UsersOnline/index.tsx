@@ -3,34 +3,34 @@ import {Button, Grid, Paper, Typography} from "@mui/material";
 import {useGetUserQuery, useGetUsersOnlineQuery} from "../../backend/apiSlice";
 import {Loading} from "../Loading";
 import {Id} from "../../types";
-import {useDispatch, useSelector} from "react-redux";
 import {choseOpponent} from "../../actions";
-import {AppState} from "../../storeDefinition";
+import {useAppDispatch, useAppSelector} from "../../storeDefinition";
 
 export const UserRow: FC<{ userId: Id }> = ({userId}) => {
   const {
-    data,
+    data: user,
     isLoading,
     isSuccess,
     isError,
     error,
     isFetching
   } = useGetUserQuery(userId);
-  const dispatch = useDispatch();
-  const opponent = useSelector((state: AppState) => state.client.opponent)
+  const dispatch = useAppDispatch();
+  const opponent = useAppSelector(state => state.client.opponent)
 
   const onChooseOpponent = useCallback(async () => {
-    if (data) {
-      dispatch(choseOpponent(data.user))
+    if (user) {
+      dispatch(choseOpponent(user))
     }
-  }, [dispatch, data])
+  }, [dispatch, user])
 
   let content;
 
   if (isLoading || isFetching) {
     content = <Loading/>;
   } else if (isSuccess) {
-    content = <Button fullWidth variant={data.user.id.id === opponent?.id.id?"contained":"outlined"} onClick={onChooseOpponent}>{data.user.alias}</Button>
+    content = <Button fullWidth variant={user.id.id === opponent?.id ? "contained" : "outlined"}
+                      onClick={onChooseOpponent}>{user.alias}</Button>
   } else if (isError) {
     content = <Typography>An error occurred ({JSON.stringify(error)})</Typography>
   } else {
@@ -49,9 +49,9 @@ export const UsersOnline: FC = () => {
     error,
     isFetching
   } = useGetUsersOnlineQuery();
-  const currentUser = useSelector((state: AppState) => state.client.currentUser);
+  const currentUser = useAppSelector(state => state.client.currentUser);
 
-  const onlineUsersWithoutCurrentUser = useMemo(() => (usersOnline) ? usersOnline.onlineUsers.filter(u => u.id !== currentUser?.id.id) : [], [currentUser, usersOnline]);
+  const onlineUsersWithoutCurrentUser = useMemo(() => (usersOnline) ? usersOnline.filter(u => u.id !== currentUser?.id) : [], [currentUser, usersOnline]);
   let content;
   if (isLoading || isFetching) {
     content = <Grid item><Loading/></Grid>;

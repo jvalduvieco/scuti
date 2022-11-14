@@ -2,43 +2,46 @@ import {Button, Container, Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
 import {ShowTopThreePlayers} from "../TopThreePlayers";
 import {useNavigate} from "react-router";
-import {AppState, useAppDispatch} from "../../storeDefinition";
-import {useJoinGameMutation, useUserInvitedMutation} from "../../backend/apiSlice";
+import {useAppSelector} from "../../storeDefinition";
+import {
+  useCreateGameMutation,
+  useGetUserQuery,
+  useJoinGameMutation,
+  useUserInvitedMutation
+} from "../../backend/apiSlice";
 import {createGameId} from "../../tools/id";
-import {createGame} from "../../actions";
 import {AppRoutes} from "../../TicTacToeRoutes";
-import {Id} from "../../types";
 import UserForm from "../UserForm";
-import {useSelector} from "react-redux";
 import {UserShow} from "../UserShow";
 import {UsersOnline} from "../UsersOnline";
+import {Id} from "../../types";
 
-interface LobbyProps {
-}
-
-const aPlayer = (playerId: Id, alias: string = "default") => ({
-  id: playerId,
-  alias: alias,
-  createdAt: new Date().toISOString()
-});
-
-export const Lobby: FC<LobbyProps> = () => {
+export const Lobby: FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [inviteUser] = useUserInvitedMutation();
+  const [createGame] = useCreateGameMutation();
   const [joinGame] = useJoinGameMutation();
-  const currentUser = useSelector((state: AppState) => state.client.currentUser);
-  const opponent = useSelector((state: AppState) => state.client.opponent);
+  const currentUserId = useAppSelector(state => state.client.currentUser);
+  const opponentId = useAppSelector(state => state.client.opponent);
+
+  const {
+    data: currentUser,
+    ...restCurrentUserQuery
+  } = useGetUserQuery(currentUserId as Id, {skip: currentUserId === null});
+
+  const {
+    data: opponent,
+    ...restOpponentQuery
+  } = useGetUserQuery(opponentId as Id, {skip: opponentId === null});
 
   const onNewGame = useCallback(async () => {
-    if (!currentUser || !opponent) throw Error("currentUser can not be null")
+    if (!currentUserId || !opponentId) throw Error("currentUserId or opponentId can not be null")
     const gameId = createGameId();
-    const firstPlayerId = currentUser.id;
-    dispatch(createGame({gameId, creator: firstPlayerId}));
-    await inviteUser({host: firstPlayerId, invited: opponent.id, game: gameId});
-    await joinGame({game: gameId, player: firstPlayerId})
+    await createGame({gameId, creator: currentUserId});
+    await inviteUser({host: currentUserId, invited: opponentId, game: gameId});
+    await joinGame({game: gameId, player: currentUserId})
     navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`);
-  }, [dispatch, navigate, inviteUser, joinGame, currentUser, opponent]);
+  }, [currentUserId, opponentId, createGame, inviteUser, joinGame, navigate]);
 
   return <Container maxWidth="sm">
     <Grid container direction="column" alignContent="center" justifyContent="center" sx={{height: "100vh"}} spacing={3}>

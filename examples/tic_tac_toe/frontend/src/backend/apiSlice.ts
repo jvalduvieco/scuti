@@ -57,6 +57,23 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UsersOnline"]
     }),
+    createGame: builder.mutation<void, { creator: Id, gameId: Id }>({
+      query: ({creator, gameId}) => ({
+        url: "/commands",
+        method: "POST",
+        body: {
+          command: {
+            type: "CreateGame",
+            payload: {
+              gameId,
+              creator,
+              operationId: createOperationId()
+            }
+          }
+        },
+      }),
+      invalidatesTags: ["UsersOnline"]
+    }),
     joinGame: builder.mutation<void, { player: Id, game: Id }>({
       query: ({player, game}) => ({
         url: "/commands",
@@ -74,31 +91,53 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UsersOnline"]
     }),
-    getTopThreePlayers: builder.query<{ list: ScoreListItem[], parentOperationId: Id }, void>({
+    placeMark: builder.mutation<void, { player: Id, gameId: Id, x: number, y: number }>({
+      query: ({player, gameId, x, y}) => ({
+        url: "/commands",
+        method: "POST",
+        body: {
+          command: {
+            type: "PlaceMark",
+            payload: {
+              gameId: gameId,
+              player: player,
+              x,
+              y,
+              operationId: createOperationId()
+            }
+          }
+        },
+      }),
+      invalidatesTags: ["UsersOnline"]
+    }),
+    getTopThreePlayers: builder.query<ScoreListItem[], void>({
       query: () => ({
         url: "/queries",
         method: "POST",
         body: {query: {type: "GetTopThreePlayers", payload: {operationId: createOperationId()}}},
       }),
+      transformResponse: (response: { list: ScoreListItem[], parentOperationId: Id }) => response.list,
       providesTags: ["TopThreeList"]
     }),
-    getUsersOnline: builder.query<{ onlineUsers: Id[], parentOperationId: Id }, void>({
+    getUsersOnline: builder.query<Id[], void>({
       query: () => ({
         url: "/queries",
         method: "POST",
         body: {query: {type: "GetUsersOnline", payload: {operationId: createOperationId()}}},
       }),
+      transformResponse: (response: { onlineUsers: Id[], parentOperationId: Id }) => response.onlineUsers,
       providesTags: ["UsersOnline"]
     }),
-    getUser: builder.query<{ user: User, parentOperationId: Id }, Id>({
+    getUser: builder.query<User, Id>({
       query: (userId: Id) => ({
         url: "/queries",
         method: "POST",
         body: {query: {type: "GetUser", payload: {operationId: createOperationId(), id: userId}}},
       }),
-      providesTags: (result: { user: User, parentOperationId: Id } | undefined, error, arg) => result ? [
+      transformResponse: (response: { user: User, parentOperationId: Id }) => response.user,
+      providesTags: (result: User | undefined, error, arg) => result ? [
         "User",
-        {type: "User", id: result.user.id.id}
+        {type: "User", id: result.id.id}
       ] : []
     })
   })
@@ -107,6 +146,8 @@ export const apiSlice = createApi({
 export const {
   useCreateUserMutation,
   useUserInvitedMutation,
+  useCreateGameMutation,
+  usePlaceMarkMutation,
   useJoinGameMutation,
   useGetTopThreePlayersQuery,
   useGetUsersOnlineQuery,
@@ -114,4 +155,4 @@ export const {
 } = apiSlice
 
 export const userFetched = apiSlice.endpoints.getUser.matchFulfilled
-export const userJoined = apiSlice.endpoints.joinGame.matchFulfilled
+export const createGameCommandPending = apiSlice.endpoints.createGame.matchPending

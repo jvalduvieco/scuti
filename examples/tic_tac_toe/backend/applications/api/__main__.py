@@ -12,7 +12,7 @@ from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
 from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded, GameStarted
+    GameEnded, GameStarted, MarkPlaced
 from domain.users.commands import CreateUser
 from domain.users.domain_module import UserDomainModule
 from domain.users.events import UserInvited
@@ -48,6 +48,7 @@ def main():
                                             BoardUpdated,
                                             WaitingForPlayerPlay,
                                             GameErrorOccurred,
+                                            MarkPlaced,
                                             GameEnded,
                                             TopThreeListUpdated,
                                             UsersOnlineUpdated,

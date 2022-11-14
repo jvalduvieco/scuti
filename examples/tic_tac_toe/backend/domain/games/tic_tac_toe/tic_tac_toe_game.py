@@ -4,7 +4,7 @@ from typing import List, Tuple
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded, GameStarted
+    GameEnded, GameStarted, MarkPlaced
 from domain.games.tic_tac_toe.game import Game
 from domain.games.tic_tac_toe.game_repository import ByGameId
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
@@ -83,6 +83,8 @@ class TicTacToeGame(ManagedStateEffectHandler):
         next_game_state = state.place(command.player, command.x, command.y)
         stage = next_game_state.stage
         return next_game_state, [
+            MarkPlaced(game_id=next_game_state.id, player=command.player, x=command.x, y=command.y,
+                       parent_operation_id=command.operation_id),
             WaitingForPlayerPlay(game_id=next_game_state.id, player_id=next_game_state.waiting_for_player),
             BoardUpdated(game_id=next_game_state.id, board=next_game_state.board.to_list()),
             GameEnded(game_id=next_game_state.id,

@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {GameClientState} from "../types";
-import {choseOpponent, userConnected} from "../actions";
+import {acceptInvitation, choseOpponent, userConnected} from "../actions";
 
 const initialState: GameClientState = {
   currentUser: null,
@@ -14,10 +14,13 @@ const gameClientSlice = createSlice({
   extraReducers(builder) {
     builder
         .addCase(userConnected, (state: GameClientState, action) => {
-          state.currentUser = action.payload
+          state.currentUser = action.payload.id
         })
         .addCase(choseOpponent, (state: GameClientState, action) => {
-          state.opponent = action.payload
+          state.opponent = action.payload.id
+        })
+        .addCase(acceptInvitation, (state: GameClientState, action)=> {
+          state.opponent = action.payload.host
         })
   }
 })

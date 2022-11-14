@@ -15,11 +15,8 @@ export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
                                                                      gotoLobby
                                                                    }: CongratulationsProps) => {
   const {
-    isFetching,
-    isLoading,
-    isSuccess,
-    isError,
-    data: user
+    data: user,
+      ...restGetUser
   } = useGetUserQuery(winner as Id, {skip: winner == null});
   return <Dialog
       maxWidth="lg"
@@ -35,7 +32,7 @@ export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
         width: 'fit-content',
       }}
       >
-        <Typography>The winner is {user?.user.alias} !!</Typography>
+        <Typography>The winner is {user?.alias} !!</Typography>
       </Box>
     </DialogContent>
     <DialogActions>

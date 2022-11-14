@@ -1,7 +1,7 @@
 import {Routes} from "react-router-dom";
 import {Route} from "react-router";
 import {FC} from "react";
-import GamePage from "./pages/GamePage";
+import {GamePage} from "./pages/GamePage";
 import {Lobby} from "./components/Lobby";
 
 export enum AppRoutes {

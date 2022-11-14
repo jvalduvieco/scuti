@@ -1,41 +1,46 @@
 import {Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
-import {connect} from "react-redux";
 import {GameShow} from "../components/GameShow";
-import {AppState, useAppDispatch} from "../storeDefinition";
+import {useAppSelector} from "../storeDefinition";
 import {createGameId} from "../tools/id";
 import {CongratulationsPlayerWon} from "../components/CongratulationsPlayerWon";
 import {AppRoutes} from "../TicTacToeRoutes";
 import {Draw} from "../components/Draw";
 import {useNavigate} from "react-router";
-import {createGame, placeMark} from "../actions";
-import {useJoinGameMutation} from "../backend/apiSlice";
+import {
+  useCreateGameMutation,
+  useJoinGameMutation,
+  usePlaceMarkMutation,
+  useUserInvitedMutation
+} from "../backend/apiSlice";
 
-
-const mapStateToProps = (state: AppState) => ({
-  gameState: state.game
-})
-type GamePageProps = ReturnType<typeof mapStateToProps>;
-
-const GamePage: FC<GamePageProps> = ({gameState}) => {
+export const GamePage: FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [joinGame] = useJoinGameMutation();
+  const [inviteUser] = useUserInvitedMutation();
+  const [createGame] = useCreateGameMutation();
+  const [placeMark] = usePlaceMarkMutation();
+  const gameState = useAppSelector(state => state.game);
+  const client = useAppSelector(state => state.client);
 
-  const onPlace = useCallback((x: number, y: number) => dispatch(placeMark({
-        gameId: gameState.gameId!,
-        player: gameState.turn!,
-        x: x,
-        y: y
-      })),
-      [dispatch, gameState.gameId, gameState.turn]);
+  const onPlace = useCallback(async (x: number, y: number) =>
+              await placeMark({
+                gameId: gameState.gameId!,
+                player: gameState.turn!,
+                x: x,
+                y: y
+              }),
+          [placeMark, gameState.gameId, gameState.turn]
+      )
+  ;
 
   const onRestartGame = useCallback(async () => {
     const gameId = createGameId();
-    dispatch(createGame({gameId, creator: gameState.firstPlayer!}));
-    await joinGame({game: gameId, player: gameState.firstPlayer!})
+    await createGame({gameId, creator: client.currentUser!});
+    await joinGame({game: gameId, player: client.currentUser!})
+    await inviteUser({game: gameId, host: client.currentUser!, invited: client.opponent!})
     navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`)
-  }, [dispatch, navigate, joinGame, gameState.firstPlayer]);
+  }, [client.currentUser, client.opponent, joinGame, inviteUser, navigate, createGame]);
 
   const onGotoLobby = useCallback(() => navigate(AppRoutes.HOME), [navigate])
   switch (gameState.stage) {
@@ -57,6 +62,3 @@ const GamePage: FC<GamePageProps> = ({gameState}) => {
       </Grid>
   }
 }
-
-
-export default connect(mapStateToProps)(GamePage);

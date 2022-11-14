@@ -1,16 +1,7 @@
 import {GameStage, GameState} from "../types";
 import {createSlice} from "@reduxjs/toolkit";
-import {
-  acceptInvitation,
-  boardUpdated,
-  createGame,
-  gameCreated,
-  gameEnded,
-  gameStarted,
-  placeMark,
-  waitingForPlayerToPlay
-} from "../actions";
-import {apiSlice, userJoined} from "../backend/apiSlice";
+import {acceptInvitation, boardUpdated, gameEnded, gameStarted, markPlaced, waitingForPlayerToPlay} from "../actions";
+import {createGameCommandPending} from "../backend/apiSlice";
 
 const initialState: GameState = {
   boardState: null,
@@ -29,10 +20,6 @@ const gameSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-        .addCase(createGame.pending, (state: GameState, action) => {
-          state.gameId = action.meta.arg.gameId;
-          state.firstPlayer = action.meta.arg.creator;
-        })
         .addCase(gameStarted, (state: GameState, action) => {
           if (state.gameId?.id === action.payload.gameId.id) {
             state.boardState = action.payload.board;
@@ -40,9 +27,9 @@ const gameSlice = createSlice({
             state.gameId = action.payload.gameId
           }
         })
-        .addCase(placeMark.fulfilled, (state, action) => {
-          if (state.gameId?.id === action.meta.arg.gameId.id) {
-            state.messages.push(`Player ${action.meta.arg.player.id} placed a mark on (${action.meta.arg.x}, ${action.payload.y})`)
+        .addCase(markPlaced, (state, action) => {
+          if (state.gameId?.id === action.payload.gameId.id) {
+            state.messages.push(`Player ${action.payload.player.id} placed a mark on (${action.payload.x}, ${action.payload.y})`)
           }
         })
         .addCase(waitingForPlayerToPlay, (state: GameState, action) => {
@@ -67,6 +54,10 @@ const gameSlice = createSlice({
           state.gameId = action.payload.game;
           state.firstPlayer = action.payload.host;
           state.secondPlayer = action.payload.invited;
+        })
+        .addMatcher(createGameCommandPending, (state: GameState, action) => {
+          state.gameId = action.meta.arg.originalArgs.gameId;
+          state.firstPlayer = action.meta.arg.originalArgs.creator;
         })
   }
 })

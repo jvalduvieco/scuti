@@ -2,7 +2,6 @@ import {setupListeners} from "@reduxjs/toolkit/query";
 import {
   acceptInvitation,
   connectionStatusUpdated,
-  gameStarted,
   topThreeListUpdated,
   userConnected,
   userInvited,
@@ -32,10 +31,8 @@ export const startAppListening =
     listenerMiddleware.startListening as AppStartListening
 
 
-export const addAppListener = addListener as TypedAddListener<
-    AppState,
-    AppThunkDispatch
-    >
+export const addAppListener = addListener as TypedAddListener<AppState,
+    AppThunkDispatch>
 
 export const store = setupStore(undefined, [listenerMiddleware.middleware], [buildSocketIoMiddleware()]);
 
@@ -64,19 +61,19 @@ startAppListening({
 
 startAppListening({
   actionCreator: userInvited,
-  effect: async(action, {dispatch, getState}) => {
+  effect: async (action, {dispatch, getState}) => {
     const state = await getState();
-    console.log({id:state.client.currentUser?.id, action})
-    if (state.client.currentUser?.id.id === action.payload.invited.id) {
+    if (state.client.currentUser?.id === action.payload.invited.id) {
       await dispatch(acceptInvitation({...action.payload}))
     }
   }
 })
+
 startAppListening({
   actionCreator: acceptInvitation,
-  effect: async (action, {dispatch, getState}) =>{
+  effect: async (action, {dispatch, getState}) => {
     const state = await getState();
-    if (state.client.currentUser?.id.id === action.payload.invited.id) {
+    if (state.client.currentUser?.id === action.payload.invited.id) {
       await dispatch(apiSlice.endpoints.joinGame.initiate({player: action.payload.invited, game: action.payload.game}));
       await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
     }

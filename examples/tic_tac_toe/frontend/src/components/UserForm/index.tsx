@@ -8,7 +8,7 @@ import * as yup from "yup";
 import {FormTextInput} from "../Form/FormTextInput";
 import {UserAvatar} from "../UserAvatar";
 import {userConnected} from "../../actions";
-import {useDispatch} from "react-redux";
+import {useAppDispatch} from "../../storeDefinition";
 
 function completeUser(user: Partial<User>): User {
   return {...user, createdAt: new Date().toISOString(), id: createUserId()} as User
@@ -22,7 +22,7 @@ export default function UserForm() {
     resolver: yupResolver(schema)
   });
   const [createUser] = useCreateUserMutation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<Partial<User>> = async user => {
     const newUser = completeUser(user);
