@@ -1,27 +1,19 @@
 import {Button, Container, Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
 import {ShowTopThreePlayers} from "../TopThreePlayers";
-import {useNavigate} from "react-router";
 import {useAppSelector} from "../../storeDefinition";
-import {
-  useCreateGameMutation,
-  useGetUserQuery,
-  useJoinGameMutation,
-  useUserInvitedMutation
-} from "../../backend/apiSlice";
-import {createGameId} from "../../tools/id";
-import {AppRoutes} from "../../TicTacToeRoutes";
+import {useGetUserQuery} from "../../backend/apiSlice";
 import UserForm from "../UserForm";
 import {UserShow} from "../UserShow";
 import {UsersOnline} from "../UsersOnline";
 import {Id} from "../../types";
 import {RenderOnSuccess} from "../RenderOnSuccess";
+import {createNewGame} from "../../actions";
+import {useDispatch} from "react-redux";
+import {createGameId} from "../../tools/id";
 
 export const Lobby: FC = () => {
-  const navigate = useNavigate();
-  const [inviteUser] = useUserInvitedMutation();
-  const [createGame] = useCreateGameMutation();
-  const [joinGame] = useJoinGameMutation();
+  const dispatch = useDispatch();
   const currentUserId = useAppSelector(state => state.client.currentUser);
   const opponentId = useAppSelector(state => state.client.opponent);
 
@@ -31,13 +23,10 @@ export const Lobby: FC = () => {
   } = useGetUserQuery(currentUserId as Id, {skip: currentUserId === null});
 
   const onNewGame = useCallback(async () => {
-    if (!currentUserId || !opponentId) throw Error("currentUserId or opponentId can not be null")
-    const gameId = createGameId();
-    await createGame({gameId, creator: currentUserId});
-    await inviteUser({host: currentUserId, invited: opponentId, game: gameId});
-    await joinGame({game: gameId, player: currentUserId})
-    navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`);
-  }, [currentUserId, opponentId, createGame, inviteUser, joinGame, navigate]);
+    if (currentUserId !== null && opponentId !== null) {
+      dispatch(createNewGame({gameId: createGameId(), creatorId: currentUserId, opponentId}));
+    }
+  }, [dispatch, currentUserId, opponentId]);
 
   return <Container maxWidth="sm">
     <Grid container direction="column" alignContent="center" justifyContent="center" sx={{height: "100vh"}} spacing={3}>
@@ -62,7 +51,8 @@ export const Lobby: FC = () => {
         <ShowTopThreePlayers/>
       </Grid>
       <Grid item>
-        <Button variant="contained" onClick={onNewGame} fullWidth disabled={!(currentUserId && opponentId)}>Play!</Button>
+        <Button variant="contained" onClick={onNewGame} fullWidth
+                disabled={!(currentUserId && opponentId)}>Play!</Button>
       </Grid>
     </Grid>
   </Container>

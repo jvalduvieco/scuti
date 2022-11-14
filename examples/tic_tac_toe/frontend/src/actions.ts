@@ -6,6 +6,13 @@ export const connectionStatusUpdated = createAction('CONNECTION_STATUS_CHANGED',
       newStatus: ConnectionStatus
     }>())
 
+export const createNewGame = createAction('CREATE_NEW_GAME',
+    withPayloadType<{
+      gameId: Id
+      creatorId: Id
+      opponentId: Id
+    }>())
+
 export const gameStarted = createAction('GAME_STARTED',
     withPayloadType<{
       gameId: Id

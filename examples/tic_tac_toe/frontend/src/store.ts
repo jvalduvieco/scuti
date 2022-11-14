@@ -2,6 +2,7 @@ import {setupListeners} from "@reduxjs/toolkit/query";
 import {
   acceptInvitation,
   connectionStatusUpdated,
+  createNewGame,
   topThreeListUpdated,
   userConnected,
   userInvited,
@@ -77,5 +78,16 @@ startAppListening({
       await dispatch(apiSlice.endpoints.joinGame.initiate({player: action.payload.invited, game: action.payload.game}));
       await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
     }
+  }
+})
+
+startAppListening({
+  actionCreator: createNewGame,
+  effect: async ({payload: {gameId, creatorId, opponentId}}, {dispatch}) => {
+    await dispatch(apiSlice.endpoints.createGame.initiate({gameId, creator: creatorId}));
+    await dispatch(apiSlice.endpoints.userInvited.initiate({host: creatorId, invited: opponentId, game: gameId}));
+    await dispatch(apiSlice.endpoints.joinGame.initiate({game: gameId, player: creatorId}));
+    await dispatch(push(`${AppRoutes.GAME_SCREEN}/${gameId.id}`));
+
   }
 })
