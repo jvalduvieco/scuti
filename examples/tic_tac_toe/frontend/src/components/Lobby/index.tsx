@@ -15,6 +15,7 @@ import UserForm from "../UserForm";
 import {UserShow} from "../UserShow";
 import {UsersOnline} from "../UsersOnline";
 import {Id} from "../../types";
+import {RenderOnSuccess} from "../RenderOnSuccess";
 
 export const Lobby: FC = () => {
   const navigate = useNavigate();
@@ -26,13 +27,8 @@ export const Lobby: FC = () => {
 
   const {
     data: currentUser,
-    ...restCurrentUserQuery
+    ...currentUserQueryStatus
   } = useGetUserQuery(currentUserId as Id, {skip: currentUserId === null});
-
-  const {
-    data: opponent,
-    ...restOpponentQuery
-  } = useGetUserQuery(opponentId as Id, {skip: opponentId === null});
 
   const onNewGame = useCallback(async () => {
     if (!currentUserId || !opponentId) throw Error("currentUserId or opponentId can not be null")
@@ -53,7 +49,9 @@ export const Lobby: FC = () => {
       <Grid item container direction="row" spacing={2}>
         <Grid item xs={6}>
           {!currentUser && <UserForm/>}
-          {currentUser && <UserShow alias={currentUser.alias}/>}
+          <RenderOnSuccess queryStatus={[currentUserQueryStatus]} mustBeDefined={[currentUser]}>
+            {(currentUser && <UserShow alias={currentUser.alias}/>) || <></>}
+          </RenderOnSuccess>
         </Grid>
         <Grid item xs={6}>
           <UsersOnline/>
@@ -64,7 +62,7 @@ export const Lobby: FC = () => {
         <ShowTopThreePlayers/>
       </Grid>
       <Grid item>
-        <Button variant="contained" onClick={onNewGame} fullWidth disabled={!(currentUser && opponent)}>Play!</Button>
+        <Button variant="contained" onClick={onNewGame} fullWidth disabled={!(currentUserId && opponentId)}>Play!</Button>
       </Grid>
     </Grid>
   </Container>
