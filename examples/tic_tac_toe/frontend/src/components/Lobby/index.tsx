@@ -1,38 +1,31 @@
 import {Button, Container, Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
 import {ShowTopThreePlayers} from "../TopThreePlayers";
-import {useNavigate} from "react-router";
-import {useAppDispatch} from "../../storeDefinition";
-import {useCreateUserMutation} from "../../backend/apiSlice";
-import {createGameId, createPlayerId} from "../../tools/id";
-import {createNewGame} from "../../actions";
-import {AppRoutes} from "../../TicTacToeRoutes";
+import {useAppSelector} from "../../storeDefinition";
+import {useGetUserQuery} from "../../backend/apiSlice";
+import UserForm from "../UserForm";
+import {UserShow} from "../UserShow";
+import {UsersOnline} from "../UsersOnline";
 import {Id} from "../../types";
+import {RenderOnSuccess} from "../RenderOnSuccess";
+import {createNewGame} from "../../actions";
+import {useDispatch} from "react-redux";
+import {createGameId} from "../../tools/id";
 
-interface LobbyProps {
-}
+export const Lobby: FC = () => {
+  const dispatch = useDispatch();
+  const {currentUserId, opponentId} = useAppSelector(state => state.client);
 
-const aPlayer = (playerId: Id, alias: string = "default") => ({
-  id: playerId,
-  alias: alias,
-  createdAt: new Date().toISOString()
-});
-
-export const Lobby: FC<LobbyProps> = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [createUser] = useCreateUserMutation();
+  const {
+    data: currentUser,
+    ...currentUserQueryStatus
+  } = useGetUserQuery(currentUserId as Id, {skip: currentUserId === null});
 
   const onNewGame = useCallback(async () => {
-    const gameId = createGameId();
-    const firstPlayerId = createPlayerId();
-    const secondPlayerId = createPlayerId();
-
-    await createUser(aPlayer(firstPlayerId)).unwrap();
-    await createUser(aPlayer(secondPlayerId)).unwrap();
-    dispatch(createNewGame({gameId, firstPlayer: firstPlayerId, secondPlayer: secondPlayerId}));
-    navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`);
-  }, [dispatch, navigate, createUser]);
+    if (currentUserId !== null && opponentId !== null) {
+      await dispatch(createNewGame({gameId: createGameId(), creatorId: currentUserId, opponentId}));
+    }
+  }, [dispatch, currentUserId, opponentId]);
 
   return <Container maxWidth="sm">
     <Grid container direction="column" alignContent="center" justifyContent="center" sx={{height: "100vh"}} spacing={3}>
@@ -41,11 +34,24 @@ export const Lobby: FC<LobbyProps> = () => {
           Welcome to tic tac toe!
         </Typography>
       </Grid>
+      <Grid item container direction="row" spacing={2}>
+        <Grid item xs={6}>
+          {!currentUser && <UserForm/>}
+          <RenderOnSuccess queryStatus={[currentUserQueryStatus]} mustBeDefined={[currentUser]}>
+            {(currentUser && <UserShow alias={currentUser.alias}/>) || <></>}
+          </RenderOnSuccess>
+        </Grid>
+        <Grid item xs={6}>
+          <UsersOnline/>
+        </Grid>
+      </Grid>
+
       <Grid item>
         <ShowTopThreePlayers/>
       </Grid>
       <Grid item>
-        <Button variant="contained" onClick={onNewGame} fullWidth>Play!</Button>
+        <Button variant="contained" onClick={onNewGame} fullWidth
+                disabled={!(currentUserId && opponentId)}>Play!</Button>
       </Grid>
     </Grid>
   </Container>

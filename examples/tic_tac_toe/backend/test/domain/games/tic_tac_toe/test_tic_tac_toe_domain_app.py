@@ -1,19 +1,13 @@
-from typing import List
-
 from domain.games.tic_tac_toe.board import TicTacToeBoard
-from domain.games.tic_tac_toe.commands import NewGame, PlaceMark
+from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
-from domain.games.tic_tac_toe.events import GameStarted, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded
+from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameEnded
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
-from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
+from domain.games.tic_tac_toe.types import GameStage
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from hamcrest import has_items, has_item
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
-from mani.domain.cqrs.effects import Effect
 from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
-from mani.infrastructure.tools.list import filter_none
 
 
 class TestTicTacToeApp(DomainTestCase):
@@ -29,24 +23,25 @@ class TestTicTacToeApp(DomainTestCase):
     def test_a_game_can_be_started(self):
         operation_id = OperationId()
         self.feed_effects([
-            NewGame(game_id=self.game_id, operation_id=operation_id, first_player=self.first_player,
-                    second_player=self.second_player)]
+            CreateGame(game_id=self.game_id, operation_id=operation_id, creator=self.first_player),
+            JoinGame(game_id=self.game_id, operation_id=OperationId(), player_id=self.first_player),
+            JoinGame(game_id=self.game_id, operation_id=OperationId(), player_id=self.second_player)
+        ]
         )
 
         self.assertThatHandledEffects(
-            has_items(GameStarted(game_id=self.game_id,
-                                  first_player=self.first_player,
-                                  second_player=self.second_player,
+            has_items(GameCreated(game_id=self.game_id,
+                                  creator=self.first_player,
                                   board=TicTacToeBoard().to_list(),
-                                  stage=GameStage.IN_PROGRESS,
+                                  stage=GameStage.WAITING_FOR_PLAYERS,
                                   parent_operation_id=operation_id),
-                      BoardUpdated(game_id=self.game_id, board=TicTacToeBoard().to_list()),
                       WaitingForPlayerPlay(game_id=self.game_id, player_id=self.first_player)))
 
     def test_a_player_can_win_the_game_if_manages_to_place_three_marks_in_a_row(self):
         self.feed_effects([
-            NewGame(game_id=self.game_id, operation_id=OperationId(), first_player=self.first_player,
-                    second_player=self.second_player),
+            CreateGame(game_id=self.game_id, operation_id=OperationId(), creator=self.first_player),
+            JoinGame(game_id=self.game_id, operation_id=OperationId(), player_id=self.first_player),
+            JoinGame(game_id=self.game_id, operation_id=OperationId(), player_id=self.second_player),
             PlaceMark(game_id=self.game_id, operation_id=OperationId(), player=self.first_player, x=0, y=0),
             PlaceMark(game_id=self.game_id, operation_id=OperationId(), player=self.second_player, x=1, y=0),
             PlaceMark(game_id=self.game_id, operation_id=OperationId(), player=self.first_player, x=0, y=1),

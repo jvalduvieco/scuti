@@ -73,7 +73,7 @@ def event_controller(event_bus: EventBus, accepted_events: List[Type[Event]]):
             logger.error(f"Invalid event payload: {client_request['event']}")
             raise err
 
-        event_bus.handle([event])
+        event_bus.handle(event)
         return to_message_response("OK"), 200
 
     return dispatch_event_request

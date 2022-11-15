@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react'
+import React, {FC, PropsWithChildren, ReactNode} from 'react'
 import type {RenderOptions} from '@testing-library/react'
 import {render} from '@testing-library/react'
 import type {PreloadedState} from '@reduxjs/toolkit'
@@ -14,6 +14,17 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
   store?: AppStore
 }
 
+type Props = {
+  store: AppStore
+  children: ReactNode
+}
+export const AppProviderForTest: FC<Props> = ({store, children}) =>
+    <Provider store={store}>
+      <MemoryRouter>
+        {children}
+      </MemoryRouter>
+    </Provider>
+
 export function renderWithProviders(
     ui: React.ReactElement,
     {
@@ -24,7 +35,7 @@ export function renderWithProviders(
     }: ExtendedRenderOptions = {}
 ) {
   function Wrapper({children}: PropsWithChildren<{}>) {
-    return <Provider store={store}><MemoryRouter> {children} </MemoryRouter> </Provider>
+    return <AppProviderForTest store={store}> {children} </AppProviderForTest>
   }
 
   return {store, ...render(ui, {wrapper: Wrapper, ...renderOptions})}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {screen} from '@testing-library/react';
 import {Lobby} from "./components/Lobby";
-import {renderWithProviders} from "./utils/test";
+import {renderWithProviders} from "./tools/test";
 
 test('renders lobby screen', async () => {
   renderWithProviders(<Lobby/>);

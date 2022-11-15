@@ -7,11 +7,11 @@ from mani.infrastructure.tools.list import filter_none
 
 
 class EffectHandlerTestCase(TestCase):
-    def feed_effects(self, into: ManagedStateEffectHandler, effects: List[Effect], initial_state: Any = None):
+    def feed_effects(self, into: ManagedStateEffectHandler, effects: List[Effect], initial_state: Any = "None"):
         current_state = initial_state
         emitted_effects = []
         for effect in effects:
-            if current_state is not None:
+            if current_state != "None":
                 state, effects = into.handle(current_state, effect)
             else:
                 state, effects = into.handle(effect)

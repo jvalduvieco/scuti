@@ -1,6 +1,8 @@
 import {FC} from "react";
 import {Handler, Id} from "../../types";
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from "@mui/material";
+import {useGetUserQuery} from "../../backend/apiSlice";
+import {RenderOnSuccess} from "../RenderOnSuccess";
 
 interface CongratulationsProps {
   winner: Id
@@ -12,7 +14,12 @@ export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
                                                                      winner,
                                                                      restartGame,
                                                                      gotoLobby
-                                                                   }: CongratulationsProps) =>
+                                                                   }: CongratulationsProps) => {
+  const {
+    data: user,
+    ...status
+  } = useGetUserQuery(winner as Id, {skip: winner == null});
+  return <RenderOnSuccess queryStatus={status} mustBeDefined={user}>
     <Dialog
         maxWidth="lg"
         open={true}
@@ -27,7 +34,7 @@ export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
           width: 'fit-content',
         }}
         >
-          <Typography>The winner is {winner.id} !!</Typography>
+          <Typography>The winner is {user?.alias} !!</Typography>
         </Box>
       </DialogContent>
       <DialogActions>
@@ -35,3 +42,5 @@ export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
         <Button onClick={restartGame}>Restart with same players</Button>
       </DialogActions>
     </Dialog>
+  </RenderOnSuccess>
+}

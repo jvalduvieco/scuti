@@ -26,8 +26,9 @@ class LocalAsynchronousBus(AsynchronousBus):
                         handler(item)
                         [hook.after_handler(item, human_friendly_name) for hook in self.__bus_hooks]
                     except Exception as e:
-                        self.__items.put(BusHandlerFailed(effect=item, error=e.__str__(),
-                                                          stack_trace=''.join(traceback.format_exc())))
+                        self.handle(BusHandlerFailed(effect=item,
+                                                     error=f"{e.__class__.__name__}({e.__str__()})",
+                                                     stack_trace=e.__traceback__))
             [hook.end_processing(item) for hook in self.__bus_hooks]
             self.__items.task_done()
 

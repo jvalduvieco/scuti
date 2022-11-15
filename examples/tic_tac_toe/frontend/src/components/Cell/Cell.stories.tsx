@@ -1,7 +1,7 @@
 import React from 'react';
 import {ComponentMeta, ComponentStory} from '@storybook/react';
 import {Cell} from "./index";
-import {createPlayerId} from "../../tools/id";
+import {socrates} from "../../backend/fixtures/users";
 
 export default {
   title: 'TicTacToe/Cell',
@@ -17,4 +17,4 @@ EmptyCell.args = {
 };
 
 export const APlayer = Template.bind({});
-APlayer.args = {owner: createPlayerId(), onClick: () => null};
+APlayer.args = {owner: socrates.id, onClick: () => null};

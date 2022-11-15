@@ -1,43 +1,46 @@
 import {Grid, Typography} from "@mui/material";
 import {FC, useCallback} from "react";
-import {connect} from "react-redux";
 import {GameShow} from "../components/GameShow";
-import {AppState, useAppDispatch} from "../storeDefinition";
+import {useAppSelector} from "../storeDefinition";
 import {createGameId} from "../tools/id";
 import {CongratulationsPlayerWon} from "../components/CongratulationsPlayerWon";
 import {AppRoutes} from "../TicTacToeRoutes";
 import {Draw} from "../components/Draw";
 import {useNavigate} from "react-router";
-import {createNewGame, placeMark} from "../actions";
+import {usePlaceMarkMutation} from "../backend/apiSlice";
+import {createNewGame} from "../actions";
+import {useDispatch} from "react-redux";
 
-
-const mapStateToProps = (state: AppState) => ({
-  gameState: state.game
-})
-type GamePageProps = ReturnType<typeof mapStateToProps>;
-
-const GamePage: FC<GamePageProps> = ({gameState}) => {
+export const GamePage: FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
+  const [placeMark] = usePlaceMarkMutation();
+  const gameState = useAppSelector(state => state.game);
+  const {currentUserId, opponentId} = useAppSelector(state => state.client);
 
-  const onPlace = useCallback((x: number, y: number) => dispatch(placeMark({
-        gameId: gameState.gameId!,
-        player: gameState.turn!,
-        x: x,
-        y: y
-      })),
-      [dispatch, gameState.gameId, gameState.turn]);
+  const onPlace = useCallback(async (x: number, y: number) =>
+              await placeMark({
+                gameId: gameState.gameId!,
+                player: gameState.turn!,
+                x: x,
+                y: y
+              }),
+          [placeMark, gameState.gameId, gameState.turn]
+      )
+  ;
 
-  const onRestartGame = useCallback(() => {
-    const gameId = createGameId();
-    dispatch(createNewGame({gameId, firstPlayer: gameState.firstPlayer!, secondPlayer: gameState.secondPlayer!}));
-    navigate(`${AppRoutes.GAME_SCREEN}/${gameId.id}`)
-  }, [dispatch, navigate, gameState.firstPlayer, gameState.secondPlayer]);
+  const onRestartGame = useCallback(async () => {
+    if (currentUserId !== null && opponentId !== null) {
+      await dispatch(createNewGame({gameId: createGameId(), creatorId: currentUserId, opponentId}));
+    }
+  }, [dispatch, currentUserId, opponentId]);
 
   const onGotoLobby = useCallback(() => navigate(AppRoutes.HOME), [navigate])
   switch (gameState.stage) {
     case null:
       return <Typography>Loading</Typography>
+    case "WAITING_FOR_PLAYERS":
+      return <Typography>Waiting for players</Typography>
     case "DRAW":
       return <Draw gotoLobby={onGotoLobby} restartGame={onRestartGame}/>
     case "PLAYER_WON":
@@ -52,6 +55,3 @@ const GamePage: FC<GamePageProps> = ({gameState}) => {
       </Grid>
   }
 }
-
-
-export default connect(mapStateToProps)(GamePage);
