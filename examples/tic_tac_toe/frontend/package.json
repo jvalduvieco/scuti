@@ -86,9 +86,13 @@
     "@types/socket.io-client": "^3.0.0",
     "@types/uuid": "^8.3.4",
     "babel-plugin-named-exports-order": "^0.0.2",
-    "msw": "^0.48.0",
+    "msw": "^0.48.2",
+    "msw-storybook-addon": "^1.6.3",
     "prop-types": "^15.8.1",
     "storybook": "^6.5.13",
     "webpack": "^5.74.0"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

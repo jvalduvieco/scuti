@@ -6,10 +6,10 @@ import {
   PreloadedState,
   Store,
   ThunkDispatch, TypedStartListening
-} from '@reduxjs/toolkit'
+} from "@reduxjs/toolkit"
 import {gameReducer} from "./slices/game";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
-import {apiSlice} from './backend/apiSlice';
+import {apiSlice} from "./backend/apiSlice";
 import {gameClientReducer} from "./slices/client";
 import {userReducer} from "./slices/users";
 import {createBrowserHistory} from "history";
@@ -39,7 +39,7 @@ export const setupStore = (preloadedState?: PreloadedState<AppState>, middleware
         ...getDefaultMiddleware(),
         ...middlewaresAfterDefault,
         apiSlice.middleware],
-      devTools: process.env.NODE_ENV !== 'production',
+      devTools: process.env.NODE_ENV !== "production",
     });
 
 export type AppThunkDispatch = ThunkDispatch<AppState, any, AnyAction>;

@@ -5,7 +5,7 @@ import {BACKEND_URL} from "../config";
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({baseUrl: process.env.NODE_ENV === "test" ? "" : BACKEND_URL}),
+  baseQuery: fetchBaseQuery({baseUrl: BACKEND_URL}),
   tagTypes: ["TopThreeList", "UsersOnline", "User"],
   endpoints: builder => ({
     createUser: builder.mutation<void, User>({
@@ -135,7 +135,7 @@ export const apiSlice = createApi({
         body: {query: {type: "GetUser", payload: {operationId: createOperationId(), id: userId}}},
       }),
       transformResponse: (response: { user: User, parentOperationId: Id }) => response.user,
-      providesTags: (result: User | undefined, error, arg) => result ? [
+      providesTags: (result: User | undefined) => result ? [
         "User",
         {type: "User", id: result.id.id}
       ] : []
@@ -145,10 +145,7 @@ export const apiSlice = createApi({
 
 export const {
   useCreateUserMutation,
-  useUserInvitedMutation,
-  useCreateGameMutation,
   usePlaceMarkMutation,
-  useJoinGameMutation,
   useGetTopThreePlayersQuery,
   useGetUsersOnlineQuery,
   useGetUserQuery

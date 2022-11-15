@@ -12,7 +12,7 @@ export const UserRow: FC<{ userId: Id }> = ({userId}) => {
     ...status
   } = useGetUserQuery(userId);
   const dispatch = useAppDispatch();
-  const opponent = useAppSelector(state => state.client.opponent)
+  const {opponentId} = useAppSelector(state => state.client)
 
   const onChooseOpponent = useCallback(async () => {
     if (user) {
@@ -21,7 +21,7 @@ export const UserRow: FC<{ userId: Id }> = ({userId}) => {
   }, [dispatch, user])
 
   return <RenderOnSuccess queryStatus={status} mustBeDefined={user}>
-    <>{user && <Button fullWidth variant={user.id.id === opponent?.id ? "contained" : "outlined"}
+    <>{user && <Button fullWidth variant={user.id.id === opponentId?.id ? "contained" : "outlined"}
                        onClick={onChooseOpponent}>{user.alias}</Button>}</>
   </RenderOnSuccess>
 }
@@ -32,9 +32,9 @@ export const UsersOnline: FC = () => {
     data: usersOnline,
     ...status
   } = useGetUsersOnlineQuery();
-  const currentUser = useAppSelector(state => state.client.currentUser);
+  const {currentUserId} = useAppSelector(state => state.client);
 
-  const onlineUsersWithoutCurrentUser = useMemo(() => (usersOnline) ? usersOnline.filter(u => u.id !== currentUser?.id) : [], [currentUser, usersOnline]);
+  const onlineUsersWithoutCurrentUser = useMemo(() => (usersOnline) ? usersOnline.filter(u => u.id !== currentUserId?.id) : [], [currentUserId, usersOnline]);
 
   return <RenderOnSuccess queryStatus={status} mustBeDefined={usersOnline}>
     <Paper sx={{padding: 2, height: "300px", width: "100%"}}>

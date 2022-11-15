@@ -9,9 +9,7 @@ const initialState: GameState = {
   stage: null,
   turn: null,
   winner: null,
-  gameId: null,
-  firstPlayer: null,
-  secondPlayer: null
+  gameId: null
 };
 
 const gameSlice = createSlice({
@@ -25,6 +23,7 @@ const gameSlice = createSlice({
             state.boardState = action.payload.board;
             state.stage = (action.payload.stage as GameStage);
             state.gameId = action.payload.gameId
+            state.winner = null
           }
         })
         .addCase(markPlaced, (state, action) => {
@@ -51,13 +50,9 @@ const gameSlice = createSlice({
           }
         })
         .addCase(acceptInvitation, (state: GameState, action) => {
-          state.gameId = action.payload.game;
-          state.firstPlayer = action.payload.host;
-          state.secondPlayer = action.payload.invited;
-        })
+          state.gameId = action.payload.game;})
         .addMatcher(createGameCommandPending, (state: GameState, action) => {
           state.gameId = action.meta.arg.originalArgs.gameId;
-          state.firstPlayer = action.meta.arg.originalArgs.creator;
         })
   }
 })

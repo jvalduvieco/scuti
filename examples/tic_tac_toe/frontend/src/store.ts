@@ -42,14 +42,14 @@ setupListeners(store.dispatch);
 startAppListening({
   actionCreator: topThreeListUpdated,
   effect: async (action, {dispatch}) => {
-    dispatch(apiSlice.util.invalidateTags(["TopThreeList"]))
+    await dispatch(apiSlice.util.invalidateTags(["TopThreeList"]))
   }
 })
 
 startAppListening({
   actionCreator: UsersOnlineUpdated,
   effect: async (action, {dispatch}) => {
-    dispatch(apiSlice.util.invalidateTags(["UsersOnline"]))
+    await dispatch(apiSlice.util.invalidateTags(["UsersOnline"]))
   }
 })
 
@@ -64,7 +64,7 @@ startAppListening({
   actionCreator: userInvited,
   effect: async (action, {dispatch, getState}) => {
     const state = await getState();
-    if (state.client.currentUser?.id === action.payload.invited.id) {
+    if (state.client.currentUserId?.id === action.payload.invited.id) {
       await dispatch(acceptInvitation({...action.payload}))
     }
   }
@@ -74,7 +74,7 @@ startAppListening({
   actionCreator: acceptInvitation,
   effect: async (action, {dispatch, getState}) => {
     const state = await getState();
-    if (state.client.currentUser?.id === action.payload.invited.id) {
+    if (state.client.currentUserId?.id === action.payload.invited.id) {
       await dispatch(apiSlice.endpoints.joinGame.initiate({player: action.payload.invited, game: action.payload.game}));
       await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
     }

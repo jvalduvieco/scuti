@@ -13,13 +13,11 @@ export interface GameState {
   stage: GameStage | null
   winner: Id | null
   gameId: Id | null
-  firstPlayer: Id | null
-  secondPlayer: Id | null
 }
 
 export interface GameClientState {
-  currentUser: Id | null
-  opponent: Id | null
+  currentUserId: Id | null
+  opponentId: Id | null
 }
 
 export type ScoreListItem = { id: Id, score: number };

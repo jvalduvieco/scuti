@@ -19,9 +19,9 @@ export const Cell: FC<CellProps> = ({owner, onClick}: CellProps) => {
     data: user
   } = useGetUserQuery(owner as Id, {skip: owner == null});
   const turn = useAppSelector(state => state.game.turn);
-  const currentUser = useAppSelector(state => state.client.currentUser);
+  const currentUserId = useAppSelector(state => state.client.currentUserId);
   return <Button fullWidth variant="outlined"
-                 disabled={owner !== null || (owner === null && turn?.id !== currentUser?.id)} onClick={onClick}>
+                 disabled={owner !== null || (owner === null && turn?.id !== currentUserId?.id)} onClick={onClick}>
     {(isFetching || isLoading) && <Loading/>}
     {isError && <Typography>ERROR</Typography>}
     {isSuccess && owner !== null && user && <Typography>{user.alias}</Typography>}

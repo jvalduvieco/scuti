@@ -12,7 +12,7 @@ export const ShowTurn: FC<GameStageProps> = ({turn}: GameStageProps) => {
   const {
     data: user,
     ...status
-  } = useGetUserQuery(turn as Id);
+  } = useGetUserQuery(turn as Id, {skip: turn === null});
   return <RenderOnSuccess queryStatus={status} mustBeDefined={user}>
     <Paper sx={{padding: 1, width: "100%"}}>
       <Typography align="center">

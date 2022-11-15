@@ -14,8 +14,7 @@ import {createGameId} from "../../tools/id";
 
 export const Lobby: FC = () => {
   const dispatch = useDispatch();
-  const currentUserId = useAppSelector(state => state.client.currentUser);
-  const opponentId = useAppSelector(state => state.client.opponent);
+  const {currentUserId, opponentId} = useAppSelector(state => state.client);
 
   const {
     data: currentUser,
@@ -24,7 +23,7 @@ export const Lobby: FC = () => {
 
   const onNewGame = useCallback(async () => {
     if (currentUserId !== null && opponentId !== null) {
-      dispatch(createNewGame({gameId: createGameId(), creatorId: currentUserId, opponentId}));
+      await dispatch(createNewGame({gameId: createGameId(), creatorId: currentUserId, opponentId}));
     }
   }, [dispatch, currentUserId, opponentId]);
 

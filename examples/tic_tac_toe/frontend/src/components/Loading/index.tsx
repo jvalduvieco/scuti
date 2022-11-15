@@ -1,4 +1,4 @@
 import {FC} from "react";
-import {CircularProgress} from "@mui/material";
+import {Skeleton} from "@mui/material";
 
-export const Loading: FC = () => <CircularProgress/>
+export const Loading: FC = () => <Skeleton variant="rectangular"/>
