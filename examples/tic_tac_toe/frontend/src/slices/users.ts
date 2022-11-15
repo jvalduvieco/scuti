@@ -15,10 +15,7 @@ const usersSlice = createSlice({
         .addCase(userConnected,
             (state, action) => usersAdapter.upsertOne(state, action.payload))
         .addMatcher(userFetched,
-            (state, action) => {
-          console.log(action)
-             return usersAdapter.upsertOne(state, action.payload)
-            })
+            (state, action) => usersAdapter.upsertOne(state, action.payload))
   }
 })
 

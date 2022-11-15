@@ -16,6 +16,7 @@ import {AppStartListening, AppState, AppThunkDispatch, setupStore} from "./store
 import {addListener, createListenerMiddleware, TypedAddListener} from "@reduxjs/toolkit";
 import {push} from "@lagunovsky/redux-react-router";
 import {AppRoutes} from "./TicTacToeRoutes";
+import isEqual from "lodash.isequal";
 
 
 const buildSocketIoMiddleware = () => {
@@ -64,7 +65,7 @@ startAppListening({
   actionCreator: userInvited,
   effect: async (action, {dispatch, getState}) => {
     const state = await getState();
-    if (state.client.currentUserId?.id === action.payload.invited.id) {
+    if (isEqual(state.client.currentUserId, action.payload.invited)) {
       await dispatch(acceptInvitation({...action.payload}))
     }
   }
@@ -74,7 +75,7 @@ startAppListening({
   actionCreator: acceptInvitation,
   effect: async (action, {dispatch, getState}) => {
     const state = await getState();
-    if (state.client.currentUserId?.id === action.payload.invited.id) {
+    if (isEqual(state.client.currentUserId, action.payload.invited)) {
       await dispatch(apiSlice.endpoints.joinGame.initiate({player: action.payload.invited, game: action.payload.game}));
       await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
     }

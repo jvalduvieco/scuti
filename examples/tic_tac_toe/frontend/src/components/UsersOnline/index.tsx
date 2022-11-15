@@ -5,6 +5,7 @@ import {Id} from "../../types";
 import {choseOpponent} from "../../actions";
 import {useAppDispatch, useAppSelector} from "../../storeDefinition";
 import {RenderOnSuccess} from "../RenderOnSuccess";
+import isEqual from 'lodash.isequal';
 
 export const UserRow: FC<{ userId: Id }> = ({userId}) => {
   const {
@@ -21,7 +22,7 @@ export const UserRow: FC<{ userId: Id }> = ({userId}) => {
   }, [dispatch, user])
 
   return <RenderOnSuccess queryStatus={status} mustBeDefined={user}>
-    <>{user && <Button fullWidth variant={user.id.id === opponentId?.id ? "contained" : "outlined"}
+    <>{user && <Button fullWidth variant={isEqual(user.id, opponentId) ? "contained" : "outlined"}
                        onClick={onChooseOpponent}>{user.alias}</Button>}</>
   </RenderOnSuccess>
 }
