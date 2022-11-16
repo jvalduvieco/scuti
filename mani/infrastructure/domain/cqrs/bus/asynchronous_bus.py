@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, Callable, List
+from typing import Type, Callable
 
 from mani.domain.cqrs.bus.hooks.bus_hook import BusHook
 from mani.domain.cqrs.effects import Effect
@@ -7,7 +7,7 @@ from mani.domain.cqrs.effects import Effect
 
 class AsynchronousBus(ABC):
     @abstractmethod
-    def drain(self):
+    def drain(self, block: bool):
         pass
 
     @abstractmethod
