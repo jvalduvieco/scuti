@@ -100,6 +100,7 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=None,
+                                       condition=None,
                                        injector=self.injector))
 
         a_create_subject_command = Create(subject_id=UuidId(), some_data=3, operation_id=UuidId())
@@ -116,12 +117,14 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=None,
+                                       condition=None,
                                        injector=self.injector))
         self.command_bus.subscribe(Modify,
                                    build_asynchronous_state_managing_class_effect_handler(
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=lambda e, r: r.by_id(e.subject_id),
+                                       condition=None,
                                        injector=self.injector))
         subject_id = UuidId()
         a_create_subject_command = Create(subject_id=subject_id, some_data=3, operation_id=UuidId())
@@ -140,12 +143,14 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=None,
+                                       condition=None,
                                        injector=self.injector))
         self.command_bus.subscribe(Modify,
                                    build_asynchronous_state_managing_class_effect_handler(
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=All,
+                                       condition=None,
                                        injector=self.injector))
 
         subject_id = UuidId()
@@ -165,12 +170,14 @@ class TestStateManagingEffectHandlers(unittest.TestCase):
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=None,
+                                       condition=None,
                                        injector=self.injector))
         self.command_bus.subscribe(Set,
                                    build_asynchronous_state_managing_class_effect_handler(
                                        a_handler=AStateManagingEffectHandler,
                                        repository_type=SubjectRepository,
                                        state_mapper=BySubjectId,
+                                       condition=None,
                                        injector=self.injector))
         subject_id = UuidId()
         a_create_subject_command = Create(subject_id=subject_id, some_data=3, operation_id=UuidId())

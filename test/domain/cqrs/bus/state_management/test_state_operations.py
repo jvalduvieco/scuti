@@ -1,11 +1,13 @@
 from abc import ABC
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Type, List, Tuple
 
+from hamcrest import not_, instance_of, has_item
 from injector import Scope, Module, SingletonScope
 from plum import dispatch
 
 from mani.domain.cqrs.bus.state_management.commands import DeleteState
+from mani.domain.cqrs.bus.state_management.condition import condition
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 from mani.domain.cqrs.effects import Command, Query, Event
 from mani.domain.model.modules import DomainModule
@@ -36,7 +38,7 @@ class _Change(Command):
 
 
 @dataclass(frozen=True)
-class _Changed(Command):
+class _Changed(Event):
     subject_id: UuidId
     some_data: int
 
@@ -72,9 +74,11 @@ class _AnEffectHandler:
             _Created(a_command.subject_id, a_command.some_data)]
 
     @dispatch
+    @condition(lambda e: e.some_data > 30)
     @state_fetcher(_BySubjectId)
     def handle(self, state: _Subject, a_command: _Change):
-        return None, [DeleteState(id=a_command.subject_id)]
+        next_state = replace(state, some_data=a_command.some_data)
+        return next_state, [_Changed(subject_id=a_command.subject_id, some_data=next_state.some_data)]
 
     @dispatch
     @state_fetcher(_BySubjectId)
@@ -107,3 +111,21 @@ class TestStateOperations(DomainTestCase):
         ])
         with self.assertRaises(KeyError):
             self.make_query(_AQuery(subject_id=subject_id))
+
+    def test_effect_handling_is_not_made_if_condition_is_not_met(self):
+        subject_id = UuidId()
+        some_data = 43
+        self.feed_effects([
+            _Create(subject_id=subject_id, some_data=some_data),
+            _Change(subject_id=subject_id, some_data=23)
+        ])
+        self.assertThatHandledEffects(not_(has_item(instance_of(_Changed))))
+
+    def test_effect_handling_is_made_if_condition_is_met(self):
+        subject_id = UuidId()
+        some_data = 43
+        self.feed_effects([
+            _Create(subject_id=subject_id, some_data=some_data),
+            _Change(subject_id=subject_id, some_data=46)
+        ])
+        self.assertThatHandledEffects(has_item(instance_of(_Changed)))
