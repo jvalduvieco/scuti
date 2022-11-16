@@ -10,6 +10,7 @@ from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.query_bus import QueryBus
+from mani.domain.cqrs.bus.state_management.condition import condition_property
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import effect_to_state_mapper_property
 from mani.domain.cqrs.effects import Command, Event, Query, Effect
 from mani.domain.model.modules import DomainModule
@@ -123,30 +124,60 @@ class DomainApplication:
                             handler: Type[EffectHandler],
                             repository: Optional[Type[Repository]]):
         all_handler_parameters = inspect(handler.handle, should_ignore_self=True,
-                                         annotations_to_retrieve=[effect_to_state_mapper_property]).values()
+                                         annotations_to_retrieve=[effect_to_state_mapper_property,
+                                                                  condition_property]).values()
+        # Avoid registering effects more than once for a given effect handler, this can happen when using effect
+        # handler state evolution. See "test_effects_can_change_semantics_depending_on_state_type"
+        already_registered_effects = []
         for method in all_handler_parameters:
             if repository is None:
-                self.__register_effect_handler_without_repository(base_effect, bus, method, handler, handler_builder)
+                already_registered_effects += self.__register_effect_handler_without_repository(base_effect,
+                                                                                                bus,
+                                                                                                method,
+                                                                                                handler,
+                                                                                                handler_builder,
+                                                                                                already_registered_effects)
             else:
-                self.__register_effect_handler_with_repository(base_effect, bus, method, handler, handler_builder,
-                                                               repository)
+                already_registered_effects += self.__register_effect_handler_with_repository(base_effect,
+                                                                                             bus,
+                                                                                             method,
+                                                                                             handler,
+                                                                                             handler_builder,
+                                                                                             repository,
+                                                                                             already_registered_effects)
 
     def __register_effect_handler_without_repository(self, base_effect: Type[Effect],
                                                      bus,
                                                      method: InspectionResult,
                                                      handler: Type[EffectHandler],
-                                                     handler_builder: Callable):
+                                                     handler_builder: Callable,
+                                                     already_registered_effects: List[Effect] = None):
+        already_registered_effects = already_registered_effects if already_registered_effects is not None else []
+        condition = method.annotations.get(condition_property, None)
+        this_run_effects = []
         for effect in method.parameter_types[-1]:
-            if base_effect in effect.__mro__:
-                bus.subscribe(effect, handler_builder(handler, self.injector()))
+            if base_effect in effect.__mro__ and effect not in already_registered_effects:
+                bus.subscribe(effect, handler_builder(handler, condition, self.injector()))
+                this_run_effects += [effect]
+        return this_run_effects
 
     def __register_effect_handler_with_repository(self, base_effect: Type[Effect],
                                                   bus,
                                                   method: InspectionResult,
                                                   handler: Type[EffectHandler],
                                                   handler_builder: Callable,
-                                                  repository: Type[Repository]):
+                                                  repository: Type[Repository],
+                                                  already_registered_effects: List[Effect] = None):
+        already_registered_effects = already_registered_effects if already_registered_effects is not None else []
+        this_run_effects = []
         state_mapper = method.annotations.get(effect_to_state_mapper_property, None)
+        condition = method.annotations.get(condition_property, None)
         for effect in method.parameter_types[-1]:
-            if base_effect in effect.__mro__:
-                bus.subscribe(effect, handler_builder(handler, repository, state_mapper, self.injector()))
+            if state_mapper is None and len(method.parameter_types) == 2:
+                raise ValueError(
+                    f"Trying to register a handler that requires state without a state_mapper: {handler.__name__}.{effect.__name__}")
+            if base_effect in effect.__mro__ and effect not in already_registered_effects:
+                bus.subscribe(effect,
+                              handler_builder(handler, repository, state_mapper, condition, self.injector()))
+                this_run_effects += [effect]
+        return this_run_effects

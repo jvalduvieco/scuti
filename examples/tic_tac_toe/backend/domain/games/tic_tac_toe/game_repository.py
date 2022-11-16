@@ -1,12 +1,11 @@
 from abc import ABC
 
+from domain.games.tic_tac_toe.game import GameInProgress, GameWaitingForPlayers
+from domain.games.types import GameId
 from mani.domain.model.repository.repository import Repository
 
-from domain.games.tic_tac_toe.game import Game
-from domain.games.types import GameId
 
-
-class GameRepository(Repository[Game, GameId], ABC):
+class GameRepository(Repository[GameInProgress | GameWaitingForPlayers, GameId], ABC):
     pass
 
 

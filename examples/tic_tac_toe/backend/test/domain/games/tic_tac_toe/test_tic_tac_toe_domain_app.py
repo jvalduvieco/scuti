@@ -33,7 +33,6 @@ class TestTicTacToeApp(DomainTestCase):
         self.assertThatHandledEffects(
             has_items(GameCreated(game_id=self.game_id,
                                   creator=self.first_player,
-                                  board=TicTacToeBoard().to_list(),
                                   stage=GameStage.WAITING_FOR_PLAYERS,
                                   parent_operation_id=operation_id),
                       WaitingForPlayerPlay(game_id=self.game_id, player_id=self.first_player,

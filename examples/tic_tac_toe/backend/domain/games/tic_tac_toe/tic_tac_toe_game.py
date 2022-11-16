@@ -5,13 +5,14 @@ from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
     GameEnded, GameStarted, MarkPlaced, TurnTimeout
-from domain.games.tic_tac_toe.game import Game
+from domain.games.tic_tac_toe.game import GameWaitingForPlayers, GameInProgress
 from domain.games.tic_tac_toe.game_repository import ByGameId
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
 from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
+from mani.domain.cqrs.bus.state_management.evolve import evolve
 from mani.domain.cqrs.effects import Effect
 from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent, CancelScheduledEvents
 from mani.domain.time.units import Millisecond
@@ -23,19 +24,16 @@ class TicTacToeGame(ManagedStateEffectHandler):
 
     @dispatch
     def handle(self, command: CreateGame):
-        current_game = Game(id=command.game_id,
-                            board=TicTacToeBoard(),
-                            stage=GameStage.WAITING_FOR_PLAYERS)
+        current_game = GameWaitingForPlayers(id=command.game_id)
         return current_game, [
             GameCreated(game_id=current_game.id,
-                        board=current_game.board.to_list(),
                         creator=command.creator,
-                        stage=current_game.stage,
+                        stage=GameStage.WAITING_FOR_PLAYERS,
                         parent_operation_id=command.operation_id)]
 
     @dispatch
     @state_fetcher(ByGameId)
-    def handle(self, state: Game, effect: JoinGame) -> Tuple[Game, List[Effect]]:
+    def handle(self, state: GameWaitingForPlayers, effect: JoinGame):
         number_of_players = len(state.players)
         if number_of_players == 0:
             next_state = replace(state, players=[*state.players, effect.player_id])
@@ -43,8 +41,11 @@ class TicTacToeGame(ManagedStateEffectHandler):
                 PlayerJoinedAGame(game_id=next_state.id, player_id=effect.player_id,
                                   parent_operation_id=effect.operation_id)]
         elif number_of_players == 1:
-            next_state = replace(state, players=[*state.players, effect.player_id], stage=GameStage.IN_PROGRESS,
-                                 waiting_for_player=state.players[0])
+            next_state = evolve(state, GameInProgress,
+                                players=[*state.players, effect.player_id],
+                                board=TicTacToeBoard(),
+                                stage=GameStage.IN_PROGRESS,
+                                waiting_for_player=state.players[0])
             return next_state, [
                 PlayerJoinedAGame(game_id=next_state.id, player_id=effect.player_id,
                                   parent_operation_id=effect.operation_id),
@@ -59,7 +60,7 @@ class TicTacToeGame(ManagedStateEffectHandler):
 
     @dispatch
     @state_fetcher(ByGameId)
-    def handle(self, state: Game, command: PlaceMark):
+    def handle(self, state: GameInProgress, command: PlaceMark):
         error_effects = []
         final_effects = [CancelScheduledEvents(operation_id=OperationId(), key=str(state.id))]
         if state.waiting_for_player != command.player:
@@ -104,13 +105,13 @@ class TicTacToeGame(ManagedStateEffectHandler):
 
     @dispatch
     @state_fetcher(ByGameId)
-    def handle(self, state: Game, command: TurnTimeout):
+    def handle(self, state: GameInProgress, command: TurnTimeout):
         next_state = state.cancel_game()
         return next_state, [GameEnded(game_id=next_state.id,
                                       result=next_state.stage,
                                       winner=next_state.winner)]
 
-    def _next_turn(self, state: Game):
+    def _next_turn(self, state: GameInProgress):
         return [
             WaitingForPlayerPlay(game_id=state.id, player_id=state.waiting_for_player, timeout=self.turn_timeout),
             ScheduleEvent(TurnTimeout(game_id=state.id, player_id=state.waiting_for_player),
