@@ -1,4 +1,6 @@
 import logging
+import signal
+import sys
 from threading import Thread
 from typing import List, Type
 
@@ -9,7 +11,7 @@ from flask_compress import Compress
 from flask_cors import CORS
 
 from applications.api.controllers import command_controller, query_controller, event_controller
-from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
+from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.event_bus import EventBus
@@ -41,6 +43,13 @@ class CQRSAPIApp:
         self._domain_app = domain_app
         self._config = config
 
+        def signal_handler(sig, frame):
+            logger.info("Stop requested")
+            self._domain_app.stop()
+            sys.exit(0)
+
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGHUP, signal_handler)
         injector = domain_app.injector()
         get_logger("engineio").setLevel(logging.ERROR)
         get_logger("werkzeug").setLevel(logging.ERROR)
@@ -70,14 +79,9 @@ class CQRSAPIApp:
         injector.binder.bind(socketio.Server, self._socketio_app)
 
     def start(self):
-        self._thread_instances += [spawn(CQRSAPIApp._bus_runner, self._domain_app.injector().get(AsynchronousBus))]
+        self._domain_app.start()
         self._api_app.run(threaded=True, host=self._config.host, port=self._config.port, debug=False)
 
     def stop(self):
-        [thread.join() for thread in self._thread_instances]
+        self._domain_app.stop()
 
-    @staticmethod
-    def _bus_runner(bus: AsynchronousBus):
-        logger.info("Sequential bus runner starting...")
-        while True:
-            bus.drain(should_block=True)

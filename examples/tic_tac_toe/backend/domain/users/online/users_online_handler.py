@@ -2,13 +2,13 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict
 
-from domain.clock import Clock
 from domain.games.types import UserId
 from domain.users.online.events import UserConnected, UsersOnlineUpdated
 from domain.users.online.queries import GetUsersOnline
 from injector import inject
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, Singleton
+from mani.domain.time.wall_clock import WallClock
 from plum import dispatch
 
 
@@ -19,7 +19,7 @@ class UsersOnlineState:
 
 class UsersOnlineHandler(ManagedStateEffectHandler):
     @inject
-    def __init__(self, clock: Clock):
+    def __init__(self, clock: WallClock):
         self._clock = clock
 
     @dispatch

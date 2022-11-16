@@ -52,7 +52,8 @@ class DomainApplication:
 
     def stop(self):
         for thread in self.__threads_instances:
-            thread.join()
+            thread.should_be_running = False
+            thread.join(timeout=1)
 
     @cached_property
     def command_bus(self) -> CommandBus:
@@ -88,8 +89,9 @@ class DomainApplication:
 
     def __start_modules_threads(self) -> List[Thread]:
         result = []
-        for thread in flatten([module.processes() for module in self.__domain_instances.values()]):
-            result += [spawn(thread)]
+        all_threads_to_start = list(flatten([module.processes() for module in (self.__domain_instances.values())]))
+        for thread in all_threads_to_start:
+            result += [spawn(lambda: self.__injector.call_with_injection(thread))]
         return result
 
     def __run_module_init_commands(self):

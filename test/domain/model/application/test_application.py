@@ -1,7 +1,7 @@
 import unittest
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, replace
-from typing import Type, List, Tuple
+from typing import Type, List, Tuple, Callable
 
 from injector import Module, Scope, SingletonScope, Binder
 from plum import dispatch
@@ -209,3 +209,20 @@ class TestApplication(unittest.TestCase):
         app.event_bus.handle(SubjectChanged(subject_id=subject_id, some_data=44))
         app.injector().get(AsynchronousBus).drain()
         self.assertEqual({"result": 67}, app.query_bus.handle(AQuery(subject_id=subject_id)))
+
+    def test_domain_modules_can_define_a_list_processes_that_are_executed_on_starting_application(self):
+        def i_die():
+            raise ValueError("Thread is being executed")
+
+        class DummyDomainModule(DomainModule):
+            def processes(self) -> List[Callable]:
+                return [
+                    i_die()
+                ]
+
+        config = {}
+        domains = [DummyDomainModule]
+        app = DomainApplication(config=config, domains=domains)
+        with self.assertRaises(ValueError):
+            app.start()
+        app.stop()

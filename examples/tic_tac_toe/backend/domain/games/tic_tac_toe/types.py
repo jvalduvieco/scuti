@@ -10,6 +10,7 @@ class GameErrorReasons(Enum):
 
 
 class GameStage(Enum):
+    GAME_ABORTED = "GAME_ABORTED"
     WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS"
     PLAYER_WON = "PLAYER_WON"
     DRAW = "DRAW"

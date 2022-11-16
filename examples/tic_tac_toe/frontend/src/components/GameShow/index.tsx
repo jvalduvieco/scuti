@@ -15,13 +15,14 @@ export const GameShow: FC<GameShowProps> = ({
                                                 boardState,
                                                 messages,
                                                 turn,
+                                                timeout
                                               },
                                               onPlace
                                             }: GameShowProps) =>
     <Grid container direction="column" spacing={2} justifyContent="space-between"
           sx={{height: "100%", padding: "16px"}}>
       <Grid item>
-        <ShowTurn turn={turn}/>
+        {turn && timeout && <ShowTurn turn={turn} timeout={timeout}/>}
       </Grid>
       <Grid item>
         <Board state={boardState!} onPlace={onPlace}/>

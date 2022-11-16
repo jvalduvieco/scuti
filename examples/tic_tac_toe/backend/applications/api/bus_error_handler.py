@@ -1,5 +1,5 @@
 
-from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
+from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.infrastructure.logging.get_logger import get_logger
 

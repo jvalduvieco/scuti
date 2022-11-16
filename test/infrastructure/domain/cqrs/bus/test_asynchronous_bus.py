@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import TypeVar, Optional
 from unittest import TestCase
 
-from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
+from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.hooks.bus_hook import BusHook, Item
 from mani.domain.cqrs.effects import Event, Effect
 from mani.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus

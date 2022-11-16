@@ -9,8 +9,10 @@ from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import Effect
 from mani.domain.cqrs.effects import Effect, Command, Event
 from mani.domain.model.repository.repository import Repository
 
+
 class NotInterested:
     pass
+
 
 def build_asynchronous_state_managing_class_effect_handler(a_handler: Type[EffectHandler],
                                                            repository_type: Type[Repository],
