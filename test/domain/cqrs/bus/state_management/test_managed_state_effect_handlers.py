@@ -94,11 +94,11 @@ class SubjectEvolved(Event):
     subject_id: UuidId
 
 
-class SubjectRepository(Repository[Subject, UuidId], ABC):
+class SubjectRepository(Repository[Subject | SubjectEvolved | IndependentSubject, UuidId], ABC):
     pass
 
 
-class SubjectRepositoryInMemory(InMemoryRepository[Subject, UuidId]):
+class SubjectRepositoryInMemory(InMemoryRepository[Subject | SubjectEvolved | IndependentSubject, UuidId]):
     pass
 
 
