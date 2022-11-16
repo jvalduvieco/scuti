@@ -6,14 +6,13 @@ from mani.domain.cqrs.effects import Event, Effect
 
 @dataclass(frozen=True)
 class EffectErrors(Event):
-    pass
+    error: str
+    stack_trace: TracebackType | None
 
 
 @dataclass(frozen=True)
 class BusHandlerFailed(EffectErrors):
     effect: Effect
-    error: str
-    stack_trace: TracebackType | None
 
     @classmethod
     def from_effect_and_exception(cls, effect: Effect, exception: Exception):
@@ -24,8 +23,7 @@ class BusHandlerFailed(EffectErrors):
 
 @dataclass(frozen=True)
 class InfrastructureError(EffectErrors):
-    error: str
-    stack_trace: TracebackType | None
+    pass
 
     @classmethod
     def from_exception(cls, e: Exception):
