@@ -4,18 +4,22 @@ from typing import List, Tuple
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded, GameStarted, MarkPlaced
+    GameEnded, GameStarted, MarkPlaced, TurnTimeout
 from domain.games.tic_tac_toe.game import Game
 from domain.games.tic_tac_toe.game_repository import ByGameId
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
+from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 from mani.domain.cqrs.effects import Effect
+from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent, CancelScheduledEvents
+from mani.domain.time.units import Millisecond
 from plum import dispatch
 
 
 class TicTacToeGame(ManagedStateEffectHandler):
+    turn_timeout = Millisecond(20000)
 
     @dispatch
     def handle(self, command: CreateGame):
@@ -34,18 +38,19 @@ class TicTacToeGame(ManagedStateEffectHandler):
     def handle(self, state: Game, effect: JoinGame) -> Tuple[Game, List[Effect]]:
         number_of_players = len(state.players)
         if number_of_players == 0:
-            new_state = replace(state, players=[*state.players, effect.player_id])
-            return new_state, [
-                PlayerJoinedAGame(game_id=new_state.id, player_id=effect.player_id,
+            next_state = replace(state, players=[*state.players, effect.player_id])
+            return next_state, [
+                PlayerJoinedAGame(game_id=next_state.id, player_id=effect.player_id,
                                   parent_operation_id=effect.operation_id)]
         elif number_of_players == 1:
-            new_state = replace(state, players=[*state.players, effect.player_id], stage=GameStage.IN_PROGRESS,
-                                waiting_for_player=state.players[0])
-            return new_state, [
-                PlayerJoinedAGame(game_id=new_state.id, player_id=effect.player_id,
+            next_state = replace(state, players=[*state.players, effect.player_id], stage=GameStage.IN_PROGRESS,
+                                 waiting_for_player=state.players[0])
+            return next_state, [
+                PlayerJoinedAGame(game_id=next_state.id, player_id=effect.player_id,
                                   parent_operation_id=effect.operation_id),
-                GameStarted(game_id=new_state.id, players=new_state.players, board=new_state.board.to_list()),
-                WaitingForPlayerPlay(game_id=new_state.id, player_id=new_state.waiting_for_player)]
+                GameStarted(game_id=next_state.id, players=next_state.players, board=next_state.board.to_list()),
+                *self._next_turn(next_state)
+            ]
         else:
             return state, [
                 GameErrorOccurred(reason=GameErrorReasons.ALL_PLAYERS_ALREADY_JOINED,
@@ -56,6 +61,7 @@ class TicTacToeGame(ManagedStateEffectHandler):
     @state_fetcher(ByGameId)
     def handle(self, state: Game, command: PlaceMark):
         error_effects = []
+        final_effects = [CancelScheduledEvents(operation_id=OperationId(), key=str(state.id))]
         if state.waiting_for_player != command.player:
             error_effects += [GameErrorOccurred(reason=GameErrorReasons.PLAYER_CAN_NOT_PLAY,
                                                 player=command.player,
@@ -78,16 +84,35 @@ class TicTacToeGame(ManagedStateEffectHandler):
                                                 game_id=state.id,
                                                 parent_operation_id=command.operation_id)]
         if error_effects:
-            return state, error_effects
+            return state, error_effects + final_effects
 
-        next_game_state = state.place(command.player, command.x, command.y)
-        stage = next_game_state.stage
-        return next_game_state, [
-            MarkPlaced(game_id=next_game_state.id, player=command.player, x=command.x, y=command.y,
+        next_state = state.place(command.player, command.x, command.y)
+        stage = next_state.stage
+        if stage == GameStage.IN_PROGRESS:
+            next_effects = self._next_turn(next_state)
+        else:
+            next_effects = [GameEnded(game_id=next_state.id,
+                                      result=stage,
+                                      winner=next_state.winner)]
+        return next_state, [
+            *final_effects,
+            MarkPlaced(game_id=next_state.id, player=command.player, x=command.x, y=command.y,
                        parent_operation_id=command.operation_id),
-            WaitingForPlayerPlay(game_id=next_game_state.id, player_id=next_game_state.waiting_for_player),
-            BoardUpdated(game_id=next_game_state.id, board=next_game_state.board.to_list()),
-            GameEnded(game_id=next_game_state.id,
-                      result=stage,
-                      winner=next_game_state.winner) if stage != GameStage.IN_PROGRESS else None
+            BoardUpdated(game_id=next_state.id, board=next_state.board.to_list()),
+            *next_effects,
+        ]
+
+    @dispatch
+    @state_fetcher(ByGameId)
+    def handle(self, state: Game, command: TurnTimeout):
+        next_state = state.cancel_game()
+        return next_state, [GameEnded(game_id=next_state.id,
+                                      result=next_state.stage,
+                                      winner=next_state.winner)]
+
+    def _next_turn(self, state: Game):
+        return [
+            WaitingForPlayerPlay(game_id=state.id, player_id=state.waiting_for_player, timeout=self.turn_timeout),
+            ScheduleEvent(TurnTimeout(game_id=state.id, player_id=state.waiting_for_player),
+                          operation_id=OperationId(), key=str(state.id), when=self.turn_timeout)
         ]

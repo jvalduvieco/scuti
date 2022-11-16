@@ -27,6 +27,7 @@ export const waitingForPlayerToPlay = createAction('WAITING_FOR_PLAYER_PLAY',
     withPayloadType<{
       gameId: Id
       playerId: Id
+      timeout: number
     }>())
 
 export const boardUpdated = createAction('BOARD_UPDATED',

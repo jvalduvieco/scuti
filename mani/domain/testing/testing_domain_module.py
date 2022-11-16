@@ -2,7 +2,7 @@ from typing import List, Type, Tuple
 
 from injector import Module, Scope, inject, SingletonScope, Binder
 
-from mani.infrastructure.testing.plain_effect_store import PlainEffectStore
+from mani.infrastructure.domain.cqrs.effect_store.plain_effect_store import PlainEffectStore
 from mani.domain.testing.save_effects_bus_hook import SaveEffectsBusHook
 from mani.domain.cqrs.effect_store.effect_store import EffectStore
 from mani.domain.cqrs.effects import Command

@@ -1,13 +1,14 @@
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
-from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameEnded
+from domain.games.tic_tac_toe.events import GameCreated, WaitingForPlayerPlay, GameEnded
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from domain.games.tic_tac_toe.types import GameStage
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from hamcrest import has_items, has_item
 from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
+from mani.domain.time.units import Millisecond
 
 
 class TestTicTacToeApp(DomainTestCase):
@@ -35,7 +36,8 @@ class TestTicTacToeApp(DomainTestCase):
                                   board=TicTacToeBoard().to_list(),
                                   stage=GameStage.WAITING_FOR_PLAYERS,
                                   parent_operation_id=operation_id),
-                      WaitingForPlayerPlay(game_id=self.game_id, player_id=self.first_player)))
+                      WaitingForPlayerPlay(game_id=self.game_id, player_id=self.first_player,
+                                           timeout=Millisecond(20000))))
 
     def test_a_player_can_win_the_game_if_manages_to_place_three_marks_in_a_row(self):
         self.feed_effects([

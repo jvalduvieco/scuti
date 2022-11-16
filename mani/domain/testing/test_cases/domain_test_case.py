@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from hamcrest import assert_that
 from hamcrest.core.matcher import Matcher
-from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
+from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.effect_store.effect_store import EffectStore
 from mani.domain.cqrs.effects import Command, Event, Query, Effect
 from mani.domain.model.application.domain_application import DomainApplication

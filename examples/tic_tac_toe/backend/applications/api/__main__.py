@@ -5,14 +5,13 @@ from typing import List, Type
 
 from applications.api.bus_error_handler import BusErrorHandler
 from applications.api.cqrs_api_app import CQRSAPIApp
-from domain.domain_module import BaseDomainModule
 from domain.games.scoring.domain_module import ScoringDomainModule
 from domain.games.scoring.events import TopThreeListUpdated
 from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
 from domain.games.tic_tac_toe.events import GameCreated, BoardUpdated, WaitingForPlayerPlay, GameErrorOccurred, \
-    GameEnded, GameStarted, MarkPlaced
+    GameEnded, GameStarted, MarkPlaced, TurnTimeout
 from domain.users.commands import CreateUser
 from domain.users.domain_module import UserDomainModule
 from domain.users.events import UserInvited
@@ -42,7 +41,7 @@ def main():
     logger.setLevel(logging.DEBUG)
 
     logger.info(f"API starting...")
-    domains = [BaseDomainModule, TicTacToeDomainModule, UserDomainModule, ScoringDomainModule]
+    domains = [TicTacToeDomainModule, UserDomainModule, ScoringDomainModule]
     events_to_publish: List[Type[Event]] = [GameCreated,
                                             GameStarted,
                                             BoardUpdated,
@@ -52,7 +51,8 @@ def main():
                                             GameEnded,
                                             TopThreeListUpdated,
                                             UsersOnlineUpdated,
-                                            UserInvited]
+                                            UserInvited,
+                                            TurnTimeout]
     accepted_events: List[Type[Event]] = [UserConnected, UserInvited]
     accepted_commands: List[Type[Command]] = [CreateGame, PlaceMark, CreateUser, JoinGame]
     accepted_queries: List[Type[Query]] = [GetTopThreePlayers, GetUsersOnline, GetUser]

@@ -2,7 +2,7 @@ import queue
 import traceback
 from typing import Type, Callable, List, Dict, Optional
 
-from mani.domain.cqrs.bus.bus_handler_failed import BusHandlerFailed
+from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.hooks.bus_hook import BusHook
 from mani.domain.cqrs.effects import Effect
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
@@ -14,9 +14,11 @@ class LocalAsynchronousBus(AsynchronousBus):
         self.__handlers = {}
         self.__items = queue.Queue()
 
-    def drain(self, should_block: bool = False) -> None:
-        while not self.is_empty() or should_block:
-            item = self.__items.get()
+    def drain(self) -> None:
+        while not self.is_empty():
+            item = self.__get_item()
+            if item is None:
+                break
             current_item_type = type(item)
             [hook.begin_processing(item) for hook in self.__bus_hooks]
             if current_item_type in self.__handlers:
@@ -26,9 +28,7 @@ class LocalAsynchronousBus(AsynchronousBus):
                         handler(item)
                         [hook.after_handler(item, human_friendly_name) for hook in self.__bus_hooks]
                     except Exception as e:
-                        self.handle(BusHandlerFailed(effect=item,
-                                                     error=f"{e.__class__.__name__}({e.__str__()})",
-                                                     stack_trace=e.__traceback__))
+                        self.handle(BusHandlerFailed.from_effect_and_exception(effect=item, exception=e))
             [hook.end_processing(item) for hook in self.__bus_hooks]
             self.__items.task_done()
 
@@ -55,3 +55,12 @@ class LocalAsynchronousBus(AsynchronousBus):
 
     def register_hook(self, hook: BusHook):
         self.__bus_hooks.append(hook)
+
+    def __get_item(self):
+        try:
+            return self.__items.get(timeout=0.5)
+        except queue.Empty:
+            pass
+        return None
+
+

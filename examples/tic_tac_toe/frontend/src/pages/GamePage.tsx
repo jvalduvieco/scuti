@@ -10,6 +10,7 @@ import {useNavigate} from "react-router";
 import {usePlaceMarkMutation} from "../backend/apiSlice";
 import {createNewGame} from "../actions";
 import {useDispatch} from "react-redux";
+import {GameAborted} from "../components/GameAborted";
 
 export const GamePage: FC = () => {
   const navigate = useNavigate();
@@ -47,6 +48,8 @@ export const GamePage: FC = () => {
       return <CongratulationsPlayerWon winner={gameState.winner!}
                                        gotoLobby={onGotoLobby}
                                        restartGame={onRestartGame}/>
+    case "GAME_ABORTED":
+      return <GameAborted gotoLobby={onGotoLobby} restartGame={onRestartGame}/>
     default:
       return <Grid container direction="row" justifyContent="center" sx={{height: "100vh"}} spacing={3}>
         <Grid item xs={8}>

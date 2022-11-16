@@ -5,6 +5,7 @@ from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from mani.domain.cqrs.effects import Event
+from mani.domain.time.units import Millisecond
 
 TicTacToeBoardAsLists = List[List[UserId]]
 
@@ -27,6 +28,13 @@ class GameStarted(Event):
 
 @dataclass(frozen=True)
 class WaitingForPlayerPlay(Event):
+    game_id: GameId
+    player_id: UserId
+    timeout: Millisecond
+
+
+@dataclass(frozen=True)
+class TurnTimeout(Event):
     game_id: GameId
     player_id: UserId
 

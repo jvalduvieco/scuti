@@ -22,7 +22,8 @@ InProgress.args = {
     stage: "IN_PROGRESS",
     turn: secondPlayer,
     gameId: createGameId(),
-    winner: null
+    winner: null,
+    timeout: null
   },
   onPlace: () => null
 };

@@ -27,6 +27,9 @@ class Game(IdentifiableEntity[GameId]):
                        stage=stage,
                        board=next_board)
 
+    def cancel_game(self):
+        return replace(self, stage=GameStage.GAME_ABORTED)
+
     def __next_stage(self, next_board: TicTacToeBoard):
         if next_board.any_player_has_three_in_a_row():
             return GameStage.PLAYER_WON
