@@ -28,7 +28,6 @@ class TestTicTacToeGame(EffectHandlerTestCase):
 
         self.assertEqual([GameCreated(game_id=self.game_id,
                                       creator=self.first_player,
-                                      board=TicTacToeBoard().to_list(),
                                       stage=GameStage.WAITING_FOR_PLAYERS,
                                       parent_operation_id=operation_id)],
                          effects)
@@ -46,7 +45,6 @@ class TestTicTacToeGame(EffectHandlerTestCase):
         turn_timeout = Millisecond(20000)
         self.assertEqual([GameCreated(game_id=self.game_id,
                                       creator=self.first_player,
-                                      board=TicTacToeBoard().to_list(),
                                       stage=GameStage.WAITING_FOR_PLAYERS,
                                       parent_operation_id=operation_id),
                           PlayerJoinedAGame(game_id=self.game_id, player_id=self.first_player,

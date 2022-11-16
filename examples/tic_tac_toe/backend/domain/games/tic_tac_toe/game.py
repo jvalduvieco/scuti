@@ -8,7 +8,13 @@ from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntit
 
 
 @dataclass(frozen=True)
-class Game(IdentifiableEntity[GameId]):
+class GameWaitingForPlayers:
+    id: GameId
+    players: List[UserId] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class GameInProgress(IdentifiableEntity[GameId]):
     id: GameId
     board: TicTacToeBoard
     stage: GameStage

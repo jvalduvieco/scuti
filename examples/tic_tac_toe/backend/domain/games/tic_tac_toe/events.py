@@ -14,7 +14,6 @@ TicTacToeBoardAsLists = List[List[UserId]]
 class GameCreated(Event):
     game_id: GameId
     creator: UserId
-    board: TicTacToeBoardAsLists
     stage: GameStage
     parent_operation_id: OperationId
 
