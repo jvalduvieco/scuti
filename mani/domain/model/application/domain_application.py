@@ -169,6 +169,9 @@ class DomainApplication:
         this_run_effects = []
         state_mapper = method.annotations.get(effect_to_state_mapper_property, None)
         for effect in method.parameter_types[-1]:
+            if state_mapper is None and len(method.parameter_types) == 2:
+                raise ValueError(
+                    f"Trying to register a handler that requires state without a state_mapper: {handler.__name__}.{effect.__name__}")
             if base_effect in effect.__mro__ and effect not in already_registered_effects:
                 bus.subscribe(effect, handler_builder(handler, repository, state_mapper, self.injector()))
                 this_run_effects += [effect]

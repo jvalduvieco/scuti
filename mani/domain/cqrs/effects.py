@@ -15,3 +15,6 @@ class Command(Effect):
 
 class Query(Effect):
     pass
+
+class FrameworkCommand(Effect):
+    pass
