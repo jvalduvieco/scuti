@@ -52,7 +52,7 @@ def main():
     accepted_commands: List[Type[Command]] = [CreateGame, PlaceMark, CreateUser, JoinGame]
     accepted_queries: List[Type[Query]] = [GetTopThreePlayers, GetUsersOnline, GetUser]
 
-    config = TicTacToeConfig(host="127.0.0.1", port=8080)
+    config = TicTacToeConfig(host="0.0.0.0", port=8080)
 
     domain = DomainApplication(domains=domains, config=config.__dict__)
     api_app = CQRSAPIApp(domain, config, accepted_commands, events_to_publish,

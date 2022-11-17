@@ -8,7 +8,7 @@ export type Id = { id: string }
 
 export interface GameState {
     boardState: BoardState | null
-    timeout: Date | null
+    timeout: string | null
     turn: Id | null
     messages: string[]
     stage: GameStage | null

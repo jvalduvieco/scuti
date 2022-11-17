@@ -36,7 +36,7 @@ const gameSlice = createSlice({
             .addCase(waitingForPlayerToPlay, (state: GameState, action) => {
                 if (isEqual(state.gameId, action.payload.gameId)) {
                     state.turn = action.payload.playerId
-                    state.timeout = new Date(Date.now() + action.payload.timeout)
+                    state.timeout = new Date(Date.now() + action.payload.timeout).toISOString()
                 }
             })
             .addCase(boardUpdated, (state: GameState, action) => {
