@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from mani.domain.time.wall_clock import WallClock
 from mani.domain.time.units import Second
+from mani.domain.time.wall_clock import WallClock
 
 
 class RealWallClock(WallClock):

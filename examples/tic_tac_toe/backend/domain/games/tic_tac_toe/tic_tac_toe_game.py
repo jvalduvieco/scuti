@@ -1,5 +1,4 @@
 from dataclasses import replace
-from typing import List, Tuple
 
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
@@ -10,13 +9,13 @@ from domain.games.tic_tac_toe.game_repository import ByGameId
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
 from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
+from plum import dispatch
+
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 from mani.domain.cqrs.bus.state_management.evolve import evolve
-from mani.domain.cqrs.effects import Effect
 from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent, CancelScheduledEvents
 from mani.domain.time.units import Millisecond
-from plum import dispatch
 
 
 class TicTacToeGame(ManagedStateEffectHandler):

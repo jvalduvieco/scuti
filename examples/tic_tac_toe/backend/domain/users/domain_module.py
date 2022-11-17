@@ -7,6 +7,7 @@ from domain.users.user_repository import UserRepository
 from infrastructure.domain.users.online.users_online_store_in_memory import UsersOnlineStoreInMemory
 from infrastructure.domain.users.user_repository_in_memory import UserRepositoryInMemory
 from injector import Module, Scope, SingletonScope
+
 from mani.domain.model.modules import DomainModule
 
 

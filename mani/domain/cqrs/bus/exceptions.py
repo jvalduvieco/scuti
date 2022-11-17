@@ -4,5 +4,3 @@ class AlreadyRegisteredEffect(ValueError):
 
 class NoHandlerForEffect(ValueError):
     pass
-
-

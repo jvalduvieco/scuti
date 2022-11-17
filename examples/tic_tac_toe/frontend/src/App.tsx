@@ -9,10 +9,10 @@ import {appHistory} from "./storeDefinition";
 
 const App: FC = () =>
     <Provider store={store}>
-      <ReduxRouter history={appHistory}>
-        <CssBaseline/>
-        <TicTacToeRoutes/>
-      </ReduxRouter>
+        <ReduxRouter history={appHistory}>
+            <CssBaseline/>
+            <TicTacToeRoutes/>
+        </ReduxRouter>
     </Provider>
 
 export default App;

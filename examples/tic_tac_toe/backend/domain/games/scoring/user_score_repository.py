@@ -1,8 +1,9 @@
 from abc import ABC
 
-from domain.games.types import UserId
-from mani.domain.model.repository.repository import Repository
 from domain.games.scoring.user_score import UserScore
+from domain.games.types import UserId
+
+from mani.domain.model.repository.repository import Repository
 
 
 class UserScoreRepository(Repository[UserScore, UserId], ABC):

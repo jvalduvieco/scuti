@@ -7,6 +7,7 @@ from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
+
 from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent, CancelScheduledEvents
 from mani.domain.testing.matchers.any_id import match_any_id
 from mani.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
@@ -69,7 +70,8 @@ class TestTicTacToeGame(EffectHandlerTestCase):
 
                           BoardUpdated(game_id=self.game_id,
                                        board=TicTacToeBoard(cells={(0, 0): self.first_player}).to_list()),
-                          WaitingForPlayerPlay(game_id=self.game_id, player_id=self.second_player, timeout=turn_timeout),
+                          WaitingForPlayerPlay(game_id=self.game_id, player_id=self.second_player,
+                                               timeout=turn_timeout),
                           ScheduleEvent(event=TurnTimeout(game_id=self.game_id,
                                                           player_id=self.second_player),
                                         when=turn_timeout,

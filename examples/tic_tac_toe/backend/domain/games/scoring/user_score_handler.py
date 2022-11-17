@@ -4,10 +4,11 @@ from domain.games.scoring.events import PlayerScoreChanged
 from domain.games.scoring.user_score import UserScore
 from domain.games.tic_tac_toe.events import GameEnded
 from domain.users.events import UserCreated
+from plum import dispatch
+
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.condition import condition
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
-from plum import dispatch
 
 
 class UserScoreHandler(ManagedStateEffectHandler):

@@ -108,7 +108,7 @@ class TestAsynchronousBus(TestCase):
                 self.before_handler_effects += [(effect, human_friendly_name)]
 
             def after_handler(self, effect: Effect, human_friendly_name: Optional[str]):
-                self.after_handler_effects +=[(effect, human_friendly_name)]
+                self.after_handler_effects += [(effect, human_friendly_name)]
 
             def end_processing(self, effect: Effect):
                 self.end_processing_effects += [effect]

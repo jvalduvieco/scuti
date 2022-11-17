@@ -12,6 +12,7 @@ from domain.users.domain_module import UserDomainModule
 from domain.users.events import UserCreated
 from domain.users.user import User
 from hamcrest import has_item, not_, instance_of
+
 from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
 
 

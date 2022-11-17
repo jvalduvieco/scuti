@@ -1,8 +1,8 @@
 from typing import Type, List
 
+from applications.api.tools import from_javascript, to_message_response, to_javascript
 from flask import request
 
-from applications.api.tools import from_javascript, to_message_response, to_javascript
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.query_bus import QueryBus

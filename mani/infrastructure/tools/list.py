@@ -17,5 +17,6 @@ def unique(a_list: Iterable[T],
         seen_add = seen.add
         return [x for x in a_list if not (unique_by(x) in seen or seen_add(unique_by(x)))]
 
+
 def filter_none(an_iterator: Iterator) -> Iterator:
     return filter(lambda x: x is not None, an_iterator)

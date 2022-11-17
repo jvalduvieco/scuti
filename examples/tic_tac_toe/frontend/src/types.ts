@@ -7,24 +7,24 @@ export type ConnectionStatus = "Online" | "Offline";
 export type Id = { id: string }
 
 export interface GameState {
-  boardState: BoardState | null
-  timeout: Date | null
-  turn: Id | null
-  messages: string[]
-  stage: GameStage | null
-  winner: Id | null
-  gameId: Id | null
+    boardState: BoardState | null
+    timeout: Date | null
+    turn: Id | null
+    messages: string[]
+    stage: GameStage | null
+    winner: Id | null
+    gameId: Id | null
 }
 
 export interface GameClientState {
-  currentUserId: Id | null
-  opponentId: Id | null
+    currentUserId: Id | null
+    opponentId: Id | null
 }
 
 export type ScoreListItem = { id: Id, score: number };
 
 export function withPayloadType<T>() {
-  return (t: T) => ({payload: t})
+    return (t: T) => ({payload: t})
 }
 
 export type User = { id: Id, alias: string, createdAt: string };

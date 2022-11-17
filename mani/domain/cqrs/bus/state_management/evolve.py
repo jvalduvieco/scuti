@@ -1,4 +1,4 @@
-from dataclasses import fields, is_dataclass
+from dataclasses import fields
 from typing import TypeVar, Type
 
 from mani.domain.cqrs.bus.state_management.dataclass import Dataclass

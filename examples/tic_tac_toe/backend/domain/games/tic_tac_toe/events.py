@@ -4,6 +4,7 @@ from typing import Optional, List
 from domain.games.tic_tac_toe.types import GameStage, GameErrorReasons
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
+
 from mani.domain.cqrs.effects import Event
 from mani.domain.time.units import Millisecond
 

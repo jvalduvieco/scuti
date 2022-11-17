@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Type
 from unittest import TestCase
 
 from hamcrest import assert_that, contains_exactly

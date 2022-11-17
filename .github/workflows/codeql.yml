@@ -21,38 +21,38 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'python' ]
-        
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
           python-version: '3.10'
           cache: 'pipenv'
-    - name: ⚙️ Install pipenv
-      run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+      - name: ⚙️ Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
 
-    - name: ⚙️ Install mani dependencies
-      run: |
-        pipenv install --dev
-        # Set the `CODEQL-PYTHON` environment variable to the Python executable
-        # that includes the dependencies
-        echo "CODEQL_PYTHON=$(which python)" >> $GITHUB_ENV
-    
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        setup-python-dependencies: false
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        
-        # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
+      - name: ⚙️ Install mani dependencies
+        run: |
+          pipenv install --dev
+          # Set the `CODEQL-PYTHON` environment variable to the Python executable
+          # that includes the dependencies
+          echo "CODEQL_PYTHON=$(which python)" >> $GITHUB_ENV
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          setup-python-dependencies: false
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
+
+          # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          # queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"

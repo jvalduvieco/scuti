@@ -4,18 +4,18 @@ import {GameMessages} from "./index";
 
 
 export default {
-  title: 'TicTacToe/GameMessages',
-  component: GameMessages
+    title: 'TicTacToe/GameMessages',
+    component: GameMessages
 } as ComponentMeta<typeof GameMessages>;
 
 const Template: ComponentStory<typeof GameMessages> = (args) => <GameMessages {...args} />;
 
 export const NoMessages = Template.bind({});
 NoMessages.args = {
-  messages: []
+    messages: []
 };
 
 export const SomeMessages = Template.bind({});
 SomeMessages.args = {
-  messages: ["first message", "another messages"]
+    messages: ["first message", "another messages"]
 };

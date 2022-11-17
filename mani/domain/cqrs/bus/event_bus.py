@@ -1,5 +1,5 @@
 import abc
-from typing import List, Callable, Type
+from typing import Callable, Type
 
 from mani.domain.cqrs.effects import Event
 

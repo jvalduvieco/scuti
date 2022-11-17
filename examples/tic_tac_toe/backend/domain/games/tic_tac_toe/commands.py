@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
+
 from mani.domain.cqrs.effects import Command
 
 

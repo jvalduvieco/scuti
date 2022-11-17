@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from domain.games.types import UserId, GameId
 from domain.operation_id import OperationId
 from domain.users.user import User
+
 from mani.domain.cqrs.effects import Event
 
 

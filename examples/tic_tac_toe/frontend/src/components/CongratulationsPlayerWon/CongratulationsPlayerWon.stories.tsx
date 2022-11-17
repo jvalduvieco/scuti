@@ -6,15 +6,15 @@ import {plato} from '../../backend/fixtures/users';
 
 
 export default {
-  title: 'TicTacToe/CongratulationsPlayerWon',
-  component: CongratulationsPlayerWon
+    title: 'TicTacToe/CongratulationsPlayerWon',
+    component: CongratulationsPlayerWon
 } as ComponentMeta<typeof CongratulationsPlayerWon>;
 
 const Template: ComponentStory<typeof CongratulationsPlayerWon> = (args) => <CongratulationsPlayerWon {...args} />;
 
 export const Show = Template.bind({});
 Show.args = {
-  winner: plato.id,
-  gotoLobby: action("goToLobby"),
-  restartGame: action("restartGame")
+    winner: plato.id,
+    gotoLobby: action("goToLobby"),
+    restartGame: action("restartGame")
 };
