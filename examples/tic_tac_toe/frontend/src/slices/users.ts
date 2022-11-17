@@ -7,16 +7,16 @@ const usersAdapter = createEntityAdapter()
 const initialState = usersAdapter.getInitialState()
 
 const usersSlice = createSlice({
-  name: 'usersSlice',
-  initialState,
-  reducers: {},
-  extraReducers(builder) {
-    builder
-        .addCase(userConnected,
-            (state, action) => usersAdapter.upsertOne(state, action.payload))
-        .addMatcher(userFetched,
-            (state, action) => usersAdapter.upsertOne(state, action.payload))
-  }
+    name: "usersSlice",
+    initialState,
+    reducers: {},
+    extraReducers(builder) {
+        builder
+            .addCase(userConnected,
+                (state, action) => usersAdapter.upsertOne(state, action.payload))
+            .addMatcher(userFetched,
+                (state, action) => usersAdapter.upsertOne(state, action.payload))
+    }
 })
 
 export const userReducer = usersSlice.reducer

@@ -1,6 +1,7 @@
 from typing import List, Type, Tuple, Any
 
 from injector import Binder, SingletonScope, Module, Scope
+
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.hooks.logging_effects_bus_hook import LoggingEffectsBusHook
 from mani.domain.cqrs.event_scheduler.event_scheduler_handler import EventSchedulerHandler

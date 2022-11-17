@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Callable
+from typing import Type, Callable
 
 from injector import inject
 

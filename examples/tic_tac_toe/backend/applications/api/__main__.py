@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from threading import Thread
 from typing import List, Type
 
 from applications.api.bus_error_handler import BusErrorHandler
@@ -18,17 +17,13 @@ from domain.users.events import UserInvited
 from domain.users.online.events import UserConnected, UsersOnlineUpdated
 from domain.users.online.queries import GetUsersOnline
 from domain.users.queries import GetUser
+
 from mani.domain.cqrs.effects import Event, Command, Query
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.application.net_config import NetConfig
 from mani.infrastructure.logging.get_logger import get_logger
 
 logger = get_logger(__name__)
-
-
-def spawn(func, *args) -> None:
-    thread = Thread(target=func, args=args, daemon=True)
-    thread.start()
 
 
 @dataclass(frozen=True)

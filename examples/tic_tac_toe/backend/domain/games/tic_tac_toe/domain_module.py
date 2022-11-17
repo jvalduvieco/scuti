@@ -1,10 +1,10 @@
 from typing import List, Type, Tuple
 
-from injector import Module, Scope, SingletonScope
-
 from domain.games.tic_tac_toe.game_repository import GameRepository
 from domain.games.tic_tac_toe.tic_tac_toe_game import TicTacToeGame
 from infrastructure.domain.games.tic_tac_toe.game_repository_in_memory import GameRepositoryInMemory
+from injector import Module, Scope, SingletonScope
+
 from mani.domain.model.modules import DomainModule
 
 

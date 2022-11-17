@@ -1,4 +1,3 @@
-from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.commands import CreateGame, PlaceMark, JoinGame
 from domain.games.tic_tac_toe.domain_module import TicTacToeDomainModule
 from domain.games.tic_tac_toe.events import GameCreated, WaitingForPlayerPlay, GameEnded
@@ -7,6 +6,7 @@ from domain.games.tic_tac_toe.types import GameStage
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from hamcrest import has_items, has_item
+
 from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
 from mani.domain.time.units import Millisecond
 

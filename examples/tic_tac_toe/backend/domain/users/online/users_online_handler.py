@@ -6,10 +6,11 @@ from domain.games.types import UserId
 from domain.users.online.events import UserConnected, UsersOnlineUpdated
 from domain.users.online.queries import GetUsersOnline
 from injector import inject
+from plum import dispatch
+
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, Singleton
 from mani.domain.time.wall_clock import WallClock
-from plum import dispatch
 
 
 @dataclass(frozen=True)

@@ -1,5 +1,5 @@
 import AppProviderForTestDecorator from "./AppProviderForTestDecorator";
-import {initialize, mswDecorator} from 'msw-storybook-addon';
+import {initialize, mswDecorator} from "msw-storybook-addon";
 import {mswTestHandlers} from "../src/backend/mocks/handlers";
 import {socrates} from "../src/backend/fixtures/users";
 

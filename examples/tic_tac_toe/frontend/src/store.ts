@@ -1,12 +1,12 @@
 import {setupListeners} from "@reduxjs/toolkit/query";
 import {
-  acceptInvitation,
-  connectionStatusUpdated,
-  createNewGame,
-  topThreeListUpdated,
-  userConnected,
-  userInvited,
-  UsersOnlineUpdated
+    acceptInvitation,
+    connectionStatusUpdated,
+    createNewGame,
+    topThreeListUpdated,
+    userConnected,
+    userInvited,
+    UsersOnlineUpdated
 } from "./actions";
 import {apiSlice} from "./backend/apiSlice";
 import io from "socket.io-client";
@@ -20,11 +20,11 @@ import isEqual from "lodash.isequal";
 
 
 const buildSocketIoMiddleware = () => {
-  const socket = io(BACKEND_URL);
-  const socketIoMiddleware = createSocketIoMiddleware(socket, "server/");
-  socket.on("connect", () => store.dispatch(connectionStatusUpdated({newStatus: "Online"})));
-  socket.on("disconnect", () => store.dispatch(connectionStatusUpdated({newStatus: "Offline"})));
-  return socketIoMiddleware;
+    const socket = io(BACKEND_URL);
+    const socketIoMiddleware = createSocketIoMiddleware(socket, "server/");
+    socket.on("connect", () => store.dispatch(connectionStatusUpdated({newStatus: "Online"})));
+    socket.on("disconnect", () => store.dispatch(connectionStatusUpdated({newStatus: "Offline"})));
+    return socketIoMiddleware;
 }
 
 export const listenerMiddleware = createListenerMiddleware();
@@ -41,54 +41,57 @@ export const store = setupStore(undefined, [listenerMiddleware.middleware], [bui
 setupListeners(store.dispatch);
 
 startAppListening({
-  actionCreator: topThreeListUpdated,
-  effect: async (action, {dispatch}) => {
-    await dispatch(apiSlice.util.invalidateTags(["TopThreeList"]))
-  }
-})
-
-startAppListening({
-  actionCreator: UsersOnlineUpdated,
-  effect: async (action, {dispatch}) => {
-    await dispatch(apiSlice.util.invalidateTags(["UsersOnline"]))
-  }
-})
-
-startAppListening({
-  actionCreator: userConnected,
-  effect: async (action, {dispatch}) => {
-    await dispatch(apiSlice.endpoints.userConnected.initiate(action.payload.id));
-  }
-})
-
-startAppListening({
-  actionCreator: userInvited,
-  effect: async (action, {dispatch, getState}) => {
-    const state = await getState();
-    if (isEqual(state.client.currentUserId, action.payload.invited)) {
-      await dispatch(acceptInvitation({...action.payload}))
+    actionCreator: topThreeListUpdated,
+    effect: async (action, {dispatch}) => {
+        await dispatch(apiSlice.util.invalidateTags(["TopThreeList"]))
     }
-  }
 })
 
 startAppListening({
-  actionCreator: acceptInvitation,
-  effect: async (action, {dispatch, getState}) => {
-    const state = await getState();
-    if (isEqual(state.client.currentUserId, action.payload.invited)) {
-      await dispatch(apiSlice.endpoints.joinGame.initiate({player: action.payload.invited, game: action.payload.game}));
-      await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
+    actionCreator: UsersOnlineUpdated,
+    effect: async (action, {dispatch}) => {
+        await dispatch(apiSlice.util.invalidateTags(["UsersOnline"]))
     }
-  }
 })
 
 startAppListening({
-  actionCreator: createNewGame,
-  effect: async ({payload: {gameId, creatorId, opponentId}}, {dispatch}) => {
-    await dispatch(apiSlice.endpoints.createGame.initiate({gameId, creator: creatorId}));
-    await dispatch(apiSlice.endpoints.userInvited.initiate({host: creatorId, invited: opponentId, game: gameId}));
-    await dispatch(apiSlice.endpoints.joinGame.initiate({game: gameId, player: creatorId}));
-    await dispatch(push(`${AppRoutes.GAME_SCREEN}/${gameId.id}`));
+    actionCreator: userConnected,
+    effect: async (action, {dispatch}) => {
+        await dispatch(apiSlice.endpoints.userConnected.initiate(action.payload.id));
+    }
+})
 
-  }
+startAppListening({
+    actionCreator: userInvited,
+    effect: async (action, {dispatch, getState}) => {
+        const state = await getState();
+        if (isEqual(state.client.currentUserId, action.payload.invited)) {
+            await dispatch(acceptInvitation({...action.payload}))
+        }
+    }
+})
+
+startAppListening({
+    actionCreator: acceptInvitation,
+    effect: async (action, {dispatch, getState}) => {
+        const state = await getState();
+        if (isEqual(state.client.currentUserId, action.payload.invited)) {
+            await dispatch(apiSlice.endpoints.joinGame.initiate({
+                player: action.payload.invited,
+                game: action.payload.game
+            }));
+            await dispatch(push(`${AppRoutes.GAME_SCREEN}/${action.payload.game.id}`))
+        }
+    }
+})
+
+startAppListening({
+    actionCreator: createNewGame,
+    effect: async ({payload: {gameId, creatorId, opponentId}}, {dispatch}) => {
+        await dispatch(apiSlice.endpoints.createGame.initiate({gameId, creator: creatorId}));
+        await dispatch(apiSlice.endpoints.userInvited.initiate({host: creatorId, invited: opponentId, game: gameId}));
+        await dispatch(apiSlice.endpoints.joinGame.initiate({game: gameId, player: creatorId}));
+        await dispatch(push(`${AppRoutes.GAME_SCREEN}/${gameId.id}`));
+
+    }
 })

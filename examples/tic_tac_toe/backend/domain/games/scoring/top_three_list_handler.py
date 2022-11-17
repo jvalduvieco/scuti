@@ -1,9 +1,10 @@
 from domain.games.scoring.events import PlayerScoreChanged, TopThreeListUpdated
 from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.scoring.top_three_list import TopThreeList
+from plum import dispatch
+
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, Singleton
-from plum import dispatch
 
 
 class TopThreeHandler(ManagedStateEffectHandler):

@@ -1,4 +1,4 @@
-from typing import Callable, Type, Dict, Any, TypeVar
+from typing import Callable, Type, Dict, Any
 
 from plum import dispatch
 

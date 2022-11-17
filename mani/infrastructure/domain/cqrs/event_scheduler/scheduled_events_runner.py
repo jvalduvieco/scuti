@@ -1,6 +1,7 @@
 import threading
 from time import sleep
 
+import pyprctl
 from injector import inject
 
 from mani.domain.cqrs.bus.event_bus import EventBus
@@ -17,6 +18,7 @@ def event_scheduler_runner(scheduled_events: ScheduledEventsStore,
                            event_bus: EventBus,
                            clock: MonotonicClock):
     logger.info("Starting event scheduler...")
+    pyprctl.set_name("Event scheduler runner")
     self = threading.current_thread()
     while getattr(self, "should_be_running", True):
         try:

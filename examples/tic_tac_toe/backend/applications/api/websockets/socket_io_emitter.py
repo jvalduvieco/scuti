@@ -1,13 +1,13 @@
 import marshmallow_dataclass
 import socketio
+from applications.api.tools import to_javascript
 from injector import inject
 from plum import dispatch
 
-from mani.infrastructure.tools.string import camel_to_underscore
-from applications.api.tools import to_javascript
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.effects import Event
 from mani.infrastructure.logging.get_logger import get_logger
+from mani.infrastructure.tools.string import camel_to_underscore
 
 logger = get_logger(__name__)
 

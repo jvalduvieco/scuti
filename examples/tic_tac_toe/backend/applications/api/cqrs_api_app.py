@@ -6,26 +6,24 @@ from typing import List, Type
 
 import flask_injector
 import socketio
+from applications.api.controllers import command_controller, query_controller, event_controller
+from applications.api.websockets.create_socket_io_app import create_socketio_app
+from applications.api.websockets.socket_io_emitter import EventToSocketIOBridge
 from flask import Flask
 from flask_compress import Compress
 from flask_cors import CORS
 
-from applications.api.controllers import command_controller, query_controller, event_controller
-from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.event_bus import EventBus
+from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.effects import Command, Event, Query
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.application.net_config import NetConfig
-from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
     build_asynchronous_class_effect_handler
 from mani.infrastructure.logging.get_logger import get_logger
-from mani.infrastructure.tools.thread import spawn
-from applications.api.websockets.create_socket_io_app import create_socketio_app
-from applications.api.websockets.socket_io_emitter import EventToSocketIOBridge
 
 logger = get_logger(__name__)
 
@@ -59,8 +57,10 @@ class CQRSAPIApp:
         Compress(self._api_app)
         flask_injector.FlaskInjector(app=self._api_app, injector=injector)
         domain_app.event_bus.subscribe(BusHandlerFailed,
-                                       build_asynchronous_class_effect_handler(bus_error_effect_handler, None,injector))
-        [domain_app.event_bus.subscribe(event, build_asynchronous_class_effect_handler(EventToSocketIOBridge, None,injector))
+                                       build_asynchronous_class_effect_handler(bus_error_effect_handler, None,
+                                                                               injector))
+        [domain_app.event_bus.subscribe(event,
+                                        build_asynchronous_class_effect_handler(EventToSocketIOBridge, None, injector))
          for event in events_to_publish]
 
         self._api_app.add_url_rule("/commands",
@@ -84,4 +84,3 @@ class CQRSAPIApp:
 
     def stop(self):
         self._domain_app.stop()
-

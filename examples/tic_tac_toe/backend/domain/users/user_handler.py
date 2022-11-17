@@ -5,9 +5,10 @@ from domain.users.events import UserCreated, UserUpdated
 from domain.users.queries import GetUser
 from domain.users.user import User
 from domain.users.user_repository import ById
+from plum import dispatch
+
 from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
-from plum import dispatch
 
 
 class UserHandler(ManagedStateEffectHandler):

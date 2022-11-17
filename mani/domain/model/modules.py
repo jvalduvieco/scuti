@@ -2,7 +2,7 @@ from abc import ABC
 from collections.abc import Mapping
 from typing import List, Type, Tuple, Callable
 
-from injector import Module, Scope, Injector
+from injector import Module, Scope
 
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.effects import Command

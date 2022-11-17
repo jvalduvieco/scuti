@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from domain.games.scoring.top_three_list import TopThreeList
 from domain.games.types import UserId
+
 from mani.domain.cqrs.effects import Event
 
 

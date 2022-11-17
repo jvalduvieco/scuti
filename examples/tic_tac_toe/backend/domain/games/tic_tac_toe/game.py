@@ -4,6 +4,7 @@ from typing import Optional, List
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.types import GameStage
 from domain.games.types import GameId, UserId
+
 from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntity
 
 

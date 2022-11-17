@@ -5,42 +5,42 @@ import {useGetUserQuery} from "../../backend/apiSlice";
 import {RenderOnSuccess} from "../RenderOnSuccess";
 
 interface CongratulationsProps {
-  winner: Id
-  restartGame: Handler
-  gotoLobby: Handler
+    winner: Id
+    restartGame: Handler
+    gotoLobby: Handler
 }
 
 export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
-                                                                     winner,
-                                                                     restartGame,
-                                                                     gotoLobby
+                                                                       winner,
+                                                                       restartGame,
+                                                                       gotoLobby
                                                                    }: CongratulationsProps) => {
-  const {
-    data: user,
-    ...status
-  } = useGetUserQuery(winner as Id, {skip: winner == null});
-  return <RenderOnSuccess queryStatus={status} mustBeDefined={user}>
-    <Dialog
-        maxWidth="lg"
-        open={true}
-        onClose={gotoLobby}
-    >
-      <DialogTitle align="center">Congratulations!</DialogTitle>
-      <DialogContent>
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          m: 'auto',
-          width: 'fit-content',
-        }}
+    const {
+        data: user,
+        ...status
+    } = useGetUserQuery(winner as Id, {skip: winner == null});
+    return <RenderOnSuccess queryStatus={status} mustBeDefined={user}>
+        <Dialog
+            maxWidth="lg"
+            open={true}
+            onClose={gotoLobby}
         >
-          <Typography>The winner is {user?.alias} !!</Typography>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={gotoLobby}>Go to lobby</Button>
-        <Button onClick={restartGame}>Restart with same players</Button>
-      </DialogActions>
-    </Dialog>
-  </RenderOnSuccess>
+            <DialogTitle align="center">Congratulations!</DialogTitle>
+            <DialogContent>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    m: "auto",
+                    width: "fit-content",
+                }}
+                >
+                    <Typography>The winner is {user?.alias} !!</Typography>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={gotoLobby}>Go to lobby</Button>
+                <Button onClick={restartGame}>Restart with same players</Button>
+            </DialogActions>
+        </Dialog>
+    </RenderOnSuccess>
 }

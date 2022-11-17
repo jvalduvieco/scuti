@@ -6,13 +6,13 @@ from hamcrest import contains_exactly
 from injector import Module, Scope, SingletonScope
 from plum import dispatch
 
-from mani.domain.testing.matchers.any_id import match_any_id
-from mani.domain.testing.matchers.something_like import SomethingLike
-from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 from mani.domain.cqrs.effects import Command, Query, Event
 from mani.domain.model.modules import DomainModule
 from mani.domain.model.repository.repository import Repository
+from mani.domain.testing.matchers.any_id import match_any_id
+from mani.domain.testing.matchers.something_like import SomethingLike
+from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
 from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
 from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
 
@@ -59,7 +59,8 @@ class _SubjectCreated(Event):
 class _AnEffectHandler:
     @dispatch
     def handle(self, a_command: _Create):
-        return _Subject(a_command.subject_id, a_command.some_data), [_SubjectCreated(a_command.subject_id, some_data=23)]
+        return _Subject(a_command.subject_id, a_command.some_data), [
+            _SubjectCreated(a_command.subject_id, some_data=23)]
 
     @dispatch
     @state_fetcher(_BySubjectId)

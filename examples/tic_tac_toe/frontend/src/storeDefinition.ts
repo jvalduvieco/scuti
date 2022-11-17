@@ -1,11 +1,12 @@
 import {
-  AnyAction,
-  combineReducers,
-  configureStore,
-  Middleware,
-  PreloadedState,
-  Store,
-  ThunkDispatch, TypedStartListening
+    AnyAction,
+    combineReducers,
+    configureStore,
+    Middleware,
+    PreloadedState,
+    Store,
+    ThunkDispatch,
+    TypedStartListening
 } from "@reduxjs/toolkit"
 import {gameReducer} from "./slices/game";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
@@ -20,31 +21,31 @@ const routerMiddleware = createRouterMiddleware(appHistory)
 
 
 const rootReducer = combineReducers({
-  game: gameReducer,
-  client: gameClientReducer,
-  user: userReducer,
-  ...createRouterReducerMapObject(appHistory),
-  [apiSlice.reducerPath]: apiSlice.reducer
+    game: gameReducer,
+    client: gameClientReducer,
+    user: userReducer,
+    ...createRouterReducerMapObject(appHistory),
+    [apiSlice.reducerPath]: apiSlice.reducer
 });
 
 export type AppState = ReturnType<typeof rootReducer>
 
 export const setupStore = (preloadedState?: PreloadedState<AppState>, middlewaresBeforeDefault: Middleware[] = [], middlewaresAfterDefault: Middleware[] = []) =>
     configureStore({
-      reducer: rootReducer,
-      preloadedState,
-      middleware: (getDefaultMiddleware) => [
-        routerMiddleware,
-        ...middlewaresBeforeDefault,
-        ...getDefaultMiddleware(),
-        ...middlewaresAfterDefault,
-        apiSlice.middleware],
-      devTools: process.env.NODE_ENV !== "production",
+        reducer: rootReducer,
+        preloadedState,
+        middleware: (getDefaultMiddleware) => [
+            routerMiddleware,
+            ...middlewaresBeforeDefault,
+            ...getDefaultMiddleware(),
+            ...middlewaresAfterDefault,
+            apiSlice.middleware],
+        devTools: process.env.NODE_ENV !== "production",
     });
 
 export type AppThunkDispatch = ThunkDispatch<AppState, any, AnyAction>;
 export type AppStore = Omit<Store<AppState, AnyAction>, "dispatch"> & {
-  dispatch: AppThunkDispatch;
+    dispatch: AppThunkDispatch;
 };
 
 export type AppStartListening = TypedStartListening<AppState, AppThunkDispatch>

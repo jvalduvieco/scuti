@@ -4,10 +4,10 @@ from queue import PriorityQueue
 from typing import Optional
 
 from injector import inject
+
 from mani.domain.cqrs.effects import Event
 from mani.domain.cqrs.event_scheduler.scheduled_events_store import ScheduledEventsStore
 from mani.domain.time.monotonic_clock import MonotonicClock
-
 from mani.domain.time.units import Millisecond
 
 
