@@ -1,10 +1,10 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {GameMessages} from "./index";
 
 
 export default {
-    title: 'TicTacToe/GameMessages',
+    title: "TicTacToe/GameMessages",
     component: GameMessages
 } as ComponentMeta<typeof GameMessages>;
 

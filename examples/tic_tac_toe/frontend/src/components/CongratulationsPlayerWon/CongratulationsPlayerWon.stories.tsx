@@ -1,12 +1,12 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {CongratulationsPlayerWon,} from "./index";
 import {action} from "@storybook/addon-actions";
-import {plato} from '../../backend/fixtures/users';
+import {plato} from "../../backend/fixtures/users";
 
 
 export default {
-    title: 'TicTacToe/CongratulationsPlayerWon',
+    title: "TicTacToe/CongratulationsPlayerWon",
     component: CongratulationsPlayerWon
 } as ComponentMeta<typeof CongratulationsPlayerWon>;
 

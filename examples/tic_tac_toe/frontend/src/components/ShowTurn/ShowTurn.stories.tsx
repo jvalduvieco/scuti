@@ -1,11 +1,11 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {ShowTurn} from "./index";
 import {plato} from "../../backend/fixtures/users";
 
 
 export default {
-    title: 'TicTacToe/ShowTurn',
+    title: "TicTacToe/ShowTurn",
     component: ShowTurn
 } as ComponentMeta<typeof ShowTurn>;
 

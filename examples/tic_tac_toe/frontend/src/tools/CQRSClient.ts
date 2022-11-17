@@ -6,10 +6,10 @@ export class CQRSClient {
     static async command(body: string, onError: (response: Response) => void) {
         const response = await fetch(
             `${BACKEND_URL}/commands`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: body
             }
@@ -29,10 +29,10 @@ export class CQRSClient {
     static async query(body: string, onError: (response: Response) => void) {
         const response = await fetch(
             `${BACKEND_URL}/queries`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: body
             }
@@ -52,10 +52,10 @@ export class CQRSClient {
     static async event(body: string, onError: (response: Response) => void) {
         const response = await fetch(
             `${BACKEND_URL}/events`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: body
             }

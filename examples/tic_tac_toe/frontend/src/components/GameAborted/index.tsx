@@ -19,10 +19,10 @@ export const GameAborted: FC<GameAbortedProps> = ({
         <DialogTitle align="center">Doh! Game was aborted!</DialogTitle>
         <DialogContent>
             <Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                m: 'auto',
-                width: 'fit-content',
+                display: "flex",
+                flexDirection: "column",
+                m: "auto",
+                width: "fit-content",
             }}
             >
                 <Typography>The game was aborted due a user timeout</Typography>

@@ -8,7 +8,7 @@ const initialState: GameClientState = {
 };
 
 const gameClientSlice = createSlice({
-    name: 'gameClient',
+    name: "gameClient",
     initialState,
     reducers: {},
     extraReducers(builder) {

@@ -17,7 +17,7 @@ export const FormTextInput: FC<IFormTextInputProps> = ({name, ...otherProps}) =>
                 {...otherProps}
                 {...field}
                 error={!!errors[name]}
-                helperText={errors[name] ? errors[name]!.message as string : ''}
+                helperText={errors[name] ? errors[name]!.message as string : ""}
             />
         )}
         />

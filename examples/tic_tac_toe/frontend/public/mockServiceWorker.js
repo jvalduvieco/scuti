@@ -8,18 +8,18 @@
  * - Please do NOT serve this file on production.
  */
 
-const INTEGRITY_CHECKSUM = '3d6b9f06410d179a7f7404d4bf4c3c70'
+const INTEGRITY_CHECKSUM = "3d6b9f06410d179a7f7404d4bf4c3c70"
 const activeClientIds = new Set()
 
-self.addEventListener('install', function () {
+self.addEventListener("install", function () {
     self.skipWaiting()
 })
 
-self.addEventListener('activate', function (event) {
+self.addEventListener("activate", function (event) {
     event.waitUntil(self.clients.claim())
 })
 
-self.addEventListener('message', async function (event) {
+self.addEventListener("message", async function (event) {
     const clientId = event.source.id
 
     if (!clientId || !self.clients) {
@@ -33,41 +33,41 @@ self.addEventListener('message', async function (event) {
     }
 
     const allClients = await self.clients.matchAll({
-        type: 'window',
+        type: "window",
     })
 
     switch (event.data) {
-        case 'KEEPALIVE_REQUEST': {
+        case "KEEPALIVE_REQUEST": {
             sendToClient(client, {
-                type: 'KEEPALIVE_RESPONSE',
+                type: "KEEPALIVE_RESPONSE",
             })
             break
         }
 
-        case 'INTEGRITY_CHECK_REQUEST': {
+        case "INTEGRITY_CHECK_REQUEST": {
             sendToClient(client, {
-                type: 'INTEGRITY_CHECK_RESPONSE',
+                type: "INTEGRITY_CHECK_RESPONSE",
                 payload: INTEGRITY_CHECKSUM,
             })
             break
         }
 
-        case 'MOCK_ACTIVATE': {
+        case "MOCK_ACTIVATE": {
             activeClientIds.add(clientId)
 
             sendToClient(client, {
-                type: 'MOCKING_ENABLED',
+                type: "MOCKING_ENABLED",
                 payload: true,
             })
             break
         }
 
-        case 'MOCK_DEACTIVATE': {
+        case "MOCK_DEACTIVATE": {
             activeClientIds.delete(clientId)
             break
         }
 
-        case 'CLIENT_CLOSED': {
+        case "CLIENT_CLOSED": {
             activeClientIds.delete(clientId)
 
             const remainingClients = allClients.filter((client) => {
@@ -84,29 +84,29 @@ self.addEventListener('message', async function (event) {
     }
 })
 
-self.addEventListener('fetch', function (event) {
+self.addEventListener("fetch", function (event) {
     const {request} = event
-    const accept = request.headers.get('accept') || ''
+    const accept = request.headers.get("accept") || ""
 
     // Bypass server-sent events.
-    if (accept.includes('text/event-stream')) {
+    if (accept.includes("text/event-stream")) {
         return
     }
 
     // Bypass navigation requests.
-    if (request.mode === 'navigate') {
+    if (request.mode === "navigate") {
         return
     }
 
     // Opening the DevTools triggers the "only-if-cached" request
     // that cannot be handled by the worker. Bypass such requests.
-    if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
+    if (request.cache === "only-if-cached" && request.mode !== "same-origin") {
         return
     }
 
     // Bypass all requests when there are no active clients.
     // Prevents the self-unregistered worked from handling requests
-    // after it's been deleted (still remains active until the next reload).
+    // after it"s been deleted (still remains active until the next reload).
     if (activeClientIds.size === 0) {
         return
     }
@@ -116,9 +116,9 @@ self.addEventListener('fetch', function (event) {
 
     event.respondWith(
         handleRequest(event, requestId).catch((error) => {
-            if (error.name === 'NetworkError') {
+            if (error.name === "NetworkError") {
                 console.warn(
-                    '[MSW] Successfully emulated a network error for the "%s %s" request.',
+                    "[MSW] Successfully emulated a network error for the '%s %s' request.",
                     request.method,
                     request.url,
                 )
@@ -148,7 +148,7 @@ async function handleRequest(event, requestId) {
         ;(async function () {
             const clonedResponse = response.clone()
             sendToClient(client, {
-                type: 'RESPONSE',
+                type: "RESPONSE",
                 payload: {
                     requestId,
                     type: clonedResponse.type,
@@ -168,27 +168,27 @@ async function handleRequest(event, requestId) {
 }
 
 // Resolve the main client for the given event.
-// Client that issues a request doesn't necessarily equal the client
-// that registered the worker. It's with the latter the worker should
+// Client that issues a request doesn"t necessarily equal the client
+// that registered the worker. It"s with the latter the worker should
 // communicate with during the response resolving phase.
 async function resolveMainClient(event) {
     const client = await self.clients.get(event.clientId)
 
-    if (client?.frameType === 'top-level') {
+    if (client?.frameType === "top-level") {
         return client
     }
 
     const allClients = await self.clients.matchAll({
-        type: 'window',
+        type: "window",
     })
 
     return allClients
         .filter((client) => {
             // Get only those clients that are currently visible.
-            return client.visibilityState === 'visible'
+            return client.visibilityState === "visible"
         })
         .find((client) => {
-            // Find the client ID that's recorded in the
+            // Find the client ID that"s recorded in the
             // set of clients that have registered the worker.
             return activeClientIds.has(client.id)
         })
@@ -199,15 +199,15 @@ async function getResponse(event, client, requestId) {
     const clonedRequest = request.clone()
 
     function passthrough() {
-        // Clone the request because it might've been already used
+        // Clone the request because it might"ve been already used
         // (i.e. its body has been read and sent to the client).
         const headers = Object.fromEntries(clonedRequest.headers.entries())
 
         // Remove MSW-specific request headers so the bypassed requests
-        // comply with the server's CORS preflight check.
+        // comply with the server"s CORS preflight check.
         // Operate with the headers as an object because request "Headers"
         // are immutable.
-        delete headers['x-msw-bypass']
+        delete headers["x-msw-bypass"]
 
         return fetch(clonedRequest, {headers})
     }
@@ -219,7 +219,7 @@ async function getResponse(event, client, requestId) {
 
     // Bypass initial page load requests (i.e. static assets).
     // The absence of the immediate/parent client in the map of the active clients
-    // means that MSW hasn't dispatched the "MOCK_ACTIVATE" event yet
+    // means that MSW hasn"t dispatched the "MOCK_ACTIVATE" event yet
     // and is not ready to handle requests.
     if (!activeClientIds.has(client.id)) {
         return passthrough()
@@ -227,13 +227,13 @@ async function getResponse(event, client, requestId) {
 
     // Bypass requests with the explicit bypass header.
     // Such requests can be issued by "ctx.fetch()".
-    if (request.headers.get('x-msw-bypass') === 'true') {
+    if (request.headers.get("x-msw-bypass") === "true") {
         return passthrough()
     }
 
     // Notify the client that a request has been intercepted.
     const clientMessage = await sendToClient(client, {
-        type: 'REQUEST',
+        type: "REQUEST",
         payload: {
             id: requestId,
             url: request.url,
@@ -254,15 +254,15 @@ async function getResponse(event, client, requestId) {
     })
 
     switch (clientMessage.type) {
-        case 'MOCK_RESPONSE': {
+        case "MOCK_RESPONSE": {
             return respondWithMock(clientMessage.data)
         }
 
-        case 'MOCK_NOT_FOUND': {
+        case "MOCK_NOT_FOUND": {
             return passthrough()
         }
 
-        case 'NETWORK_ERROR': {
+        case "NETWORK_ERROR": {
             const {name, message} = clientMessage.data
             const networkError = new Error(message)
             networkError.name = name

@@ -13,13 +13,13 @@ export const Draw: FC<DrawProperties> = ({restartGame, gotoLobby}: DrawPropertie
         open={true}
         onClose={gotoLobby}
     >
-        <DialogTitle align="center">Oohh! It's a Draw!</DialogTitle>
+        <DialogTitle align="center">Oohh! It"s a Draw!</DialogTitle>
         <DialogContent>
             <Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                m: 'auto',
-                width: 'fit-content',
+                display: "flex",
+                flexDirection: "column",
+                m: "auto",
+                width: "fit-content",
             }}
             >
                 <Typography>No winner this time</Typography>

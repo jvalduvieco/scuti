@@ -5,7 +5,7 @@ import {Id} from "../../types";
 import {choseOpponent} from "../../actions";
 import {useAppDispatch, useAppSelector} from "../../storeDefinition";
 import {RenderOnSuccess} from "../RenderOnSuccess";
-import isEqual from 'lodash.isequal';
+import isEqual from "lodash.isequal";
 
 export const UserRow: FC<{ userId: Id }> = ({userId}) => {
     const {

@@ -1,11 +1,11 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {GameAborted} from "./index";
 import {action} from "@storybook/addon-actions";
 
 
 export default {
-    title: 'TicTacToe/GameAborted',
+    title: "TicTacToe/GameAborted",
     component: GameAborted
 } as ComponentMeta<typeof GameAborted>;
 

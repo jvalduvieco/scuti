@@ -28,10 +28,10 @@ export const CongratulationsPlayerWon: FC<CongratulationsProps> = ({
             <DialogTitle align="center">Congratulations!</DialogTitle>
             <DialogContent>
                 <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    m: 'auto',
-                    width: 'fit-content',
+                    display: "flex",
+                    flexDirection: "column",
+                    m: "auto",
+                    width: "fit-content",
                 }}
                 >
                     <Typography>The winner is {user?.alias} !!</Typography>

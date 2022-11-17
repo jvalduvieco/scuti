@@ -15,7 +15,7 @@ const initialState: GameState = {
 };
 
 const gameSlice = createSlice({
-    name: 'game',
+    name: "game",
     initialState,
     reducers: {},
     extraReducers(builder) {

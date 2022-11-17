@@ -7,7 +7,7 @@ const usersAdapter = createEntityAdapter()
 const initialState = usersAdapter.getInitialState()
 
 const usersSlice = createSlice({
-    name: 'usersSlice',
+    name: "usersSlice",
     initialState,
     reducers: {},
     extraReducers(builder) {

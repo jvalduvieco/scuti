@@ -1,11 +1,11 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
-import {GamePage} from './GamePage';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
+import {GamePage} from "./GamePage";
 import {plato, socrates} from "../backend/fixtures/users";
 
 
 export default {
-    title: 'TicTacToe/GamePage',
+    title: "TicTacToe/GamePage",
     component: GamePage
 } as ComponentMeta<typeof GamePage>;
 

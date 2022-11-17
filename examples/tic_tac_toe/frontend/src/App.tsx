@@ -1,8 +1,8 @@
-import React, {FC} from 'react';
-import './App.css';
-import {Provider} from 'react-redux';
+import React, {FC} from "react";
+import "./App.css";
+import {Provider} from "react-redux";
 import {TicTacToeRoutes} from "./TicTacToeRoutes";
-import {CssBaseline} from '@mui/material';
+import {CssBaseline} from "@mui/material";
 import {store} from "./store";
 import {ReduxRouter} from "@lagunovsky/redux-react-router";
 import {appHistory} from "./storeDefinition";

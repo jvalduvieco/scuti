@@ -10,7 +10,7 @@ function stringToColor(string: string) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    let color = '#';
+    let color = "#";
 
     for (i = 0; i < 3; i += 1) {
         const value = (hash >> (i * 8)) & 0xff;
@@ -27,7 +27,7 @@ export function stringAvatar(name: string) {
             bgcolor: stringToColor(name),
             marginTop: "8px"
         },
-        children: `${name.split(' ').map(s => s[0]).join("")}`,
+        children: `${name.split(" ").map(s => s[0]).join("")}`,
     };
 }
 

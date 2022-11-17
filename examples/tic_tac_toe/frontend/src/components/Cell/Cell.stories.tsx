@@ -1,10 +1,10 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {Cell} from "./index";
 import {socrates} from "../../backend/fixtures/users";
 
 export default {
-    title: 'TicTacToe/Cell',
+    title: "TicTacToe/Cell",
     component: Cell
 } as ComponentMeta<typeof Cell>;
 

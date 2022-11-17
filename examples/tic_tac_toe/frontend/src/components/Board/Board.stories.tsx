@@ -1,12 +1,12 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {Board} from "./index";
 import {createPlayerId} from "../../tools/id";
 import {mswTestHandlers} from "../../backend/mocks/handlers";
 import {plato, socrates} from "../../backend/fixtures/users";
 
 export default {
-    title: 'TicTacToe/Board',
+    title: "TicTacToe/Board",
     component: Board,
 } as ComponentMeta<typeof Board>;
 const firstPlayer = plato.id;

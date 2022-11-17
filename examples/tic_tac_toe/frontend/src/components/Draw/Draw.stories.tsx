@@ -1,11 +1,11 @@
-import React from 'react';
-import {ComponentMeta, ComponentStory} from '@storybook/react';
+import React from "react";
+import {ComponentMeta, ComponentStory} from "@storybook/react";
 import {Draw,} from "./index";
 import {action} from "@storybook/addon-actions";
 
 
 export default {
-    title: 'TicTacToe/Draw',
+    title: "TicTacToe/Draw",
     component: Draw
 } as ComponentMeta<typeof Draw>;
 
