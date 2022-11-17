@@ -22,7 +22,7 @@ export const GameShow: FC<GameShowProps> = ({
     <Grid container direction="column" spacing={2} justifyContent="space-between"
           sx={{height: "100%", padding: "16px"}}>
         <Grid item>
-            {turn && timeout && <ShowTurn turn={turn} timeout={timeout}/>}
+            {turn && timeout && <ShowTurn turn={turn} timeout={new Date(timeout)}/>}
         </Grid>
         <Grid item>
             <Board state={boardState!} onPlace={onPlace}/>
