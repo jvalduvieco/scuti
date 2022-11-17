@@ -59,8 +59,8 @@ class CQRSAPIApp:
         Compress(self._api_app)
         flask_injector.FlaskInjector(app=self._api_app, injector=injector)
         domain_app.event_bus.subscribe(BusHandlerFailed,
-                                       build_asynchronous_class_effect_handler(bus_error_effect_handler, injector))
-        [domain_app.event_bus.subscribe(event, build_asynchronous_class_effect_handler(EventToSocketIOBridge, injector))
+                                       build_asynchronous_class_effect_handler(bus_error_effect_handler, None,injector))
+        [domain_app.event_bus.subscribe(event, build_asynchronous_class_effect_handler(EventToSocketIOBridge, None,injector))
          for event in events_to_publish]
 
         self._api_app.add_url_rule("/commands",

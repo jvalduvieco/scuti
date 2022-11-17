@@ -1,5 +1,4 @@
 import queue
-import traceback
 from typing import Type, Callable, List, Dict, Optional
 
 from mani.domain.cqrs.bus.events import BusHandlerFailed
@@ -14,11 +13,8 @@ class LocalAsynchronousBus(AsynchronousBus):
         self.__handlers = {}
         self.__items = queue.Queue()
 
-    def drain(self) -> None:
-        while not self.is_empty():
-            item = self.__get_item()
-            if item is None:
-                break
+    def drain(self, block: bool = True) -> None:
+        while item := self.__get_item(block):
             current_item_type = type(item)
             [hook.begin_processing(item) for hook in self.__bus_hooks]
             if current_item_type in self.__handlers:
@@ -56,11 +52,9 @@ class LocalAsynchronousBus(AsynchronousBus):
     def register_hook(self, hook: BusHook):
         self.__bus_hooks.append(hook)
 
-    def __get_item(self):
+    def __get_item(self, block: bool):
         try:
-            return self.__items.get(timeout=0.5)
+            return self.__items.get(block=block, timeout=0.5)
         except queue.Empty:
             pass
         return None
-
-

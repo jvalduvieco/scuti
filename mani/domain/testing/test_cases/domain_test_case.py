@@ -36,7 +36,7 @@ class DomainTestCase(TestCase):
             self.drain_effects()
 
     def drain_effects(self) -> None:
-        self.__bus.drain()
+        self.__bus.drain(block=False)
 
     def reset_emitted_effects(self):
         self._handled_effects.clear()

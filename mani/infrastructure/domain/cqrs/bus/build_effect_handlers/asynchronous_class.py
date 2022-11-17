@@ -1,4 +1,4 @@
-from typing import Type, Callable
+from typing import Type, Callable, Optional
 
 from injector import Injector
 
@@ -7,7 +7,7 @@ from mani.domain.cqrs.bus.state_management.condition import HandlerCondition
 from mani.domain.cqrs.effects import Effect
 
 
-def build_asynchronous_class_effect_handler(a_handler: Type[EffectHandler], condition: HandlerCondition,
+def build_asynchronous_class_effect_handler(a_handler: Type[EffectHandler], condition: Optional[HandlerCondition],
                                             injector: Injector) -> \
         Callable[[Effect], None]:
     def handler(effect: Effect) -> None:
