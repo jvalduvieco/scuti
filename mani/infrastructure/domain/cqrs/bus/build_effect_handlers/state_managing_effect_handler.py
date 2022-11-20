@@ -1,4 +1,4 @@
-from typing import Type, Optional, Callable, Iterable
+from typing import Callable, Iterable, Optional, Type
 
 from injector import Injector
 
@@ -8,12 +8,8 @@ from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.state_management.commands import DeleteState
 from mani.domain.cqrs.bus.state_management.condition import HandlerCondition
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import EffectToStateMapper
-from mani.domain.cqrs.effects import Effect, Command, Event
+from mani.domain.cqrs.effects import Command, Effect, Event
 from mani.domain.model.repository.repository import Repository
-
-
-class NotInterested:
-    pass
 
 
 def build_asynchronous_state_managing_class_effect_handler(a_handler: Type[EffectHandler],
@@ -32,8 +28,6 @@ def build_asynchronous_state_managing_class_effect_handler(a_handler: Type[Effec
         repository = injector.get(repository_type)
         if state_mapper is not None:
             states = state_mapper(effect, repository)
-            if type(states) == NotInterested:
-                return
             if not isinstance(states, Iterable):
                 states = [states]
 

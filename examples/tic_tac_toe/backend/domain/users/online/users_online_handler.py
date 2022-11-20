@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict
 
 from domain.games.types import UserId
-from domain.users.online.events import UserConnected, UsersOnlineUpdated
+from domain.users.online.events import UserConnected, UserDisconnected, UsersOnlineUpdated
 from domain.users.online.queries import GetUsersOnline
 from injector import inject
 from plum import dispatch
@@ -29,6 +29,15 @@ class UsersOnlineHandler(ManagedStateEffectHandler):
         if not state:
             state = UsersOnlineState()
         state.online_users[effect.id] = self._clock.now()
+        return state, [
+            UsersOnlineUpdated(online_users=list(state.online_users.keys()), parent_operation_id=effect.operation_id)]
+
+    @dispatch
+    @state_fetcher(Singleton)
+    def handle(self, state: UsersOnlineState | None, effect: UserDisconnected):
+        if not state:
+            return state, []
+        del state.online_users[effect.id]
         return state, [
             UsersOnlineUpdated(online_users=list(state.online_users.keys()), parent_operation_id=effect.operation_id)]
 

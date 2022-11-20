@@ -1,21 +1,18 @@
-from typing import Type, List
+from typing import Dict, Type
 
-from applications.api.tools import from_javascript, to_message_response, to_javascript
+from applications.api.tools import from_javascript, to_javascript, to_message_response
 from flask import request
-
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.query_bus import QueryBus
-from mani.domain.cqrs.effects import Command, Query, Event
+from mani.domain.cqrs.effects import Command, Event, Query
 from mani.infrastructure.logging.get_logger import get_logger
 from mani.infrastructure.serialization.from_untyped_dict import from_untyped_dict
 
 logger = get_logger(__name__)
 
 
-def command_controller(command_bus: CommandBus, accepted_commands: List[Type[Command]]):
-    available_commands = {command_type.__name__: command_type for command_type in accepted_commands}
-
+def command_controller(command_bus: CommandBus, available_commands: Dict[str, Type[Command]]):
     def dispatch_command_request():
         client_request = request.get_json()
         logger.debug("Command received: %s", client_request["command"])
@@ -34,9 +31,7 @@ def command_controller(command_bus: CommandBus, accepted_commands: List[Type[Com
     return dispatch_command_request
 
 
-def query_controller(query_bus: QueryBus, accepted_queries: List[Type[Query]]):
-    available_queries = {query_type.__name__: query_type for query_type in accepted_queries}
-
+def query_controller(query_bus: QueryBus, available_queries: Dict[str, Type[Query]]):
     def dispatch_query_request():
         client_request = request.get_json()
         logger.debug("Query received: %s", client_request["query"])
@@ -57,9 +52,7 @@ def query_controller(query_bus: QueryBus, accepted_queries: List[Type[Query]]):
     return dispatch_query_request
 
 
-def event_controller(event_bus: EventBus, accepted_events: List[Type[Event]]):
-    available_events = {event_type.__name__: event_type for event_type in accepted_events}
-
+def event_controller(event_bus: EventBus, available_events: Dict[str, Type[Event]]):
     def dispatch_event_request():
         client_request = request.get_json()
         logger.debug("Event received: %s", client_request["event"])

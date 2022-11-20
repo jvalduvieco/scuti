@@ -11,6 +11,7 @@ from mani.domain.cqrs.effects import Command, Event, Query, Effect
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.testing.testing_domain_module import TestingDomainModule
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
+from mani.infrastructure.logging.errors import print_traceback
 from mani.infrastructure.logging.get_logger import get_logger
 
 logger = get_logger(__name__)
@@ -69,17 +70,4 @@ class DomainTestCase(TestCase):
         logger.error(f"### {index} ###")
         logger.error(
             f"{e.error}{f'while processing {e.effect}' if hasattr(e, 'effect') else ''} in {prepared_stack_trace}")
-        self.__print_traceback(e.stack_trace)
-
-    def __print_traceback(self, tb):
-        local_vars = {}
-        while tb:
-            filename = tb.tb_frame.f_code.co_filename
-            name = tb.tb_frame.f_code.co_name
-            line_no = tb.tb_lineno
-            # Prepend desired color (e.g. RED) to line
-            logger.error(f"\tFile {filename} line {line_no}, in {name}")
-
-            local_vars = tb.tb_frame.f_locals
-            tb = tb.tb_next
-        logger.error(f"Local variables in top frame: \n\t{local_vars}")
+        print_traceback(logger, e.stack_trace)

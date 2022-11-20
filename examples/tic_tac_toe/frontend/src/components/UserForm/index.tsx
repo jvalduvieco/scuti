@@ -1,14 +1,14 @@
-import {FormProvider, SubmitHandler, useForm} from "react-hook-form";
-import {User} from "../../types";
-import {createUserId} from "../../tools/id";
-import {useCreateUserMutation} from "../../backend/apiSlice";
-import {Button, Grid, Paper, Typography} from "@mui/material";
 import {yupResolver} from "@hookform/resolvers/yup";
+import {Button, Grid, Paper, Typography} from "@mui/material";
+import {FormProvider, SubmitHandler, useForm} from "react-hook-form";
 import * as yup from "yup";
+import {userConnected} from "../../actions";
+import {useCreateUserMutation} from "../../backend/apiSlice";
+import {useAppDispatch} from "../../storeDefinition";
+import {createUserId} from "../../tools/id";
+import {User} from "../../types";
 import {FormTextInput} from "../Form/FormTextInput";
 import {UserAvatar} from "../UserAvatar";
-import {userConnected} from "../../actions";
-import {useAppDispatch} from "../../storeDefinition";
 
 function completeUser(user: Partial<User>): User {
     return {...user, createdAt: new Date().toISOString(), id: createUserId()} as User

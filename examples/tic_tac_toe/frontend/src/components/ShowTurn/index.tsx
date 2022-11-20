@@ -20,7 +20,7 @@ export const ShowTurn: FC<ShowTurnProps> = ({turn, timeout}: ShowTurnProps) => {
     return <RenderOnSuccess queryStatus={status} mustBeDefined={[user, timeout]}>
         <Paper sx={{padding: 1, width: "100%"}}>
             <Typography align="center">
-                It"s {user?.alias} turn
+                It's {user?.alias} turn
             </Typography>
             <Typography align="center">
                 {seconds} s

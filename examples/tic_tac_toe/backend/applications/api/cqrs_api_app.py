@@ -6,13 +6,14 @@ from typing import List, Type
 
 import flask_injector
 import socketio
-from applications.api.controllers import command_controller, query_controller, event_controller
+from applications.api.controllers import command_controller, event_controller, query_controller
+from applications.api.tools import from_javascript
 from applications.api.websockets.create_socket_io_app import create_socketio_app
+from applications.api.websockets.sessions.session_repository import SessionRepository
 from applications.api.websockets.socket_io_emitter import EventToSocketIOBridge
 from flask import Flask
 from flask_compress import Compress
 from flask_cors import CORS
-
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.event_bus import EventBus
@@ -24,6 +25,8 @@ from mani.domain.model.application.net_config import NetConfig
 from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
     build_asynchronous_class_effect_handler
 from mani.infrastructure.logging.get_logger import get_logger
+from mani.infrastructure.serialization.from_untyped_dict import from_untyped_dict
+from mani.infrastructure.tools.string import snake_to_upper_camel
 
 logger = get_logger(__name__)
 
@@ -33,10 +36,10 @@ class CQRSAPIApp:
                  events_to_publish: List[Type[Event]] = None, accepted_events: List[Type[Event]] = None,
                  accepted_queries: List[Type[Query]] = None,
                  bus_error_effect_handler: Type[EffectHandler] = None):
-        self._accepted_commands = accepted_commands or []
+        self._available_commands = {command_type.__name__: command_type for command_type in accepted_commands or []}
+        self._available_events = {event_type.__name__: event_type for event_type in accepted_events or []}
+        self._available_queries = {query_type.__name__: query_type for query_type in accepted_queries or []}
         self._events_to_publish = events_to_publish or []
-        self._accepted_events = accepted_events or []
-        self._accepted_queries = accepted_queries or []
         self._thread_instances: List[Thread] = []
         self._domain_app = domain_app
         self._config = config
@@ -64,19 +67,51 @@ class CQRSAPIApp:
          for event in events_to_publish]
 
         self._api_app.add_url_rule("/commands",
-                                   view_func=command_controller(injector.get(CommandBus), self._accepted_commands),
+                                   view_func=command_controller(injector.get(CommandBus), self._available_commands),
                                    provide_automatic_options=None,
                                    methods=["POST"])
         self._api_app.add_url_rule("/queries",
-                                   view_func=query_controller(injector.get(QueryBus), self._accepted_queries),
+                                   view_func=query_controller(injector.get(QueryBus), self._available_queries),
                                    provide_automatic_options=None,
                                    methods=["POST"])
         self._api_app.add_url_rule("/events",
-                                   view_func=event_controller(injector.get(EventBus), self._accepted_events),
+                                   view_func=event_controller(injector.get(EventBus), self._available_events),
                                    provide_automatic_options=None,
                                    methods=["POST"])
         self._socketio_app = create_socketio_app(self._api_app)
+
+        self._socketio_app.on("action",
+                              lambda s, m: self.__handle_websocket_actions(s, m))
+        self._socketio_app.on("disconnect",
+                              lambda s: self.__handle_websocket_actions(s, self._create_disconnect_action(s)))
+
         injector.binder.bind(socketio.Server, self._socketio_app)
+
+    def _create_disconnect_action(self, s: str):
+        return {
+            "type": "server/SESSION_DISCONNECTED",
+            "data": {
+                "sessionId": s
+            }}
+
+    def __handle_websocket_actions(self, sid: str, message: dict):
+        logger.debug(f"action received: {sid} {message}")
+        message["type"] = snake_to_upper_camel(message["type"].split("/")[1])
+        if message["type"] == "AssociateUserToSession":
+            message = self.__add_session_id(message, sid)
+        bus = None
+        effect_type = None
+        if message["type"] in self._available_commands:
+            bus = self._domain_app.command_bus
+            effect_type = self._available_commands[message["type"]]
+        elif message["type"] in self._available_events:
+            bus = self._domain_app.event_bus
+            effect_type = self._available_events[message["type"]]
+        effect = from_untyped_dict(effect_type, from_javascript(message["data"]))
+        bus.handle(effect)
+
+    def __add_session_id(self, message: dict, session_id: str):
+        return {**message, "data": {**message["data"], "sessionId": session_id}}
 
     def start(self):
         self._domain_app.start()
