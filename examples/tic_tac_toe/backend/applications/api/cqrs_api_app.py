@@ -79,7 +79,7 @@ class CQRSAPIApp:
                                    provide_automatic_options=None,
                                    methods=["POST"])
         self._socketio_app = create_socketio_app(self._api_app)
-        session_repository = self._domain_app.injector().get(SessionRepository)
+
         self._socketio_app.on("action",
                               lambda s, m: self.__handle_websocket_actions(s, m))
         self._socketio_app.on("disconnect",
@@ -93,10 +93,6 @@ class CQRSAPIApp:
             "data": {
                 "sessionId": s
             }}
-
-    def __user_disconnected(self, repository: SessionRepository, sid: str):
-        logger.debug(f"Removing session {sid}")
-        repository.remove(sid)
 
     def __handle_websocket_actions(self, sid: str, message: dict):
         logger.debug(f"action received: {sid} {message}")
