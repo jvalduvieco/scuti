@@ -9,7 +9,6 @@ from mani.domain.cqrs.event_scheduler.scheduled_events_store import ScheduledEve
 from mani.domain.model.modules import DomainModule
 from mani.domain.time.monotonic_clock import MonotonicClock
 from mani.domain.time.wall_clock import WallClock
-from mani.infrastructure.domain.cqrs.bus.asynchronous_bus_runner import asynchronous_bus_runner
 from mani.infrastructure.domain.cqrs.event_scheduler.scheduled_events_runner import event_scheduler_runner
 from mani.infrastructure.domain.cqrs.event_scheduler.scheduled_events_store_in_memory import \
     ScheduledEventsStoreInMemory
@@ -48,6 +47,5 @@ class CQRSDomainModule(DomainModule):
 
     def processes(self):
         return [
-            asynchronous_bus_runner,
             event_scheduler_runner
         ]

@@ -1,5 +1,6 @@
 import queue
-from typing import Type, Callable, List, Dict, Optional
+from multiprocessing import Condition
+from typing import Callable, Dict, List, Optional, Type
 
 from mani.domain.cqrs.bus.events import BusHandlerFailed
 from mani.domain.cqrs.bus.hooks.bus_hook import BusHook
@@ -12,8 +13,9 @@ class LocalAsynchronousBus(AsynchronousBus):
         self.__bus_hooks: List[BusHook] = []
         self.__handlers = {}
         self.__items = queue.Queue()
+        self.__condition = Condition()
 
-    def drain(self, block: bool = True) -> None:
+    def drain(self, block: bool = False) -> None:
         while item := self.__get_item(block):
             current_item_type = type(item)
             [hook.begin_processing(item) for hook in self.__bus_hooks]
@@ -37,8 +39,11 @@ class LocalAsynchronousBus(AsynchronousBus):
             self.__handlers[item_type] = [(handler, human_friendly_name)]
 
     def handle(self, item: Effect):
+        self.__condition.acquire()
         [hook.on_handle(item) for hook in self.__bus_hooks]
         self.__items.put(item)
+        self.__condition.notify_all()
+        self.__condition.release()
 
     def handles(self, item_type: Type[Effect]):
         return item_type in self.__handlers
@@ -52,9 +57,18 @@ class LocalAsynchronousBus(AsynchronousBus):
     def register_hook(self, hook: BusHook):
         self.__bus_hooks.append(hook)
 
+    def wake_up(self):
+        self.__condition.acquire()
+        self.__condition.notify_all()
+        self.__condition.release()
+
     def __get_item(self, block: bool):
+        self.__condition.acquire()
+        if block:
+            self.__condition.wait()
         try:
-            return self.__items.get(block=block, timeout=0.5)
+            return self.__items.get(block=False)
         except queue.Empty:
             pass
+        self.__condition.release()
         return None

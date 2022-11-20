@@ -2,14 +2,13 @@ import logging
 import signal
 import sys
 from threading import Thread
-from typing import List, Type
+from typing import List, Optional, Type
 
 import flask_injector
 import socketio
 from applications.api.controllers import command_controller, event_controller, query_controller
 from applications.api.tools import from_javascript
 from applications.api.websockets.create_socket_io_app import create_socketio_app
-from applications.api.websockets.sessions.session_repository import SessionRepository
 from applications.api.websockets.socket_io_emitter import EventToSocketIOBridge
 from flask import Flask
 from flask_compress import Compress
@@ -22,11 +21,13 @@ from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.effects import Command, Event, Query
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.application.net_config import NetConfig
+from mani.infrastructure.domain.cqrs.bus.asynchronous_bus_runner import SequentialBusRunnerThread
 from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
     build_asynchronous_class_effect_handler
 from mani.infrastructure.logging.get_logger import get_logger
 from mani.infrastructure.serialization.from_untyped_dict import from_untyped_dict
 from mani.infrastructure.tools.string import snake_to_upper_camel
+from mani.infrastructure.tools.thread import spawn
 
 logger = get_logger(__name__)
 
@@ -43,10 +44,12 @@ class CQRSAPIApp:
         self._thread_instances: List[Thread] = []
         self._domain_app = domain_app
         self._config = config
+        self._thread: Optional[SequentialBusRunnerThread] = None
 
         def signal_handler(sig, frame):
             logger.info("Stop requested")
             self._domain_app.stop()
+            self._thread.stop()
             sys.exit(0)
 
         signal.signal(signal.SIGINT, signal_handler)
@@ -115,6 +118,8 @@ class CQRSAPIApp:
 
     def start(self):
         self._domain_app.start()
+        self._thread: SequentialBusRunnerThread = self._domain_app.injector().get(SequentialBusRunnerThread)
+        spawn(lambda: self._thread.run())
         self._api_app.run(threaded=True, host=self._config.host, port=self._config.port, debug=False)
 
     def stop(self):

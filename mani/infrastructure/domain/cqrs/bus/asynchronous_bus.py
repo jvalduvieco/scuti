@@ -7,7 +7,7 @@ from mani.domain.cqrs.effects import Effect
 
 class AsynchronousBus(ABC):
     @abstractmethod
-    def drain(self, block: bool):
+    def drain(self, block: bool = False):
         pass
 
     @abstractmethod
