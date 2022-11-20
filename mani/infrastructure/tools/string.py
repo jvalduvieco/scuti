@@ -10,7 +10,7 @@ def is_camel(name):
     return name != name.lower() and name != name.upper() and "_" not in name
 
 
-def camel_to_underscore(name):
+def camel_to_lower_snake(name):
     if not is_camel(name):
         return name
     if type(name) == str:
@@ -21,14 +21,14 @@ def camel_to_underscore(name):
         return name
 
 
-def underscore_to_lower_camel(name):
+def snake_to_lower_camel(name):
     if type(name) == str:
         under_pat = re.compile(r'_([a-z])')
-        return under_pat.sub(lambda x: x.group(1).upper(), name)
+        return under_pat.sub(lambda x: x.group(1).upper(), name.lower())
     else:
         return name
 
 
-def underscore_to_upper_camel(name):
-    lower_camel = underscore_to_lower_camel(name)
+def snake_to_upper_camel(name):
+    lower_camel = snake_to_lower_camel(name)
     return lower_camel[:1].upper() + lower_camel[1:]
