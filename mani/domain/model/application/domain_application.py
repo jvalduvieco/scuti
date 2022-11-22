@@ -60,7 +60,7 @@ class DomainApplication:
         for thread in self.__threads_instances:
             if thread.is_alive():
                 raise RuntimeError(f"Thread: {thread.name} is alive after stop and join. Consider using "
-                                   f"self.__shutdown_requested")
+                                   f"self.should_stop() on threads")
         self.__threads_instances = []
 
     @cached_property

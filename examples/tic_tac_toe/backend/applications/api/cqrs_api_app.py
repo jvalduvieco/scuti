@@ -9,6 +9,7 @@ import socketio
 from applications.api.controllers import command_controller, event_controller, query_controller
 from applications.api.tools import from_javascript
 from applications.api.websockets.create_socket_io_app import create_socketio_app
+from applications.api.websockets.socket_io_emitter import EventToSocketIOBridge
 from flask import Flask
 from flask_compress import Compress
 from flask_cors import CORS
@@ -19,6 +20,8 @@ from mani.domain.cqrs.effects import Command, Event, Query
 from mani.domain.model.application.application_error import ApplicationError
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.application.net_config import NetConfig
+from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
+    build_asynchronous_class_effect_handler
 from mani.infrastructure.logging.get_logger import get_logger
 from mani.infrastructure.serialization.from_untyped_dict import from_untyped_dict
 from mani.infrastructure.tools.string import snake_to_upper_camel
@@ -53,7 +56,9 @@ class CQRSAPIApp:
         CORS(self._api_app, resources={r"/*": {"origins": "*"}})
         Compress(self._api_app)
         flask_injector.FlaskInjector(app=self._api_app, injector=injector)
-
+        [domain_app.event_bus.subscribe(event,
+                                        build_asynchronous_class_effect_handler(EventToSocketIOBridge, None, injector))
+         for event in events_to_publish]
         self._api_app.add_url_rule("/commands",
                                    view_func=command_controller(injector.get(CommandBus), self._available_commands),
                                    provide_automatic_options=None,

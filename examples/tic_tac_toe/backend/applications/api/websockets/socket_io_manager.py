@@ -1,4 +1,7 @@
 import socketio
+from injector import inject
+from plum import dispatch
+
 from applications.api.websockets.commands import AssociateUserToSession
 from applications.api.websockets.events import SessionDisconnected
 from applications.api.websockets.sessions.session_repository import SessionRepository
@@ -7,13 +10,11 @@ from domain.games.tic_tac_toe.events import GameEnded, GameStateReadyToBeCleaned
 from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
 from domain.users.online.events import UserDisconnected
-from injector import inject
 from mani.domain.cqrs.bus.command_bus import CommandBus
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent
 from mani.domain.time.units import Millisecond
-from plum import dispatch
 
 
 class SocketIOManager(EffectHandler):

@@ -1,7 +1,3 @@
-import threading
-from time import sleep
-
-import pyprctl
 from injector import inject
 
 from mani.domain.cqrs.bus.event_bus import EventBus
@@ -29,15 +25,14 @@ class ScheduledEventsRunner(Thread):
         logger.info("Starting event scheduler...")
         while not self.should_stop():
             try:
+                self._scheduled_events.wait_for_next_expiration()
                 now = self._clock.now()
                 event = self._scheduled_events.expired(now)
-                if event is None:
-                    sleep(0.01)
-                else:
+                if event is not None:
                     self._event_bus.handle(event)
             except Exception as e:
                 self._event_bus.handle(InfrastructureError.from_exception(e))
         logger.info("Stopping event scheduler...")
 
     def wants_to_stop(self):
-        pass
+        self._scheduled_events.shutdown()

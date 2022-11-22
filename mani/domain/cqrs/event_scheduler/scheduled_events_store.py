@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
 
 class ScheduledEventsStore(ABC):
@@ -20,4 +20,12 @@ class ScheduledEventsStore(ABC):
 
     @abstractmethod
     def remove(self, key):
+        pass
+
+    @abstractmethod
+    def wait_for_next_expiration(self):
+        pass
+
+    @abstractmethod
+    def shutdown(self):
         pass

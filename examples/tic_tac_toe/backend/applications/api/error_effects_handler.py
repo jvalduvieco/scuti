@@ -11,5 +11,5 @@ logger = get_logger(__name__)
 class ErrorEffectsHandler(EffectHandler):
     @dispatch
     def handle(self, effect: BusHandlerFailed | InfrastructureError | ApplicationError):
-        logger.error(f"{effect.error} while handling {effect.effect}")
+        logger.error(f"{effect.error}{f'while processing {effect.effect}' if hasattr(effect, 'effect') else ''} in {effect.stack_trace}")
         print_traceback(logger, effect.stack_trace)
