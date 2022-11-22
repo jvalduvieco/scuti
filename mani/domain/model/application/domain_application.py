@@ -1,7 +1,6 @@
 from collections.abc import Mapping
 from functools import cached_property
-from threading import Thread
-from typing import List, Type, Optional, Dict, Callable
+from typing import Callable, Dict, List, Optional, Type
 
 from injector import Injector, Scope
 from setuptools.namespaces import flatten
@@ -12,7 +11,7 @@ from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.bus.state_management.condition import condition_property
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import effect_to_state_mapper_property
-from mani.domain.cqrs.effects import Command, Event, Query, Effect
+from mani.domain.cqrs.effects import Command, Effect, Event, Query
 from mani.domain.model.modules import DomainModule
 from mani.domain.model.repository.repository import Repository
 from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_class import \
@@ -24,8 +23,8 @@ from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.synchronous_class
 from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.synchronous_state_managing_effect_handler import \
     build_synchronous_state_managing_class_effect_handler
 from mani.infrastructure.domain.cqrs.cqrs_module import CQRSDomainModule
-from mani.infrastructure.registering.inspection.plum_inspection import inspect, InspectionResult
-from mani.infrastructure.tools.thread import spawn
+from mani.infrastructure.registering.inspection.plum_inspection import InspectionResult, inspect
+from mani.infrastructure.threading.thread import Thread
 
 
 class DomainApplication:
@@ -53,8 +52,16 @@ class DomainApplication:
 
     def stop(self):
         for thread in self.__threads_instances:
-            thread.should_be_running = False
+            thread.stop()
+
+        for thread in self.__threads_instances:
             thread.join(timeout=1)
+
+        for thread in self.__threads_instances:
+            if thread.is_alive():
+                raise RuntimeError(f"Thread: {thread.name} is alive after stop and join. Consider using "
+                                   f"self.should_stop() on threads")
+        self.__threads_instances = []
 
     @cached_property
     def command_bus(self) -> CommandBus:
@@ -91,8 +98,10 @@ class DomainApplication:
     def __start_modules_threads(self) -> List[Thread]:
         result = []
         all_threads_to_start = list(flatten([module.processes() for module in (self.__domain_instances.values())]))
-        for thread in all_threads_to_start:
-            result += [spawn(lambda: self.__injector.call_with_injection(thread))]
+        for thread_type in all_threads_to_start:
+            thread = self.injector().get(thread_type)
+            thread.start()
+            result += [thread]
         return result
 
     def __run_module_init_commands(self):

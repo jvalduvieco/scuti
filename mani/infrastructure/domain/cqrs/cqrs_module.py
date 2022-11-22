@@ -9,12 +9,12 @@ from mani.domain.cqrs.event_scheduler.scheduled_events_store import ScheduledEve
 from mani.domain.model.modules import DomainModule
 from mani.domain.time.monotonic_clock import MonotonicClock
 from mani.domain.time.wall_clock import WallClock
-from mani.infrastructure.domain.cqrs.bus.asynchronous_bus_runner import asynchronous_bus_runner
-from mani.infrastructure.domain.cqrs.event_scheduler.scheduled_events_runner import event_scheduler_runner
+from mani.infrastructure.domain.cqrs.bus.asynchronous_bus_runner import AsynchronousBusRunner
+from mani.infrastructure.domain.cqrs.event_scheduler.scheduled_events_runner import ScheduledEventsRunner
 from mani.infrastructure.domain.cqrs.event_scheduler.scheduled_events_store_in_memory import \
     ScheduledEventsStoreInMemory
-from mani.infrastructure.domain.time.MonotonicClock.real_monotonic_clock import RealMonotonicClock
-from mani.infrastructure.domain.time.WallClock.real_wall_clock import RealWallClock
+from mani.infrastructure.time.MonotonicClock.real_monotonic_clock import RealMonotonicClock
+from mani.infrastructure.time.WallClock.real_wall_clock import RealWallClock
 
 
 class CQRSModule(Module):
@@ -29,11 +29,11 @@ class CQRSModule(Module):
         from mani.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
         asynchronous_bus = LocalAsynchronousBus()
         asynchronous_bus.register_hook(LoggingEffectsBusHook())
-        query_bus = LocalSynchronousQueryBus()
         binder.bind(AsynchronousBus, asynchronous_bus, scope=SingletonScope)
-        binder.bind(QueryBus, query_bus, scope=SingletonScope)
         binder.bind(EventBus, EventBusFacade, scope=SingletonScope)
         binder.bind(CommandBus, CommandBusFacade, scope=SingletonScope)
+        query_bus = binder.injector.get(LocalSynchronousQueryBus)
+        binder.bind(QueryBus, query_bus, scope=SingletonScope)
         binder.bind(MonotonicClock, RealMonotonicClock, scope=SingletonScope)
         binder.bind(WallClock, RealWallClock, scope=SingletonScope)
         binder.bind(ScheduledEventsStore, ScheduledEventsStoreInMemory, scope=SingletonScope)
@@ -48,6 +48,6 @@ class CQRSDomainModule(DomainModule):
 
     def processes(self):
         return [
-            asynchronous_bus_runner,
-            event_scheduler_runner
+            AsynchronousBusRunner,
+            ScheduledEventsRunner
         ]

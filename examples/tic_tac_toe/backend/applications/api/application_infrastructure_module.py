@@ -1,5 +1,6 @@
 from typing import Any, List, Tuple, Type
 
+from applications.api.error_effects_handler import ErrorEffectsHandler
 from applications.api.websockets.sessions.session_repository import SessionRepository
 from applications.api.websockets.sessions.session_repository_in_memory import SessionRepositoryInMemory
 from applications.api.websockets.socket_io_manager import SocketIOManager
@@ -18,4 +19,5 @@ class ApplicationInfrastructureModule(DomainModule):
         return [ApplicationModule]
 
     def effect_handlers(self) -> List[Type[EffectHandler]]:
-        return [SocketIOManager]
+        return [SocketIOManager,
+                ErrorEffectsHandler]

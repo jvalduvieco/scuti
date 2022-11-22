@@ -1,19 +1,26 @@
-import threading
-
-import pyprctl
 from injector import inject
 
 from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 from mani.infrastructure.logging.get_logger import get_logger
+from mani.infrastructure.threading.thread import Thread
 
 logger = get_logger(__name__)
 
 
-@inject
-def asynchronous_bus_runner(bus: AsynchronousBus):
-    logger.info("Sequential bus runner starting...")
-    pyprctl.set_name("Sequential bus runner")
-    self = threading.current_thread()
-    while getattr(self, "should_be_running", True):
-        bus.drain()
-    logger.info("Stopping sequential bus runner...")
+class AsynchronousBusRunner(Thread):
+    @inject
+    def __init__(self, bus: AsynchronousBus):
+        super().__init__()
+        self._bus = bus
+
+    def get_name(self):
+        return "Asynchronous bus runner"
+
+    def execute(self):
+        logger.info("Starting asynchronous bus runner...")
+        while not (self._bus.is_empty() and self.should_stop()):
+            self._bus.drain(block=True)
+        logger.info("Stopping asynchronous bus runner...")
+
+    def wants_to_stop(self):
+        self._bus.shutdown()

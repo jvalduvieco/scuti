@@ -4,7 +4,6 @@ import {BoardState, CellState, ConnectionStatus, GameStage, Id, User, withPayloa
 export const connectionStatusUpdated = createAction("CONNECTION_STATUS_CHANGED",
     withPayloadType<{
       newStatus: ConnectionStatus
-      sid: string
     }>())
 
 export const createNewGame = createAction("CREATE_NEW_GAME",

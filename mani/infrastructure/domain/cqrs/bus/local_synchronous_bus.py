@@ -1,5 +1,6 @@
-from typing import Callable, Type, Dict, Any
+from typing import Any, Callable, Dict, Type
 
+from injector import inject
 from plum import dispatch
 
 from mani.domain.cqrs.bus.exceptions import AlreadyRegisteredEffect, NoHandlerForEffect
@@ -9,6 +10,7 @@ SynchronousEffectHandler = Callable[[Effect], Dict[str, Any]]
 
 
 class LocalSynchronousBus:
+    @inject
     def __init__(self):
         self._handlers: Dict[Type[Effect], SynchronousEffectHandler] = {}
 

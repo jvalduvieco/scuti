@@ -6,6 +6,7 @@ from injector import Module, Scope
 
 from mani.domain.cqrs.bus.effect_handler import EffectHandler
 from mani.domain.cqrs.effects import Command
+from mani.infrastructure.threading.thread import Thread
 
 
 class DomainModule(ABC):
@@ -21,5 +22,5 @@ class DomainModule(ABC):
     def effect_handlers(self) -> List[Type[EffectHandler]]:
         return []
 
-    def processes(self) -> List[Callable]:
+    def processes(self) -> List[Type[Thread]]:
         return []

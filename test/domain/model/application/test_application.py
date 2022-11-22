@@ -1,9 +1,10 @@
 import unittest
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, replace
-from typing import Type, List, Tuple, Callable
+from typing import List, Tuple, Type
+from unittest import skip
 
-from injector import Module, Scope, SingletonScope, Binder
+from injector import Binder, Module, Scope, SingletonScope, inject
 from plum import dispatch
 
 from mani.domain.cqrs.bus.command_bus import CommandBus
@@ -11,13 +12,13 @@ from mani.domain.cqrs.bus.event_bus import EventBus
 from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect
 from mani.domain.cqrs.bus.query_bus import QueryBus
 from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
-from mani.domain.cqrs.effects import Command, Query, Event
+from mani.domain.cqrs.effects import Command, Event, Query
 from mani.domain.model.application.domain_application import DomainApplication
 from mani.domain.model.modules import DomainModule
 from mani.domain.model.repository.repository import Repository
-from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
 from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
 from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
+from mani.infrastructure.threading.thread import Thread
 
 
 class TestApplication(unittest.TestCase):
@@ -110,6 +111,7 @@ class TestApplication(unittest.TestCase):
         app = DomainApplication(config=config, domains=domains)
         with self.assertRaises(NoHandlerForEffect):
             app.start()
+        app.stop()
 
     def test_domain_modules_can_register_effect_handlers(self):
         @dataclass(frozen=True)
@@ -147,7 +149,8 @@ class TestApplication(unittest.TestCase):
         app.start()
         # TODO Improve assertions
         app.command_bus.handle(ACommand())
-        app.event_bus.handle([AnEvent()])
+        app.event_bus.handle(AnEvent())
+        app.stop()
         self.assertEqual({"result": "query handled"}, app.query_bus.handle(AQuery()))
 
     def test_domain_modules_can_register_effect_handlers_with_external_state(self):
@@ -207,22 +210,41 @@ class TestApplication(unittest.TestCase):
         subject_id = UuidId()
         app.command_bus.handle(Create(subject_id=subject_id, some_data=23))
         app.event_bus.handle(SubjectChanged(subject_id=subject_id, some_data=44))
-        app.injector().get(AsynchronousBus).drain()
+        # app.injector().get(AsynchronousBus).drain()
+        app.stop()
         self.assertEqual({"result": 67}, app.query_bus.handle(AQuery(subject_id=subject_id)))
 
     def test_domain_modules_can_define_a_list_processes_that_are_executed_on_starting_application(self):
-        def i_die():
-            raise ValueError("Thread is being executed")
+        @dataclass(frozen=True)
+        class AnEvent(Event):
+            a_prop: int
+
+        class IDie(Thread):
+            ran = False
+            @inject
+            def __init__(self, event_bus: EventBus):
+                super().__init__()
+                self.__event_bus = event_bus
+
+            def get_name(self):
+                return "IDie"
+
+            def execute(self):
+                IDie.ran = True
+
+            def wants_to_stop(self):
+                pass
 
         class DummyDomainModule(DomainModule):
-            def processes(self) -> List[Callable]:
+            def processes(self) -> List[Type[Thread]]:
                 return [
-                    i_die()
+                    IDie
                 ]
 
         config = {}
         domains = [DummyDomainModule]
         app = DomainApplication(config=config, domains=domains)
-        with self.assertRaises(ValueError):
-            app.start()
+        called_event_handlers = []
+        app.start()
         app.stop()
+        self.assertEqual(True, IDie.ran)

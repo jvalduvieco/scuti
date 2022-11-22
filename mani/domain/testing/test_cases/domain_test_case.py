@@ -5,7 +5,7 @@ from hamcrest import assert_that
 from hamcrest.core.matcher import Matcher
 from plum import dispatch
 
-from mani.domain.cqrs.bus.events import EffectErrors
+from mani.domain.errors import ErrorEvent
 from mani.domain.cqrs.effect_store.effect_store import EffectStore
 from mani.domain.cqrs.effects import Command, Event, Query, Effect
 from mani.domain.model.application.domain_application import DomainApplication
@@ -47,7 +47,7 @@ class DomainTestCase(TestCase):
 
     def assertThatHandledEffects(self, something: Matcher, expect_errors: bool = False):
         effects = self.handled_effects()
-        errors = list(filter(lambda e: issubclass(e.__class__, EffectErrors), effects))
+        errors = list(filter(lambda e: issubclass(e.__class__, ErrorEvent), effects))
         if errors and not expect_errors:
             for index, error in enumerate(errors):
                 self.__print_error(error, index)
@@ -65,7 +65,7 @@ class DomainTestCase(TestCase):
     def __feed_effect(self, event: Event) -> None:
         self.app.event_bus.handle(event)
 
-    def __print_error(self, e: EffectErrors, index: int):
+    def __print_error(self, e: ErrorEvent, index: int):
         prepared_stack_trace = e.stack_trace
         logger.error(f"### {index} ###")
         logger.error(

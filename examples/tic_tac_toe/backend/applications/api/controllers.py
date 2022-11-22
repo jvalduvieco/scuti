@@ -47,6 +47,7 @@ def query_controller(query_bus: QueryBus, available_queries: Dict[str, Type[Quer
             raise err
 
         result = query_bus.handle(query)
+
         return to_javascript(result), 200
 
     return dispatch_query_request

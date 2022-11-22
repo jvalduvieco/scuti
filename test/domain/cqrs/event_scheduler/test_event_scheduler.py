@@ -5,7 +5,7 @@ from mani.domain.cqrs.effects import Event
 from mani.domain.time.units import Millisecond
 from mani.infrastructure.domain.cqrs.event_scheduler.scheduled_events_store_in_memory import \
     ScheduledEventsStoreInMemory
-from mani.infrastructure.domain.time.MonotonicClock.fake_monotonic_clock import FakeMonotonicClock
+from mani.infrastructure.time.MonotonicClock.fake_monotonic_clock import FakeMonotonicClock
 
 
 @dataclass(frozen=True)

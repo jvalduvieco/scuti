@@ -1,5 +1,5 @@
-from dataclasses import field, dataclass
-from typing import List, Type, Callable, Dict, Protocol, cast, Any, Optional
+from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional, Protocol, Type, cast
 
 import plum
 from plum import Signature
@@ -29,6 +29,8 @@ def inspect(a_plum_overloaded_callable: Callable, should_ignore_self: bool = Fal
             annotations_to_retrieve: List[str] = None) -> Dict[int, InspectionResult]:
     result = {}
     annotations_to_retrieve = annotations_to_retrieve or []
+    if not hasattr(a_plum_overloaded_callable, 'methods'):
+        raise ValueError(f"{a_plum_overloaded_callable} is not a plum method, can not be used as handler")
     methods = cast(PlumWrapper, a_plum_overloaded_callable).methods
     for index, (parameters, (function, _return_type)) in enumerate(methods.items()):
         types = _plum_parameter_types(parameters)
