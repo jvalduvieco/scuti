@@ -13,7 +13,8 @@ class LocalAsynchronousBus(AsynchronousBus):
         self.__bus_hooks: List[BusHook] = []
         self.__handlers = {}
         self.__items = queue.Queue()
-        self.__condition = Condition()
+        self.__should_be_awake = Condition()
+        self.__shutdown_requested = False
 
     def drain(self, block: bool = False) -> None:
         while item := self.__get_item(block):
@@ -39,11 +40,12 @@ class LocalAsynchronousBus(AsynchronousBus):
             self.__handlers[item_type] = [(handler, human_friendly_name)]
 
     def handle(self, item: Effect):
-        self.__condition.acquire()
-        [hook.on_handle(item) for hook in self.__bus_hooks]
-        self.__items.put(item)
-        self.__condition.notify_all()
-        self.__condition.release()
+        if self.__shutdown_requested:
+            raise RuntimeError("Can not handle, shutdown requested")
+        with self.__should_be_awake:
+            [hook.on_handle(item) for hook in self.__bus_hooks]
+            self.__items.put(item)
+            self.__should_be_awake.notify_all()
 
     def handles(self, item_type: Type[Effect]):
         return item_type in self.__handlers
@@ -57,18 +59,17 @@ class LocalAsynchronousBus(AsynchronousBus):
     def register_hook(self, hook: BusHook):
         self.__bus_hooks.append(hook)
 
-    def wake_up(self):
-        self.__condition.acquire()
-        self.__condition.notify_all()
-        self.__condition.release()
+    def shutdown(self):
+        self.__shutdown_requested = True
+        with self.__should_be_awake:
+            self.__should_be_awake.notify_all()
 
     def __get_item(self, block: bool):
-        self.__condition.acquire()
-        if block:
-            self.__condition.wait()
-        try:
-            return self.__items.get(block=False)
-        except queue.Empty:
-            pass
-        self.__condition.release()
+        with self.__should_be_awake:
+            if self.__items.empty() and block and not self.__shutdown_requested:
+                self.__should_be_awake.wait()
+            try:
+                return self.__items.get(block=False)
+            except queue.Empty:
+                pass
         return None

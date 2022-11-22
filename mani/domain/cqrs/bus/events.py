@@ -1,17 +1,11 @@
 from dataclasses import dataclass
-from types import TracebackType
 
-from mani.domain.cqrs.effects import Event, Effect
-
-
-@dataclass(frozen=True)
-class EffectErrors(Event):
-    error: str
-    stack_trace: TracebackType | None
+from mani.domain.cqrs.effects import Effect
+from mani.domain.errors import ErrorEvent
 
 
 @dataclass(frozen=True)
-class BusHandlerFailed(EffectErrors):
+class BusHandlerFailed(ErrorEvent):
     effect: Effect
 
     @classmethod
@@ -22,7 +16,7 @@ class BusHandlerFailed(EffectErrors):
 
 
 @dataclass(frozen=True)
-class InfrastructureError(EffectErrors):
+class InfrastructureError(ErrorEvent):
     pass
 
     @classmethod

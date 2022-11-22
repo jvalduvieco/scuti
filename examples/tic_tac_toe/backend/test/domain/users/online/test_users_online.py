@@ -4,7 +4,7 @@ from domain.users.online.events import UserConnected, UserDisconnected
 from domain.users.online.queries import GetUsersOnline
 from domain.users.online.users_online_handler import UsersOnlineHandler, UsersOnlineState
 from mani.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
-from mani.infrastructure.domain.time.WallClock.fake_wall_clock import FakeWallClock
+from mani.infrastructure.time.WallClock.fake_wall_clock import FakeWallClock
 from test.tools.domain.fixtures import a_perfect_date_and_time
 
 

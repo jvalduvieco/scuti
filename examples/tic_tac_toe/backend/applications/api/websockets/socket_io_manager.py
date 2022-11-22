@@ -38,10 +38,11 @@ class SocketIOManager(EffectHandler):
     @dispatch
     def handle(self, event: SessionDisconnected):
         user_id = self._sessions.by_session_id(event.session_id)
-        self._sessions.remove(event.session_id)
-        self._socketio_app.leave_room(event.session_id, str(user_id))
-        self._socketio_app.close_room(str(user_id))
-        self._event_bus.handle(UserDisconnected(id=user_id, operation_id=OperationId()))
+        if user_id is not None:
+            self._sessions.remove(event.session_id)
+            self._socketio_app.leave_room(event.session_id, str(user_id))
+            self._socketio_app.close_room(str(user_id))
+            self._event_bus.handle(UserDisconnected(id=user_id, operation_id=OperationId()))
 
     @dispatch
     def handle(self, event: GameEnded):

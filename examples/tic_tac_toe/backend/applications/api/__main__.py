@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import List, Type
 
 from applications.api.application_infrastructure_module import ApplicationInfrastructureModule
-from applications.api.bus_error_handler import BusErrorHandler
 from applications.api.cqrs_api_app import CQRSAPIApp
 from applications.api.websockets.commands import AssociateUserToSession
 from applications.api.websockets.events import SessionDisconnected
@@ -58,10 +57,12 @@ def main():
     config = TicTacToeConfig(host="0.0.0.0", port=8080)
 
     domain = DomainApplication(domains=domains, config=config.__dict__)
-    api_app = CQRSAPIApp(domain, config, accepted_commands, events_to_publish,
+    api_app = CQRSAPIApp(domain,
+                         config=config,
+                         accepted_commands=accepted_commands,
+                         events_to_publish=events_to_publish,
                          accepted_events=accepted_events,
-                         accepted_queries=accepted_queries,
-                         bus_error_effect_handler=BusErrorHandler)
+                         accepted_queries=accepted_queries)
     logger.info(f"API listening on: {config.host}:{config.port}")
 
     api_app.start()

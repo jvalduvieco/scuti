@@ -22,17 +22,14 @@ import {AppRoutes} from "./TicTacToeRoutes";
 const buildSocketIoMiddleware = () => {
   const socket = io(BACKEND_URL);
   const socketIoMiddleware = createSocketIoMiddleware(socket, "server/");
-  socket.on("connect", (socket: { id: string; }) => store.dispatch(connectionStatusUpdated({
-    newStatus: "Online",
-    sid: socket.id
+  socket.on("connect", () => store.dispatch(connectionStatusUpdated({
+    newStatus: "Online"
   })));
-  socket.on("reconnect", (socket: { id: string; }) => store.dispatch(connectionStatusUpdated({
-    newStatus: "Online",
-    sid: socket.id
+  socket.on("reconnect", () => store.dispatch(connectionStatusUpdated({
+    newStatus: "Online"
   })));
   socket.on("disconnect", (socket: { id: string; }) => store.dispatch(connectionStatusUpdated({
-    newStatus: "Offline",
-    sid: socket.id
+    newStatus: "Offline"
   })));
   return socketIoMiddleware;
 }

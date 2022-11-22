@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Type, Callable
+from typing import Callable, Type
 
 from mani.domain.cqrs.bus.hooks.bus_hook import BusHook
 from mani.domain.cqrs.effects import Effect
@@ -28,4 +28,8 @@ class AsynchronousBus(ABC):
 
     @abstractmethod
     def register_hook(self, hook: BusHook):
+        pass
+
+    @abstractmethod
+    def shutdown(self):
         pass
