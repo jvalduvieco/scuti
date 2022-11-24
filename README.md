@@ -1,5 +1,6 @@
 # Scuti mini framework
-![build status](https://github.com/jvalduvieco/scuti/actions/workflows/ci.yml/badge.svg)
+![build status](https://github.com/jvalduvieco/scuti/actions/workflows/ci.yml/badge.svg) [![PyPI version]
+(https://badge.fury.io/py/scuti.svg)](https://badge.fury.io/py/scuti)
 
 A small CQS inspired framework with many things.
 
