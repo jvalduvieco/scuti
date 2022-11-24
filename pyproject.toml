@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mani-fwk"
+name = "scuti"
 version = "0.0.2"
 authors = [
     { name = "Joan Valduvieco", email = "jvalduvieco@gmail.com" },
@@ -32,11 +32,11 @@ exclude = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["mani"]
+packages = ["scuti"]
 
 [publish.index.repos.private]
 url = "https://test.pypi.org/legacy/"
 
 [project.urls]
-"Homepage" = "https://github.com/jvalduvieco/mani"
-"Bug Tracker" = "https://github.com/jvalduvieco/mani/issues"
+"Homepage" = "https://github.com/jvalduvieco/scuti"
+"Bug Tracker" = "https://github.com/jvalduvieco/scuti/issues"

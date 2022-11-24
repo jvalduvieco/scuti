@@ -8,10 +8,10 @@ from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
 
-from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent, CancelScheduledEvents
-from mani.domain.testing.matchers.any_id import match_any_id
-from mani.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
-from mani.domain.time.units import Millisecond
+from scuti.domain.cqrs.event_scheduler.commands import ScheduleEvent, CancelScheduledEvents
+from scuti.domain.testing.matchers.any_id import match_any_id
+from scuti.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
+from scuti.domain.time.units import Millisecond
 
 
 class TestTicTacToeGame(EffectHandlerTestCase):

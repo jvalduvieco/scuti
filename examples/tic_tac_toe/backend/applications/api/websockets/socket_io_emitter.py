@@ -7,10 +7,10 @@ from domain.games.tic_tac_toe.events import BoardUpdated, GameEnded, GameStarted
 from domain.users.events import UserInvited
 from domain.users.online.events import UserConnected
 from injector import inject
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
-from mani.domain.cqrs.effects import Event
-from mani.infrastructure.logging.get_logger import get_logger
-from mani.infrastructure.tools.string import camel_to_lower_snake
+from scuti.domain.cqrs.bus.effect_handler import EffectHandler
+from scuti.domain.cqrs.effects import Event
+from scuti.infrastructure.logging.get_logger import get_logger
+from scuti.infrastructure.tools.string import camel_to_lower_snake
 from plum import dispatch
 
 logger = get_logger(__name__)

@@ -10,11 +10,11 @@ from domain.games.tic_tac_toe.events import GameEnded, GameStateReadyToBeCleaned
 from domain.operation_id import OperationId
 from domain.users.events import PlayerJoinedAGame
 from domain.users.online.events import UserDisconnected
-from mani.domain.cqrs.bus.command_bus import CommandBus
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
-from mani.domain.cqrs.bus.event_bus import EventBus
-from mani.domain.cqrs.event_scheduler.commands import ScheduleEvent
-from mani.domain.time.units import Millisecond
+from scuti.domain.cqrs.bus.command_bus import CommandBus
+from scuti.domain.cqrs.bus.effect_handler import EffectHandler
+from scuti.domain.cqrs.bus.event_bus import EventBus
+from scuti.domain.cqrs.event_scheduler.commands import ScheduleEvent
+from scuti.domain.time.units import Millisecond
 
 
 class SocketIOManager(EffectHandler):
@@ -44,12 +44,6 @@ class SocketIOManager(EffectHandler):
             self._socketio_app.leave_room(event.session_id, str(user_id))
             self._socketio_app.close_room(str(user_id))
             self._event_bus.handle(UserDisconnected(id=user_id, operation_id=OperationId()))
-
-    @dispatch
-    def handle(self, event: GameEnded):
-        self._command_bus.handle(ScheduleEvent(GameStateReadyToBeCleaned(game_id=event.game_id),
-                                               when=Millisecond(10000), key=str(event.game_id),
-                                               operation_id=OperationId()))
 
     @dispatch
     def handle(self, event: GameStateReadyToBeCleaned):

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from mani.domain.model.identifiable.identifier import Identifier
-from mani.domain.testing.matchers.any_id import match_any_id
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.domain.model.identifiable.identifier import Identifier
+from scuti.domain.testing.matchers.any_id import match_any_id
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
 
 
 class TestAnyId(TestCase):

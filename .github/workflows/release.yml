@@ -17,7 +17,7 @@ jobs:
       - name: ⚙️ Install pipenv
         run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
 
-      - name: ⚙️ Install mani dependencies
+      - name: ⚙️ Install scuti dependencies
         run: pipenv install --dev
 
       - name: 🐝 Build the package

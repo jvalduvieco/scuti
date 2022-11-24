@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from unittest import TestCase
 
-from mani.infrastructure.domain.model.store.in_memory_store import InMemoryStore
+from scuti.infrastructure.domain.model.store.in_memory_store import InMemoryStore
 
 
 @dataclass(frozen=True)

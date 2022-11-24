@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from unittest import TestCase
 
-from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect, AlreadyRegisteredEffect
-from mani.domain.cqrs.effects import Command
-from mani.infrastructure.domain.cqrs.bus.command_bus_facade import CommandBusFacade
-from mani.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
+from scuti.domain.cqrs.bus.exceptions import NoHandlerForEffect, AlreadyRegisteredEffect
+from scuti.domain.cqrs.effects import Command
+from scuti.infrastructure.domain.cqrs.bus.command_bus_facade import CommandBusFacade
+from scuti.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
 
 
 @dataclass(frozen=True)

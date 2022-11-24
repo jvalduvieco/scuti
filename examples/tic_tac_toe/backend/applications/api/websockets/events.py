@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from mani.domain.cqrs.effects import Event
+from scuti.domain.cqrs.effects import Event
 
 
 @dataclass(frozen=True)

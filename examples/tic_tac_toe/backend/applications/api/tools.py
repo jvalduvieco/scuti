@@ -1,7 +1,7 @@
 from typing import List, Dict
 
-from mani.infrastructure.tools.dict import apply_to_keys
-from mani.infrastructure.tools.string import camel_to_lower_snake, snake_to_lower_camel
+from scuti.infrastructure.tools.dict import apply_to_keys
+from scuti.infrastructure.tools.string import camel_to_lower_snake, snake_to_lower_camel
 
 
 def to_message_response(message: str):

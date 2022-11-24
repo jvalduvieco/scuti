@@ -7,7 +7,7 @@ from domain.users.events import UserCreated, UserUpdated
 from domain.users.user import User
 from domain.users.user_handler import UserHandler
 
-from mani.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
+from scuti.domain.testing.test_cases.effect_handler_test_case import EffectHandlerTestCase
 
 
 class UserTestCase(EffectHandlerTestCase):

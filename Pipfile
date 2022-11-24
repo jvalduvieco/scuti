@@ -5,6 +5,7 @@ name = "pypi"
 
 [scripts]
 test = "python3 -m unittest"
+docs = "cd examples/tic_tac_toe/backend; pipenv docs"
 
 [packages]
 injector = "*"
@@ -17,6 +18,8 @@ pyprctl = "*"
 parameterized = "*"
 pipenv-setup = "*"
 vistir = "==0.6.1"
+pycco = "*"
+watchdog = "*"
 
 [requires]
 python_version = "3.10"

@@ -1,4 +1,4 @@
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
 
 
 class GameId(UuidId):

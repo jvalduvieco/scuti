@@ -7,18 +7,18 @@ from unittest import skip
 from injector import Binder, Module, Scope, SingletonScope, inject
 from plum import dispatch
 
-from mani.domain.cqrs.bus.command_bus import CommandBus
-from mani.domain.cqrs.bus.event_bus import EventBus
-from mani.domain.cqrs.bus.exceptions import NoHandlerForEffect
-from mani.domain.cqrs.bus.query_bus import QueryBus
-from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
-from mani.domain.cqrs.effects import Command, Event, Query
-from mani.domain.model.application.domain_application import DomainApplication
-from mani.domain.model.modules import DomainModule
-from mani.domain.model.repository.repository import Repository
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
-from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
-from mani.infrastructure.threading.thread import Thread
+from scuti.domain.cqrs.bus.command_bus import CommandBus
+from scuti.domain.cqrs.bus.event_bus import EventBus
+from scuti.domain.cqrs.bus.exceptions import NoHandlerForEffect
+from scuti.domain.cqrs.bus.query_bus import QueryBus
+from scuti.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
+from scuti.domain.cqrs.effects import Command, Event, Query
+from scuti.domain.model.application.domain_application import DomainApplication
+from scuti.domain.model.modules import DomainModule
+from scuti.domain.model.repository.repository import Repository
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
+from scuti.infrastructure.threading.thread import Thread
 
 
 class TestApplication(unittest.TestCase):

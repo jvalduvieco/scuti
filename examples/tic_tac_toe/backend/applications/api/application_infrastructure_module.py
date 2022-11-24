@@ -5,8 +5,8 @@ from applications.api.websockets.sessions.session_repository import SessionRepos
 from applications.api.websockets.sessions.session_repository_in_memory import SessionRepositoryInMemory
 from applications.api.websockets.socket_io_manager import SocketIOManager
 from injector import Binder, Module, Scope, SingletonScope
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
-from mani.domain.model.modules import DomainModule
+from scuti.domain.cqrs.bus.effect_handler import EffectHandler
+from scuti.domain.model.modules import DomainModule
 
 
 class ApplicationModule(Module):

@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from unittest import TestCase
 
-from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntity
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
-from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
+from scuti.domain.model.identifiable.identifiable_entity import IdentifiableEntity
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
 
 
 @dataclass(frozen=True)

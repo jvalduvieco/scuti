@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mani.infrastructure.tools.string import camel_to_lower_snake, snake_to_lower_camel, snake_to_upper_camel
+from scuti.infrastructure.tools.string import camel_to_lower_snake, snake_to_lower_camel, snake_to_upper_camel
 
 
 class TestStringTools(TestCase):

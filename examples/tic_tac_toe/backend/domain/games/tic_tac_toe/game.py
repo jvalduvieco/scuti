@@ -1,21 +1,29 @@
 from dataclasses import dataclass, field, replace
-from typing import Optional, List
+from typing import List, Optional
 
 from domain.games.tic_tac_toe.board import TicTacToeBoard
 from domain.games.tic_tac_toe.types import GameStage
 from domain.games.types import GameId, UserId
+from scuti.domain.model.identifiable.identifiable_entity import IdentifiableEntity
 
-from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntity
+"""
+State is represented using frozen dataclasses. State classes are understood as a representation of system state in a 
+given point in time. To better represent state mutations immutable dataclasses are used so an evolution in the state 
+implies a new name making concepts clearer
+"""
 
 
 @dataclass(frozen=True)
-class GameWaitingForPlayers:
+class GameWaitingForPlayers(IdentifiableEntity[GameId]):
     id: GameId
     players: List[UserId] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class GameInProgress(IdentifiableEntity[GameId]):
+    """
+    Each state stage can have its own properties and methods to derive state or mutate
+    """
     id: GameId
     board: TicTacToeBoard
     stage: GameStage

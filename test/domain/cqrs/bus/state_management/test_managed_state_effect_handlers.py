@@ -6,15 +6,15 @@ from hamcrest import has_item, instance_of
 from injector import Scope, Module, SingletonScope
 from plum import dispatch, NotFoundLookupError
 
-from mani.domain.cqrs.bus.events import BusHandlerFailed
-from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
-from mani.domain.cqrs.bus.state_management.evolve import evolve
-from mani.domain.cqrs.effects import Command, Query, Event
-from mani.domain.model.modules import DomainModule
-from mani.domain.model.repository.repository import Repository
-from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
-from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
+from scuti.domain.cqrs.bus.events import BusHandlerFailed
+from scuti.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
+from scuti.domain.cqrs.bus.state_management.evolve import evolve
+from scuti.domain.cqrs.effects import Command, Query, Event
+from scuti.domain.model.modules import DomainModule
+from scuti.domain.model.repository.repository import Repository
+from scuti.domain.testing.test_cases.domain_test_case import DomainTestCase
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
 
 _BySubjectId = lambda e, r: r.by_id(e.subject_id)
 

@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from parameterized import parameterized_class
 
-from mani.infrastructure.domain.model.identifiable.string_id import StringId
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.infrastructure.domain.model.identifiable.string_id import StringId
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
 
 
 @parameterized_class(('type', 'expected'), [
