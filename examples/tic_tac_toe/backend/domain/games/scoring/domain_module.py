@@ -8,7 +8,7 @@ from infrastructure.domain.games.scoring.top_three_store_in_memory import TopThr
 from infrastructure.domain.games.scoring.user_score_repository_in_memory import UserScoreRepositoryInMemory
 from injector import Module, Scope, SingletonScope
 
-from mani.domain.model.modules import DomainModule
+from scuti.domain.model.modules import DomainModule
 
 
 class ScoringDomainModule(DomainModule):

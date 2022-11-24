@@ -4,8 +4,8 @@ from typing import List, Optional
 from domain.games.tic_tac_toe.types import GameErrorReasons, GameStage
 from domain.games.types import GameId, UserId
 from domain.operation_id import OperationId
-from mani.domain.cqrs.effects import Event
-from mani.domain.time.units import Millisecond
+from scuti.domain.cqrs.effects import Event
+from scuti.domain.time.units import Millisecond
 
 TicTacToeBoardAsLists = List[List[UserId]]
 

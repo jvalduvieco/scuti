@@ -8,12 +8,12 @@ from domain.games.tic_tac_toe.events import GameEnded
 from domain.games.tic_tac_toe.types import GameStage
 from domain.games.types import UserId, GameId
 from domain.operation_id import OperationId
-from domain.users.domain_module import UserDomainModule
+from domain.users.users_domain_module import UserDomainModule
 from domain.users.events import UserCreated
 from domain.users.user import User
 from hamcrest import has_item, not_, instance_of
 
-from mani.domain.testing.test_cases.domain_test_case import DomainTestCase
+from scuti.domain.testing.test_cases.domain_test_case import DomainTestCase
 
 
 class ScoringTestCase(DomainTestCase):

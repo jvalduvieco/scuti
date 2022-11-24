@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from domain.games.types import UserId
-from mani.domain.cqrs.effects import Command
+from scuti.domain.cqrs.effects import Command
 
 
 @dataclass(frozen=True)

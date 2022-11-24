@@ -3,7 +3,7 @@ from typing import Union
 
 from plum import dispatch
 
-from mani.infrastructure.registering.inspection.plum_inspection import inspect, InspectionResult
+from scuti.infrastructure.registering.inspection.plum_inspection import inspect, InspectionResult
 from test.infrastructure.registering.inspection.fixtures import ANicePlumHandler, ACreationalCommand, SomeState, \
     ANiceCommand, ANiceEvent, \
     ANotSoNiceCommand, AStinkyCommand

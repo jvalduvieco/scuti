@@ -7,8 +7,8 @@ from domain.users.user import User
 from domain.users.user_repository import ById
 from plum import dispatch
 
-from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
-from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
+from scuti.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
+from scuti.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher
 
 
 class UserHandler(ManagedStateEffectHandler):

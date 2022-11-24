@@ -1,18 +1,24 @@
 from typing import Dict, Type
 
-from applications.api.tools import from_javascript, to_javascript, to_message_response
 from flask import request
-from mani.domain.cqrs.bus.command_bus import CommandBus
-from mani.domain.cqrs.bus.event_bus import EventBus
-from mani.domain.cqrs.bus.query_bus import QueryBus
-from mani.domain.cqrs.effects import Command, Event, Query
-from mani.infrastructure.logging.get_logger import get_logger
-from mani.infrastructure.serialization.from_untyped_dict import from_untyped_dict
+
+from applications.api.tools import from_javascript, to_javascript, to_message_response
+from scuti.domain.cqrs.bus.command_bus import CommandBus
+from scuti.domain.cqrs.bus.event_bus import EventBus
+from scuti.domain.cqrs.bus.query_bus import QueryBus
+from scuti.domain.cqrs.effects import Command, Event, Query
+from scuti.infrastructure.logging.get_logger import get_logger
+from scuti.infrastructure.serialization.from_untyped_dict import from_untyped_dict
 
 logger = get_logger(__name__)
 
 
 def command_controller(command_bus: CommandBus, available_commands: Dict[str, Type[Command]]):
+    """
+    Controllers just feed effects to the proper bus. This usually requires deserializing effect and call `handle`method
+    of the bus
+    """
+
     def dispatch_command_request():
         client_request = request.get_json()
         logger.debug("Command received: %s", client_request["command"])
@@ -32,6 +38,11 @@ def command_controller(command_bus: CommandBus, available_commands: Dict[str, Ty
 
 
 def query_controller(query_bus: QueryBus, available_queries: Dict[str, Type[Query]]):
+    """
+    Queries are resolved synchronously using flask thread. So they return query answer using HTTP encoded in a json
+    text
+    """
+
     def dispatch_query_request():
         client_request = request.get_json()
         logger.debug("Query received: %s", client_request["query"])
@@ -54,6 +65,11 @@ def query_controller(query_bus: QueryBus, available_queries: Dict[str, Type[Quer
 
 
 def event_controller(event_bus: EventBus, available_events: Dict[str, Type[Event]]):
+    """
+    This endpoint is used to receive events from other applications TO this application. So the event happens somewhere
+    else, and it is forwarded by the other system to this application using HTTP POSTs to `/events` endpoint.
+    """
+
     def dispatch_event_request():
         client_request = request.get_json()
         logger.debug("Event received: %s", client_request["event"])

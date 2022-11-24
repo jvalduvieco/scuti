@@ -3,7 +3,7 @@ from typing import List
 
 from domain.games.types import UserId
 from domain.operation_id import OperationId
-from mani.domain.cqrs.effects import Event
+from scuti.domain.cqrs.effects import Event
 
 
 @dataclass(frozen=True)

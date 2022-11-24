@@ -3,8 +3,8 @@ from domain.games.scoring.queries import GetTopThreePlayers
 from domain.games.scoring.top_three_list import TopThreeList
 from plum import dispatch
 
-from mani.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
-from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, Singleton
+from scuti.domain.cqrs.bus.effect_handler import ManagedStateEffectHandler
+from scuti.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, Singleton
 
 
 class TopThreeHandler(ManagedStateEffectHandler):

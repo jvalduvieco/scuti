@@ -4,11 +4,11 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from mani.domain.cqrs.bus.exceptions import AlreadyRegisteredEffect, NoHandlerForEffect
-from mani.domain.cqrs.bus.query_bus import QueryBus
-from mani.domain.cqrs.bus.query_handler import QueryHandler
-from mani.domain.cqrs.effects import Query
-from mani.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
+from scuti.domain.cqrs.bus.exceptions import AlreadyRegisteredEffect, NoHandlerForEffect
+from scuti.domain.cqrs.bus.query_bus import QueryBus
+from scuti.domain.cqrs.bus.query_handler import QueryHandler
+from scuti.domain.cqrs.effects import Query
+from scuti.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
 
 
 def a_simple_handler(_: Query) -> Dict:

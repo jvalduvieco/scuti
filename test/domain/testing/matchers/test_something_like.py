@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from hamcrest import assert_that, contains_exactly
 
-from mani.domain.testing.matchers.something_like import SomethingLike
+from scuti.domain.testing.matchers.something_like import SomethingLike
 
 
 class TestSomethingLike(TestCase):

@@ -6,23 +6,23 @@ from typing import Tuple, List
 from injector import Injector, SingletonScope
 from plum import dispatch
 
-from mani.domain.cqrs.bus.command_bus import CommandBus
-from mani.domain.cqrs.bus.effect_handler import EffectHandler
-from mani.domain.cqrs.bus.event_bus import EventBus
-from mani.domain.cqrs.bus.query_bus import QueryBus
-from mani.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, All
-from mani.domain.cqrs.effects import Command, Effect
-from mani.domain.model.identifiable.identifiable_entity import IdentifiableEntity
-from mani.domain.model.repository.repository import Repository
-from mani.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
-from mani.infrastructure.domain.cqrs.bus.build_effect_handlers.state_managing_effect_handler import \
+from scuti.domain.cqrs.bus.command_bus import CommandBus
+from scuti.domain.cqrs.bus.effect_handler import EffectHandler
+from scuti.domain.cqrs.bus.event_bus import EventBus
+from scuti.domain.cqrs.bus.query_bus import QueryBus
+from scuti.domain.cqrs.bus.state_management.effect_to_state_mapping import state_fetcher, All
+from scuti.domain.cqrs.effects import Command, Effect
+from scuti.domain.model.identifiable.identifiable_entity import IdentifiableEntity
+from scuti.domain.model.repository.repository import Repository
+from scuti.infrastructure.domain.cqrs.bus.asynchronous_bus import AsynchronousBus
+from scuti.infrastructure.domain.cqrs.bus.build_effect_handlers.asynchronous_state_managing_effect_handler import \
     build_asynchronous_state_managing_class_effect_handler
-from mani.infrastructure.domain.cqrs.bus.command_bus_facade import CommandBusFacade
-from mani.infrastructure.domain.cqrs.bus.event_bus_facade import EventBusFacade
-from mani.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
-from mani.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
-from mani.infrastructure.domain.model.identifiable.uuid_id import UuidId
-from mani.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
+from scuti.infrastructure.domain.cqrs.bus.command_bus_facade import CommandBusFacade
+from scuti.infrastructure.domain.cqrs.bus.event_bus_facade import EventBusFacade
+from scuti.infrastructure.domain.cqrs.bus.local_asynchronous_bus import LocalAsynchronousBus
+from scuti.infrastructure.domain.cqrs.bus.local_synchronous_query_bus import LocalSynchronousQueryBus
+from scuti.infrastructure.domain.model.identifiable.uuid_id import UuidId
+from scuti.infrastructure.domain.model.repository.in_memory_repository import InMemoryRepository
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,7 @@ import logging
 
 import socketio
 from flask import Flask
-from mani.infrastructure.logging.get_logger import get_logger
+from scuti.infrastructure.logging.get_logger import get_logger
 
 logger = get_logger(__name__)
 

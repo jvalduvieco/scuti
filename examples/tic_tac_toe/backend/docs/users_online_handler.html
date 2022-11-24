@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>users_online_handler.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>users_online_handler.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">domain.games.types</span> <span class="kn">import</span> <span class="n">UserId</span>
+<span class="kn">from</span> <span class="nn">domain.users.online.events</span> <span class="kn">import</span> <span class="n">UserConnected</span><span class="p">,</span> <span class="n">UserDisconnected</span><span class="p">,</span> <span class="n">UsersOnlineUpdated</span>
+<span class="kn">from</span> <span class="nn">domain.users.online.queries</span> <span class="kn">import</span> <span class="n">GetUsersOnline</span>
+<span class="kn">from</span> <span class="nn">injector</span> <span class="kn">import</span> <span class="n">inject</span>
+<span class="kn">from</span> <span class="nn">plum</span> <span class="kn">import</span> <span class="n">dispatch</span>
+
+<span class="kn">from</span> <span class="nn">scuti.domain.cqrs.bus.effect_handler</span> <span class="kn">import</span> <span class="n">ManagedStateEffectHandler</span>
+<span class="kn">from</span> <span class="nn">scuti.domain.cqrs.bus.state_management.effect_to_state_mapping</span> <span class="kn">import</span> <span class="n">state_fetcher</span><span class="p">,</span> <span class="n">Singleton</span>
+<span class="kn">from</span> <span class="nn">scuti.domain.time.wall_clock</span> <span class="kn">import</span> <span class="n">WallClock</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>As you can see effect handlers dependencies can be injected</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">UsersOnlineState</span><span class="p">:</span>
+    <span class="n">online_users</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">UserId</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UsersOnlineHandler</span><span class="p">(</span><span class="n">ManagedStateEffectHandler</span><span class="p">):</span>
+    <span class="nd">@inject</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clock</span><span class="p">:</span> <span class="n">WallClock</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">_clock</span> <span class="o">=</span> <span class="n">clock</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>These handlers act as a singleton, so there will be only one instance in the domain. A predefined
+<code>Singleton</code> state fetcher is available for you.
+In case multiple stages can be handled, use a Union</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="nd">@dispatch</span>
+    <span class="nd">@state_fetcher</span><span class="p">(</span><span class="n">Singleton</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">UsersOnlineState</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="n">UserConnected</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">UsersOnlineState</span><span class="p">()</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">online_users</span><span class="p">[</span><span class="n">effect</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">UsersOnlineUpdated</span><span class="p">(</span><span class="n">online_users</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">online_users</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">parent_operation_id</span><span class="o">=</span><span class="n">effect</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Handlers can also answer queries about its internal state. Usually query responses are modeled as
+dictionaries as this data is leaving the domain very quickly so no need for type hinting or synchronization
+between code in the domain. This is a developer decision, dataclasses could be used.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="nd">@dispatch</span>
+    <span class="nd">@state_fetcher</span><span class="p">(</span><span class="n">Singleton</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">UsersOnlineState</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="n">UserDisconnected</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="p">[]</span>
+        <span class="k">del</span> <span class="n">state</span><span class="o">.</span><span class="n">online_users</span><span class="p">[</span><span class="n">effect</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="p">[</span>
+            <span class="n">UsersOnlineUpdated</span><span class="p">(</span><span class="n">online_users</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">online_users</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">parent_operation_id</span><span class="o">=</span><span class="n">effect</span><span class="o">.</span><span class="n">operation_id</span><span class="p">)]</span>
+
+    <span class="nd">@dispatch</span>
+    <span class="nd">@state_fetcher</span><span class="p">(</span><span class="n">Singleton</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">UsersOnlineState</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">effect</span><span class="p">:</span> <span class="n">GetUsersOnline</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;online_users&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">online_users</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">state</span> <span class="k">else</span> <span class="p">[],</span>
+                <span class="s2">&quot;parent_operation_id&quot;</span><span class="p">:</span> <span class="n">effect</span><span class="o">.</span><span class="n">operation_id</span><span class="p">}</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
