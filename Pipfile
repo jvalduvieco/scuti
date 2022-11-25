@@ -11,10 +11,10 @@ docs = "pycco -i -d docs/  examples/tic_tac_toe/backend/applications/api/__main_
 injector = "*"
 plum-dispatch = "*"
 uuid = "*"
-pyhamcrest = "*"
 pyprctl = "*"
 
 [dev-packages]
+pyhamcrest = "*"
 parameterized = "*"
 pipenv-setup = "*"
 vistir = "==0.6.1"

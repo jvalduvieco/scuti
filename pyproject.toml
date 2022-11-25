@@ -8,9 +8,9 @@ version = "0.0.3"
 authors = [
     { name = "Joan Valduvieco", email = "jvalduvieco@gmail.com" },
 ]
-description = "A simple framework for building complex web applications."
+description = "A simple backend framework for building complex web applications. Inspired in CQS and DDD"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 dependencies = [
     "injector ==0.20.1",
     "plum-dispatch==1.7.4",
@@ -28,6 +28,8 @@ classifiers = [
 [tool.hatch.build.targets.sdist]
 exclude = [
     "/.github",
+    "/examples",
+    "/docs",
     "/test",
 ]
 

@@ -20,7 +20,7 @@
       <p>This is an example of using <a href="http://github.com/jvalduvieco/scuti/">Scuti</a> to implement a multiplayer
 distributed tic tac toe game.
 Scuti is a set of libraries and the minimal code to implement a bus that delivers commands, events and queries to
-handlers that change (for commands and queries) or retrieve (queries) the state of the system. It is a highly
+handlers that change (commands and events) or retrieve (queries) the state of the system. It is a highly
 customizable piece of code that, once customized, offers a clear view of the simple architecture showing a clear path
 to the developer to implement features. The main pattern Scuti favors is CQS.</p>
 <p>This example contains two parts:</p>
@@ -67,7 +67,7 @@ It includes a:</p>
  takes care of Websockets.</li>
 <li>Dependency <a href="https://github.com/alecthomas/injector">Injector</a>: That holds all dependencies and builds objects and 
  functions</li>
-<li>A multi dispatch library [Plum] so handlers can have multiple <code>handle</code> methods.</li>
+<li>A multi dispatch library <a href="https://github.com/wesselb/plum">Plum</a> so handlers can have multiple <code>handle</code> methods.</li>
 </ul>
     </div>
     <div class='code'>
@@ -171,7 +171,7 @@ subdomains that:
 there is something about Tic tac toe rules, something about users, something about scoring and some application 
 stuff.</p>
 <p>See:  <a href="game_domain_module.html">domain/games/tic_tac_toe/game_domain_module.py</a></p>
-<p>Another interesting example is users domain Module:  <a href="game_domain_module.html">domain/users/game_domain_module.py</a></p>
+<p>Another interesting example is users domain Module:  <a href="users_domain_module.html">domain/users/users_domain_module.py</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="n">domains</span> <span class="o">=</span> <span class="p">[</span><span class="n">TicTacToeDomainModule</span><span class="p">,</span> <span class="n">UserDomainModule</span><span class="p">,</span> <span class="n">ScoringDomainModule</span><span class="p">,</span> <span class="n">ApplicationInfrastructureModule</span><span class="p">]</span></pre></div>

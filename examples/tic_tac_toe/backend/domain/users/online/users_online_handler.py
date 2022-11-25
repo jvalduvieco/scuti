@@ -53,7 +53,7 @@ class UsersOnlineHandler(ManagedStateEffectHandler):
     @state_fetcher(Singleton)
     def handle(self, state: UsersOnlineState | None, effect: GetUsersOnline) -> Dict:
         """
-        Handlers can also answer queries about its internal state. Usually query responses are modeled as
+        Handlers can also answer queries about its internal state. Usually query responses are modelled as
         dictionaries as this data is leaving the domain very quickly so no need for type hinting or synchronization
         between code in the domain. This is a developer decision, dataclasses could be used.
         """

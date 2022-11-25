@@ -2,7 +2,7 @@
 This is an example of using [Scuti](http://github.com/jvalduvieco/scuti/) to implement a multiplayer
 distributed tic tac toe game.
 Scuti is a set of libraries and the minimal code to implement a bus that delivers commands, events and queries to
-handlers that change (for commands and queries) or retrieve (queries) the state of the system. It is a highly
+handlers that change (commands and events) or retrieve (queries) the state of the system. It is a highly
 customizable piece of code that, once customized, offers a clear view of the simple architecture showing a clear path
 to the developer to implement features. The main pattern Scuti favors is CQS.
 
@@ -36,7 +36,7 @@ It includes a:
  takes care of Websockets.
  - Dependency [Injector](https://github.com/alecthomas/injector): That holds all dependencies and builds objects and 
  functions
- - A multi dispatch library [Plum] so handlers can have multiple `handle` methods.
+ - A multi dispatch library [Plum](https://github.com/wesselb/plum) so handlers can have multiple `handle` methods.
 """
 from applications.api.cqrs_api_app import CQRSAPIApp
 from applications.api.websockets.commands import AssociateUserToSession
@@ -95,7 +95,7 @@ def main():
     
     See: [[domain/games/tic_tac_toe/game_domain_module.py]]
     
-    Another interesting example is users domain Module: [[domain/users/game_domain_module.py]]
+    Another interesting example is users domain Module: [[domain/users/users_domain_module.py]]
     """
     domains = [TicTacToeDomainModule, UserDomainModule, ScoringDomainModule, ApplicationInfrastructureModule]
 
