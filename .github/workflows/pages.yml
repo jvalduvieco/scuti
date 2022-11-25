@@ -38,10 +38,16 @@ jobs:
         run: pipenv install --dev
       - name: Create Pages
         run: pipenv run docs
+      - name: Add Readme.md as index
+        uses: jaywcjlove/markdown-to-html-cli@v3.4.5
+        with:
+          source: README.md
+          output: docs/index.html
+          github-corners: https://github.com/jvalduvieco/scuti
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: './docs'
+          path: ""./docs"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1

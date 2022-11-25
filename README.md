@@ -4,7 +4,7 @@
 
 A small CQS inspired framework with many things.
 
-Read the documentation [here](examples/tic_tac_toe/backend/docs/__main__.html)
+Read the documentation [here](https://jvalduvieco.github.io/scuti/__main__.html)
 
 A complete tic tac toe example can be found [here](examples/tic_tac_toe)
 
