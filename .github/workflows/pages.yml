@@ -39,7 +39,7 @@ jobs:
       - name: Create Pages
         run: pipenv run docs
       - name: Add Readme.md as index
-        uses: jaywcjlove/markdown-to-html-cli@v3.4.5
+        uses: jaywcjlove/markdown-to-html-cli@main
         with:
           source: README.md
           output: docs/index.html
