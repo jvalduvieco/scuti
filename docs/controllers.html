@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>controllers.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>controllers.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span>
+
+<span class="kn">from</span> <span class="nn">applications.api.tools</span> <span class="kn">import</span> <span class="n">from_javascript</span><span class="p">,</span> <span class="n">to_javascript</span><span class="p">,</span> <span class="n">to_message_response</span>
+<span class="kn">from</span> <span class="nn">scuti.domain.cqrs.bus.command_bus</span> <span class="kn">import</span> <span class="n">CommandBus</span>
+<span class="kn">from</span> <span class="nn">scuti.domain.cqrs.bus.event_bus</span> <span class="kn">import</span> <span class="n">EventBus</span>
+<span class="kn">from</span> <span class="nn">scuti.domain.cqrs.bus.query_bus</span> <span class="kn">import</span> <span class="n">QueryBus</span>
+<span class="kn">from</span> <span class="nn">scuti.domain.cqrs.effects</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Query</span>
+<span class="kn">from</span> <span class="nn">scuti.infrastructure.logging.get_logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">scuti.infrastructure.serialization.from_untyped_dict</span> <span class="kn">import</span> <span class="n">from_untyped_dict</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Controllers just feed effects to the proper bus. This usually requires deserializing effect and call <code>handle</code>method
+of the bus</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">command_controller</span><span class="p">(</span><span class="n">command_bus</span><span class="p">:</span> <span class="n">CommandBus</span><span class="p">,</span> <span class="n">available_commands</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Command</span><span class="p">]]):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">dispatch_command_request</span><span class="p">():</span>
+        <span class="n">client_request</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Command received: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client_request</span><span class="p">[</span><span class="s2">&quot;command&quot;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">from_untyped_dict</span><span class="p">(</span><span class="n">available_commands</span><span class="p">[</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]],</span>
+                                        <span class="n">from_javascript</span><span class="p">(</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">][</span><span class="s2">&quot;payload&quot;</span><span class="p">]))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Domain) Received unknown command: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Unknown command: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">400</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid command payload: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">err</span>
+        <span class="n">command_bus</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_message_response</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">),</span> <span class="mi">200</span>
+
+    <span class="k">return</span> <span class="n">dispatch_command_request</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Queries are resolved synchronously using flask thread. So they return query answer using HTTP encoded in a json
+text</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">query_controller</span><span class="p">(</span><span class="n">query_bus</span><span class="p">:</span> <span class="n">QueryBus</span><span class="p">,</span> <span class="n">available_queries</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Query</span><span class="p">]]):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">dispatch_query_request</span><span class="p">():</span>
+        <span class="n">client_request</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Query received: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client_request</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">from_untyped_dict</span><span class="p">(</span><span class="n">available_queries</span><span class="p">[</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]],</span>
+                                      <span class="n">from_javascript</span><span class="p">(</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;payload&quot;</span><span class="p">,</span> <span class="p">{})))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received unknown query: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Unknown query: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">400</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid query payload: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">err</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">query_bus</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">to_javascript</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="mi">200</span>
+
+    <span class="k">return</span> <span class="n">dispatch_query_request</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>This endpoint is used to receive events from other applications TO this application. So the event happens somewhere
+else, and it is forwarded by the other system to this application using HTTP POSTs to <code>/events</code> endpoint.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">event_controller</span><span class="p">(</span><span class="n">event_bus</span><span class="p">:</span> <span class="n">EventBus</span><span class="p">,</span> <span class="n">available_events</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Event</span><span class="p">]]):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">dispatch_event_request</span><span class="p">():</span>
+        <span class="n">client_request</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Event received: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client_request</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">from_untyped_dict</span><span class="p">(</span><span class="n">available_events</span><span class="p">[</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]],</span>
+                                      <span class="n">from_javascript</span><span class="p">(</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;payload&quot;</span><span class="p">,</span> <span class="p">{})))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(Domain) Received unknown event: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Unknown event: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">400</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid event payload: </span><span class="si">{</span><span class="n">client_request</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">err</span>
+
+        <span class="n">event_bus</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_message_response</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">),</span> <span class="mi">200</span>
+
+    <span class="k">return</span> <span class="n">dispatch_event_request</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

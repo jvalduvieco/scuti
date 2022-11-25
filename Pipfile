@@ -5,7 +5,7 @@ name = "pypi"
 
 [scripts]
 test = "python3 -m unittest"
-docs = "cd examples/tic_tac_toe/backend; pipenv docs"
+docs = "pycco -d docs/  examples/tic_tac_toe/backend/applications/api/__main__.py examples/tic_tac_toe/backend/applications/api/cqrs_api_app.py examples/tic_tac_toe/backend/applications/api/controllers.py examples/tic_tac_toe/backend/domain/games/tic_tac_toe/tic_tac_toe_game.py examples/tic_tac_toe/backend/domain/games/tic_tac_toe/game.py examples/tic_tac_toe/backend/domain/users/users_domain_module.py examples/tic_tac_toe/backend/domain/users/user_handler.py  examples/tic_tac_toe/backend/domain/games/tic_tac_toe/game_domain_module.py examples/tic_tac_toe/backend/domain/users/online/users_online_handler.py"
 
 [packages]
 injector = "*"
